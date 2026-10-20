@@ -4,7 +4,7 @@ import type { ModuleManifest } from "@/lib/modules/types";
 export const jobsModule: ModuleManifest = {
   id: "jobs",
   label: "Jobs",
-  description: "Capture a thought as a card and let a runner work it through inbox, running and done.",
+  description: "Capture a thought as a card and pick who runs it — Auto, your API, a CLI agent, or a local model. Private cards never leave the machine.",
   icon: "bot",
   navGroup: "Do",
   routes: [{ href: "/jobs", label: "Jobs board" }],

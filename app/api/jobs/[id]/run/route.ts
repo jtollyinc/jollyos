@@ -1,4 +1,4 @@
-/** POST /api/jobs/:id/run { runner } — hand a card to a runner. */
+/** POST /api/jobs/:id/run { runner?: "auto" | id } — hand a card to a runner (Auto → the default; private → Local, never cloud). */
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { runJob } from "@/lib/jobs/runners";
@@ -10,7 +10,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const gate = await requireSession();
   if ("response" in gate) return gate.response;
   const body = (await req.json().catch(() => null)) as { runner?: string } | null;
-  const result = await runJob((await params).id, body?.runner ?? "demo");
+  const result = await runJob((await params).id, body?.runner ?? "auto");
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: result.status });
-  return NextResponse.json({ job: result.job });
+  return NextResponse.json({ job: result.job, resolution: result.resolution });
 }

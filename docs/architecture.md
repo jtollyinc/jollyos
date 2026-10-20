@@ -77,10 +77,17 @@ disabled, and `gateModule` protects each page.
 
 ## Jobs runners
 
-`lib/jobs/runners.ts` defines `Runner { start(job) }`. The demo runner only
-writes `startedAt`; progress is a function of elapsed time computed on read
-(`settle` in the store), so nothing runs in the background and a restart loses
-nothing. The provider runner awaits the model inside the request.
+`lib/jobs/runners/` is a registry of who executes a card: `api` (your key,
+through the provider router), `cli` (`codex` or `claude` on PATH, detached
+child process, `JOBS_CLI_CWD`), `local` (your OpenAI-compatible server,
+`localProvider`) and `demo` (progress is a function of elapsed time computed
+on read — `settle` in the store — so nothing runs in the background). Each
+runner is one file exporting `{ manifest, health(env), start(job, env) }`;
+the manifests live client-safe in `lib/jobs/types.ts` with the one routing
+rule, `resolveRunner`: Auto → `defaultRunner(env)`, private → `local`, else
+the pick. `runJob` in `runners/index.ts` resolves, gates on health (Local
+down → the card is **blocked** with the reason; api/cli not set up → 409) and
+starts. `docs/runners.md` has the table and the "add a runner" steps.
 
 ## Daily Brief
 

@@ -22,6 +22,8 @@ services:
       LOCAL_LLM_BASE_URL: ${LOCAL_LLM_BASE_URL:-}
       LOCAL_LLM_MODEL: ${LOCAL_LLM_MODEL:-}
       BRIEF_FEEDS: ${BRIEF_FEEDS:-}
+      JOBS_DEFAULT_RUNNER: ${JOBS_DEFAULT_RUNNER:-}
+      JOBS_CLI_TIMEOUT_SEC: ${JOBS_CLI_TIMEOUT_SEC:-1800}
     volumes:
       - jollyos-data:/data
     restart: unless-stopped

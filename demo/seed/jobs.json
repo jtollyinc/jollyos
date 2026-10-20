@@ -1,6 +1,32 @@
 {
   "jobs": [
     {
+      "id": "demo-job-4",
+      "title": "Total last month's therapy and prescription receipts",
+      "brief": "Group the receipts in the notes by category and total them. Keep the output to one short table.",
+      "lane": "blocked",
+      "runner": null,
+      "private": true,
+      "blockedReason": "Local model is unreachable \u2014 job kept local, not sent to a cloud model (Set LOCAL_LLM_BASE_URL to your OpenAI-compatible server (e.g. http://localhost:1234/v1).)",
+      "model": null,
+      "progress": 0,
+      "output": null,
+      "error": null,
+      "createdAt": "2026-03-02T08:30:00.000Z",
+      "startedAt": null,
+      "finishedAt": null,
+      "log": [
+        {
+          "at": "2026-03-02T08:30:00.000Z",
+          "line": "Captured (private: local only)."
+        },
+        {
+          "at": "2026-03-02T08:31:00.000Z",
+          "line": "Blocked: Local model is unreachable \u2014 job kept local, not sent to a cloud model."
+        }
+      ]
+    },
+    {
       "id": "demo-job-1",
       "title": "Write the onboarding copy for the habit app",
       "brief": "Three screens, under 20 words each. Friendly, not cute. First screen explains why streaks are optional.",
@@ -12,7 +38,15 @@
       "createdAt": "2026-03-02T08:12:00.000Z",
       "startedAt": null,
       "finishedAt": null,
-      "log": [{ "at": "2026-03-02T08:12:00.000Z", "line": "Captured." }]
+      "log": [
+        {
+          "at": "2026-03-02T08:12:00.000Z",
+          "line": "Captured."
+        }
+      ],
+      "private": false,
+      "blockedReason": null,
+      "model": null
     },
     {
       "id": "demo-job-2",
@@ -26,7 +60,15 @@
       "createdAt": "2026-03-02T08:20:00.000Z",
       "startedAt": null,
       "finishedAt": null,
-      "log": [{ "at": "2026-03-02T08:20:00.000Z", "line": "Captured." }]
+      "log": [
+        {
+          "at": "2026-03-02T08:20:00.000Z",
+          "line": "Captured."
+        }
+      ],
+      "private": false,
+      "blockedReason": null,
+      "model": null
     },
     {
       "id": "demo-job-3",
@@ -35,16 +77,28 @@
       "lane": "done",
       "runner": "demo",
       "progress": 100,
-      "output": "Shipped: the settings page and the empty states (2 of 3 screens).\nBlocked: the export button is waiting on the API contract.\nNext: the activity feed — one of two views done.\n\n_(Seeded demo output.)_",
+      "output": "Shipped: the settings page and the empty states (2 of 3 screens).\nBlocked: the export button is waiting on the API contract.\nNext: the activity feed \u2014 one of two views done.\n\n_(Seeded demo output.)_",
       "error": null,
       "createdAt": "2026-03-01T15:40:00.000Z",
       "startedAt": "2026-03-01T15:41:00.000Z",
       "finishedAt": "2026-03-01T15:41:08.000Z",
       "log": [
-        { "at": "2026-03-01T15:40:00.000Z", "line": "Captured." },
-        { "at": "2026-03-01T15:41:00.000Z", "line": "Demo runner started." },
-        { "at": "2026-03-01T15:41:08.000Z", "line": "Demo runner finished." }
-      ]
+        {
+          "at": "2026-03-01T15:40:00.000Z",
+          "line": "Captured."
+        },
+        {
+          "at": "2026-03-01T15:41:00.000Z",
+          "line": "Demo runner started."
+        },
+        {
+          "at": "2026-03-01T15:41:08.000Z",
+          "line": "Demo runner finished."
+        }
+      ],
+      "private": false,
+      "blockedReason": null,
+      "model": "deterministic"
     }
   ]
 }

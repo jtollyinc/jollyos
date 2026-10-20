@@ -5,8 +5,9 @@ database, pluggable modules, and a privacy rule for AI that is enforced in code:
 anything you tag **local-only** is only ever sent to a model running on your
 own machine, or not sent at all.
 
-It ships with three modules: a **Jobs board** with a capture box and pluggable
-runners, a **Daily Brief** that folds your feeds into sections written for you,
+It ships with three modules: a **Jobs board** with a capture box and swappable
+runners (your API, a CLI agent, a local model, or a demo — private cards never
+leave the machine), a **Daily Brief** that folds your feeds into sections written for you,
 and a **Persona** that answers questions the way you would and learns from a
 swipeable **Decision Deck**. Demo mode runs the whole thing on fictional data
 with no configuration.
@@ -15,6 +16,8 @@ with no configuration.
 |---|---|
 | ![Home on a phone](docs/screenshots/phone-home.png) | ![Home on a desktop](docs/screenshots/desktop-home.png) |
 | ![Jobs board on a phone](docs/screenshots/phone-jobs.png) | ![Jobs board on a desktop](docs/screenshots/desktop-jobs.png) |
+| ![New job sheet with the runner picker on a phone](docs/screenshots/phone-jobs-new-job.png) | ![New job sheet with the runner picker on a desktop](docs/screenshots/desktop-jobs-new-job.png) |
+| ![A private card forced to the Local runner on a phone](docs/screenshots/phone-jobs-runner.png) | ![A private card forced to the Local runner on a desktop](docs/screenshots/desktop-jobs-runner.png) |
 | ![Daily Brief on a phone](docs/screenshots/phone-brief.png) | ![Daily Brief on a desktop](docs/screenshots/desktop-brief.png) |
 | ![Ask Myself on a phone](docs/screenshots/phone-ask.png) | ![Ask Myself on a desktop](docs/screenshots/desktop-ask.png) |
 | ![Decision Deck on a phone](docs/screenshots/phone-deck.png) | ![Decision Deck on a desktop](docs/screenshots/desktop-deck.png) |
@@ -62,7 +65,9 @@ Every variable is optional. See `.env.example` for the same list with comments.
 | `LLM_PROVIDER` | auto | `anthropic` \| `openai` \| `local` \| `demo`; auto = first configured key, else demo |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | –, `claude-opus-5` | Anthropic via the official SDK |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | –, `gpt-5-mini` | OpenAI chat completions |
-| `LOCAL_LLM_BASE_URL`, `LOCAL_LLM_MODEL` | – | Any OpenAI-compatible local server (LM Studio, Ollama, llama.cpp…) |
+| `LOCAL_LLM_BASE_URL`, `LOCAL_LLM_MODEL` | – | Any OpenAI-compatible local server (LM Studio, Ollama, llama.cpp…). Also the **Local** job runner, the only one a private card may use |
+| `JOBS_DEFAULT_RUNNER` | auto | What **Auto** means on the Jobs board: `api` \| `cli` \| `local` \| `demo`; auto = demo in demo mode, else the first configured |
+| `JOBS_CLI`, `JOBS_CLI_CWD`, `JOBS_CLI_TIMEOUT_SEC` | auto, `DATA_DIR/cli-workspace`, `1800` | The **CLI** runner: which agent CLI to prefer (`codex` or `claude`), the folder it may edit, its time limit |
 | `BRIEF_FEEDS` | – | Comma-separated RSS/Atom URLs for the Daily Brief (ignored in demo mode) |
 
 ## Providers and privacy routing
@@ -90,7 +95,7 @@ pick them up by accident.
 
 | Module | Route | What it does |
 |---|---|---|
-| Jobs | `/jobs` | Capture box → card in the inbox. Pick a runner: the **demo** runner simulates progress with no model; the **provider** runner sends the brief to your model, persona-aware. Lanes: inbox, running, done (failed cards stay visible). |
+| Jobs | `/jobs` | Capture box → card in the inbox. One **Runner** control: **Auto** (the configured default), **API** (your key, persona-aware), **CLI** (`codex` or `claude` on this machine, agentic), **Local** (your OpenAI-compatible server, $0), **Demo** (no model). A **Private** card is forced to Local and never reaches a cloud model — with no local server it sits in **Blocked** with the reason. Filters: needs you, running, inbox, blocked, done, failed. See [docs/runners.md](docs/runners.md). |
 | Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Cached per day; refresh on demand. |
 | Persona | `/persona`, `/persona/ask`, `/persona/deck` | Profile, values, preferences, rules and examples, each with a privacy tag. **Ask Myself** answers as you. The **Decision Deck** is twelve starter dilemmas you swipe; money and people cards are local-only by construction. |
 
@@ -101,6 +106,7 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 ## Docs
 
 - [docs/architecture.md](docs/architecture.md) — request flow, state files, auth, routing, runners
+- [docs/runners.md](docs/runners.md) — the job runners: one picker, one rule (Auto / private → local only), add a runner in one file
 - [docs/modules.md](docs/modules.md) — how to write a module
 - [docs/design-system.md](docs/design-system.md) — the ADHD-first rules and the primitives
 - [CONTRIBUTING.md](CONTRIBUTING.md) — checks to run, ground rules

@@ -30,6 +30,7 @@ export default async function HomePage() {
 
   const needs: string[] = [];
   if (counts && counts.inbox + counts.running) needs.push(`${counts.inbox + counts.running} job${counts.inbox + counts.running === 1 ? "" : "s"} on the board`);
+  if (counts && counts.blocked) needs.push(`${counts.blocked} blocked`);
   if (enabled.has("brief")) needs.push(brief ? "today's brief is ready" : "today's brief is not built yet");
   if (deck && deck.cards - deck.answered > 0) needs.push(`${deck.cards - deck.answered} deck cards waiting`);
   const needsSetup = statuses.filter((s) => s.state === "needs-setup");
@@ -54,7 +55,7 @@ export default async function HomePage() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {statuses.filter((s) => s.enabled).map((s) => {
           const line =
-            s.manifest.id === "jobs" && counts ? `${counts.inbox} inbox · ${counts.running} running · ${counts.done} done`
+            s.manifest.id === "jobs" && counts ? `${counts.inbox} inbox · ${counts.running} running${counts.blocked ? ` · ${counts.blocked} blocked` : ""} · ${counts.done} done`
             : s.manifest.id === "brief" ? (brief ? brief.headline : "Not built yet — open to build it")
             : s.manifest.id === "persona" && persona && deck ? `${persona.total} entries · ${deck.answered} swipes`
             : s.manifest.description;
