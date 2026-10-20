@@ -48,6 +48,17 @@ login** and nothing can sign in before setup. Data lives in `DATA_DIR`
 (`./data` locally, `/data` in Docker). Copy `.env.example` to `.env` when you
 want to configure a model provider or feeds.
 
+Two things to know about that first run:
+
+- **`npm run dev` listens on every interface**, so anyone on your network can
+  reach it. For a machine you share, bind it to yourself:
+  `npm run dev -- -H 127.0.0.1` (same for `npm start`).
+- **The Daily Brief says "needs setup" until you give it feeds.** It has no
+  default list — set `BRIEF_FEEDS` in `.env` to a comma-separated list of
+  RSS/Atom URLs and restart, or run `DEMO_MODE=true npm run dev` to see the
+  module on fixtures. Jobs, Persona, Ask Myself, the Decision Deck and Import
+  all work with no configuration at all.
+
 **Demo mode** (fictional data, no account):
 
 ```bash
@@ -90,8 +101,11 @@ instead. Never expose a demo instance to the internet: there is no password.
 - **Locked out?** Reset it from a shell on the machine:
 
   ```bash
-  npm run reset-owner              # prompts for the new password, twice
-  npm run reset-owner -- --remove  # deletes the owner; the next visit shows setup again
+  npm run reset-owner                  # prompts for the new password, twice
+  npm run reset-owner -- --stdin       # reads it from the first line of stdin
+  npm run reset-owner -- --remove      # deletes the owner; the next visit shows setup again
+  npm run reset-owner -- --remove --yes   # ...without the confirmation prompt
+  npm run reset-owner -- --help
   ```
 
   In Docker:
@@ -179,8 +193,8 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 ## Development
 
 ```bash
-npm run dev          # dev server
-npx tsc --noEmit     # types
+npm run dev          # dev server (add `-- -H 127.0.0.1` to keep it off the network)
+npm run typecheck    # tsc --noEmit
 npm run lint         # eslint
 npm test             # vitest
 npm run build        # production build (standalone output)
@@ -193,4 +207,4 @@ full history.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). License: MIT (assumption — confirm before publishing).
+MIT — see [LICENSE](LICENSE).
