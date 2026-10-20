@@ -3,25 +3,86 @@
     {
       "label": "Design Weekly (fictional feed)",
       "stories": [
-        { "id": "dw-1", "title": "Why empty states are the most-read screen in your app", "url": "https://example.com/design/empty-states", "publishedAt": "2026-03-02T06:00:00.000Z", "snippet": "A fictional essay on first-run screens and what they teach users before any data exists." },
-        { "id": "dw-2", "title": "A small studio's playbook for one-page proposals", "url": "https://example.com/design/one-page-proposals", "publishedAt": "2026-03-01T18:30:00.000Z", "snippet": "Scope, price, a single timeline bar. Fictional case study." },
-        { "id": "dw-3", "title": "Icon sets compared: stroke consistency across 200 glyphs", "url": "https://example.com/design/icon-sets", "publishedAt": "2026-03-01T12:00:00.000Z", "snippet": "A fictional round-up of open-source icon libraries and their licences." },
-        { "id": "dw-4", "title": "Reduced motion is a feature, not a fallback", "url": "https://example.com/design/reduced-motion", "publishedAt": "2026-02-28T09:15:00.000Z", "snippet": "Fictional guidance on honouring the OS preference everywhere." }
+        {
+          "id": "dw-1",
+          "title": "Why empty states are the most-read screen in your app",
+          "url": "https://example.com/design/empty-states",
+          "publishedAt": "2026-03-02T06:00:00.000Z",
+          "snippet": "A fictional essay on first-run screens and what they teach users before any data exists."
+        },
+        {
+          "id": "dw-2",
+          "title": "A small studio's playbook for one-page proposals",
+          "url": "https://example.com/design/one-page-proposals",
+          "publishedAt": "2026-03-01T18:30:00.000Z",
+          "snippet": "Scope, price, a single timeline bar. Fictional case study."
+        },
+        {
+          "id": "dw-3",
+          "title": "Icon sets compared: stroke consistency across 200 glyphs",
+          "url": "https://example.com/design/icon-sets",
+          "publishedAt": "2026-03-01T12:00:00.000Z",
+          "snippet": "A fictional round-up of open-source icon libraries and their licences."
+        },
+        {
+          "id": "dw-4",
+          "title": "Reduced motion is a feature, not a fallback",
+          "url": "https://example.com/design/reduced-motion",
+          "publishedAt": "2026-02-28T09:15:00.000Z",
+          "snippet": "Fictional guidance on honouring the OS preference everywhere."
+        }
       ]
     },
     {
       "label": "Indie Builders Digest (fictional feed)",
       "stories": [
-        { "id": "ib-1", "title": "Habit app ships streak-free mode after user interviews", "url": "https://example.com/indie/streak-free", "publishedAt": "2026-03-02T05:20:00.000Z", "snippet": "A fictional team made streaks optional and retention went up." },
-        { "id": "ib-2", "title": "Self-hosting a personal dashboard: what actually broke", "url": "https://example.com/indie/self-hosting", "publishedAt": "2026-03-01T20:00:00.000Z", "snippet": "Fictional notes on backups, secrets and the one cron job nobody remembered." },
-        { "id": "ib-3", "title": "Pricing a side project: free tier or no free tier", "url": "https://example.com/indie/free-tier", "publishedAt": "2026-03-01T07:45:00.000Z", "snippet": "A fictional founder's numbers on support load versus conversions." }
+        {
+          "id": "ib-1",
+          "title": "Habit app ships streak-free mode after user interviews",
+          "url": "https://example.com/indie/streak-free",
+          "publishedAt": "2026-03-02T05:20:00.000Z",
+          "snippet": "A fictional team made streaks optional and retention went up."
+        },
+        {
+          "id": "ib-2",
+          "title": "Self-hosting a personal dashboard: what actually broke",
+          "url": "https://example.com/indie/self-hosting",
+          "publishedAt": "2026-03-01T20:00:00.000Z",
+          "snippet": "Fictional notes on backups, secrets and the one cron job nobody remembered."
+        },
+        {
+          "id": "ib-3",
+          "title": "Pricing a side project: free tier or no free tier",
+          "url": "https://example.com/indie/free-tier",
+          "publishedAt": "2026-03-01T07:45:00.000Z",
+          "snippet": "A fictional founder's numbers on support load versus conversions."
+        },
+        {
+          "id": "ib-4",
+          "title": "Memecoin launchpad raises a fictional round on token hype",
+          "url": "https://example.com/indie/memecoin-launchpad",
+          "publishedAt": "2026-03-02T06:30:00.000Z",
+          "snippet": "A fictional crypto story, here so the Brief has something to hide once you tell it to skip crypto news."
+        }
       ]
     },
     {
       "label": "Local Models Roundup (fictional feed)",
       "stories": [
-        { "id": "lm-1", "title": "Running a 7B model on a laptop for private summaries", "url": "https://example.com/models/laptop-7b", "publishedAt": "2026-03-02T04:00:00.000Z", "snippet": "Fictional benchmark of small local models on summarisation tasks." },
-        { "id": "lm-2", "title": "A privacy tag for every prompt: one team's routing rule", "url": "https://example.com/models/privacy-routing", "publishedAt": "2026-03-01T16:10:00.000Z", "snippet": "Fictional write-up: local-only context never leaves the machine." }
+        {
+          "id": "lm-1",
+          "title": "Running a 7B model on a laptop for private summaries",
+          "url": "https://example.com/models/laptop-7b",
+          "publishedAt": "2026-03-02T04:00:00.000Z",
+          "snippet": "Fictional benchmark of small local models on summarisation tasks."
+        },
+        {
+          "id": "lm-2",
+          "title": "A privacy tag for every prompt: one team's routing rule",
+          "url": "https://example.com/models/privacy-routing",
+          "publishedAt": "2026-03-01T16:10:00.000Z",
+          "snippet": "Fictional write-up: local-only context never leaves the machine."
+        }
       ]
     }
   ]
