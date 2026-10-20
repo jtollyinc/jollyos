@@ -1,0 +1,15 @@
+#!/bin/sh
+# commit-msg guard: this repo's history must stay free of personal data.
+# Rejects co-author trailers and any email address outside example.com.
+# Enable once per clone:  git config core.hooksPath .githooks
+msg="$1"
+body=$(grep -v '^#' "$msg")
+if printf '%s\n' "$body" | grep -qiE '^co-authored-by:'; then
+  echo "commit-msg: Co-Authored-By trailers are not allowed here (see CONTRIBUTING.md)." >&2
+  exit 1
+fi
+if printf '%s\n' "$body" | grep -oiE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' | grep -viqE '@example\.com$'; then
+  echo "commit-msg: only @example.com addresses may appear in commit messages." >&2
+  exit 1
+fi
+exit 0

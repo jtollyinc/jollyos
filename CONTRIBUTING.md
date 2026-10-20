@@ -43,3 +43,9 @@ CI runs the same list plus gitleaks over the full history.
 
 `type(scope): what changed` — e.g. `feat(brief): atom feed support`,
 `fix(auth): clear cookie on logout`. Keep the subject under 72 characters.
+
+## Commit messages (people and AI agents)
+
+- Enable the repo's hooks once per clone: `git config core.hooksPath .githooks`.
+- No `Co-Authored-By:` trailers and no email addresses other than `@example.com` in commit messages. The `commit-msg` hook rejects them; CI's history scrub fails on them.
+- AI coding agents: turn co-author attribution off (Claude Code: `includeCoAuthoredBy: false`, already set in `.claude/settings.json`; see also `CLAUDE.md`).
