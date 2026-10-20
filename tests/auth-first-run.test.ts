@@ -28,13 +28,15 @@ describe("first run", () => {
     expect(ownerExists()).toBe(true);
     expect(() => createOwner("someone", "another password")).toThrow(/already exists/);
     const stored = JSON.parse(fs.readFileSync(path.join(dir, "owner.json"), "utf8")) as { passwordHash: string };
-    expect(stored.passwordHash.startsWith("scrypt:")).toBe(true);
+    expect(stored.passwordHash.startsWith("scrypt$")).toBe(true);
     expect(stored.passwordHash).not.toContain("correct horse");
+    expect((fs.statSync(path.join(dir, "owner.json")).mode & 0o777).toString(8)).toBe("600");
   });
 
   it("validates the credentials", () => {
     expect(() => createOwner("x", "long enough password")).toThrow(/Username/);
-    expect(() => createOwner("owner", "short")).toThrow(/8 characters/);
+    expect(() => createOwner("owner", "short")).toThrow(/12 characters/);
+    expect(() => createOwner("owner", "elevenchars")).toThrow(/12 characters/);
   });
 
   it("verifies the password and nothing else", () => {
@@ -46,10 +48,11 @@ describe("first run", () => {
   });
 
   it("generates a secret into DATA_DIR and round-trips a session token", async () => {
-    createOwner("owner", "correct horse battery");
-    const token = await createSessionToken("owner");
+    const owner = createOwner("owner", "correct horse battery");
+    const token = await createSessionToken(owner);
     expect(fs.existsSync(path.join(dir, "auth-secret"))).toBe(true);
-    expect(await verifySessionToken(token)).toBe("owner");
+    expect((fs.statSync(path.join(dir, "auth-secret")).mode & 0o777).toString(8)).toBe("600");
+    expect(await verifySessionToken(token)).toEqual({ username: "owner", epoch: 1 });
     expect(await verifySessionToken(token + "x")).toBeNull();
     const session = await sessionFromCookie(token);
     expect(session?.username).toBe("owner");
@@ -59,10 +62,10 @@ describe("first run", () => {
 
   it("uses AUTH_SECRET from the environment when set", async () => {
     process.env.AUTH_SECRET = "test-secret-not-for-production";
-    createOwner("owner", "correct horse battery");
-    const token = await createSessionToken("owner");
+    const owner = createOwner("owner", "correct horse battery");
+    const token = await createSessionToken(owner);
     expect(fs.existsSync(path.join(dir, "auth-secret"))).toBe(false);
-    expect(await verifySessionToken(token)).toBe("owner");
+    expect((await verifySessionToken(token))?.username).toBe("owner");
   });
 
   it("demo mode signs everyone in as the fictional user without an owner", async () => {

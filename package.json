@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "scrub": "bash scripts/scrub-check.sh",
-    "scrub:history": "bash scripts/scrub-check.sh --history"
+    "scrub:history": "bash scripts/scrub-check.sh --history",
+    "reset-owner": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/reset-owner.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

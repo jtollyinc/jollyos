@@ -35,11 +35,14 @@ export function readJson<T>(file: string, fallback: T): T {
   }
 }
 
-/** Atomic write: temp file in the same directory, then rename over the target. */
-export function writeJson(file: string, value: unknown): void {
+/**
+ * Atomic write: temp file in the same directory, then rename over the target.
+ * `mode` (e.g. 0o600 for owner.json) applies to the new file; rename keeps it.
+ */
+export function writeJson(file: string, value: unknown, mode?: number): void {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(value, null, 2) + "\n", "utf8");
+  fs.writeFileSync(tmp, JSON.stringify(value, null, 2) + "\n", { encoding: "utf8", mode });
   fs.renameSync(tmp, file);
 }
 

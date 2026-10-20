@@ -2,26 +2,37 @@
  * lib/auth — single-owner authentication.
  * ────────────────────────────────────────────────────────────────────────────
  * JollyOS has exactly one user: the owner. There is no user table, no roles,
- * no sign-up. The flow is:
+ * no sign-up, and no built-in account: nothing can sign in until the owner
+ * has been created. The flow is:
  *
- *   first run  → no owner file in DATA_DIR → every page redirects to /setup,
- *                where a username + password are chosen once.
+ *   first run  → no owner.json in DATA_DIR → every page redirects to /setup,
+ *                where a username + password are chosen once. Once the owner
+ *                exists the setup route answers 409 forever (no takeover).
  *   afterwards → /login checks the password against the scrypt hash in
  *                DATA_DIR/owner.json and sets a signed JWT session cookie.
- *   demo mode  → no owner needed; every request is the fictional demo user.
+ *   demo mode  → only when DEMO_MODE=true is set explicitly: every request is
+ *                the fictional demo user and there is no owner at all. A
+ *                missing owner or a missing .env never turns demo on.
  *
  * The JWT is HS256 (jose) signed with AUTH_SECRET. When the variable is unset
- * a random secret is generated once into DATA_DIR/auth-secret, so a plain
- * `docker compose up` works without configuration but still has a real secret.
+ * a random secret is generated once into DATA_DIR/auth-secret (mode 600), so a
+ * plain `docker compose up` works without configuration but still has a real
+ * secret. Tokens carry the owner's sessionEpoch; a password change or a CLI
+ * reset bumps it, which rejects every token issued before.
  *
- * Passwords are hashed with scrypt from Node's crypto (no native build step).
- * SERVER-SIDE ONLY.
+ * Hashing and the record shape live in ./password, the rules in ./rules, the
+ * gate decision in ./gate. SERVER-SIDE ONLY.
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
 import { SignJWT, jwtVerify } from "jose";
 import { dataPath, fileExists, readJson, writeJson } from "@/lib/data-dir";
 import { isDemoMode } from "@/lib/config";
+import { currentEpoch, newOwnerRecord, ownerWithPassword, usernameMatches, verifyPassword, type OwnerRecord } from "./password";
+import { passwordProblem, validateCredentials } from "./rules";
+
+export { hashPassword, verifyPassword, currentEpoch, type OwnerRecord } from "./password";
+export { passwordProblem, passwordRules, usernameProblem, validateCredentials, PASSWORD_MIN_LENGTH } from "./rules";
 
 export const SESSION_COOKIE = "jollyos_session";
 const SESSION_DAYS = 14;
@@ -39,93 +50,67 @@ export interface Session {
   demo: boolean;
 }
 
-// ── Password hashing ───────────────────────────────────────────────────────
-
-const KEY_LEN = 64;
-
-export function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto.scryptSync(password, salt, KEY_LEN).toString("hex");
-  return `scrypt:${salt}:${hash}`;
-}
-
-export function verifyPassword(password: string, stored: string): boolean {
-  const parts = stored.split(":");
-  if (parts.length !== 3 || parts[0] !== "scrypt") return false;
-  const [, salt, expected] = parts;
-  const computed = crypto.scryptSync(password, salt, KEY_LEN);
-  const a = Buffer.from(expected, "hex");
-  if (a.length !== computed.length) return false;
-  return crypto.timingSafeEqual(a, computed);
-}
-
 // ── Owner file ─────────────────────────────────────────────────────────────
 
-interface OwnerRecord {
-  username: string;
-  passwordHash: string;
-  createdAt: string;
-}
-
 const ownerFile = () => dataPath("owner.json");
+/** owner.json holds the hash: owner-only permissions, like auth-secret. */
+export const OWNER_FILE_MODE = 0o600;
 
 export function ownerExists(): boolean {
   return fileExists(ownerFile());
 }
 
 export function readOwner(): OwnerRecord | null {
-  return readJson<OwnerRecord | null>(ownerFile(), null);
+  const owner = readJson<OwnerRecord | null>(ownerFile(), null);
+  return owner && typeof owner.username === "string" && typeof owner.passwordHash === "string" ? owner : null;
 }
 
 export class AuthError extends Error {}
-
-/** Validate what the setup form sends. Returns a message or null when fine. */
-export function validateCredentials(username: string, password: string): string | null {
-  if (!/^[a-z0-9_.-]{2,32}$/i.test(username)) return "Username: 2-32 letters, digits, dots, dashes or underscores.";
-  if (password.length < 8) return "Password must be at least 8 characters.";
-  if (password.length > 256) return "Password is too long.";
-  return null;
-}
 
 /** First-run only: refuses when an owner already exists. */
 export function createOwner(username: string, password: string): OwnerRecord {
   if (ownerExists()) throw new AuthError("An owner already exists.");
   const problem = validateCredentials(username, password);
   if (problem) throw new AuthError(problem);
-  const record: OwnerRecord = {
-    username: username.trim(),
-    passwordHash: hashPassword(password),
-    createdAt: new Date().toISOString(),
-  };
-  writeJson(ownerFile(), record);
+  const record = newOwnerRecord(username, password);
+  writeJson(ownerFile(), record, OWNER_FILE_MODE);
   return record;
 }
 
-/** Constant-time-ish login check; false for a missing owner too. */
+/** Username (case-insensitive) and password both have to match; false for a missing owner too. */
 export function verifyOwnerLogin(username: string, password: string): boolean {
   const owner = readOwner();
-  if (!owner) return false;
-  const a = Buffer.from(username.trim().toLowerCase().padEnd(64, " "));
-  const b = Buffer.from(owner.username.toLowerCase().padEnd(64, " "));
-  const nameOk = a.length === b.length && crypto.timingSafeEqual(a, b);
+  if (!owner || typeof username !== "string" || typeof password !== "string") return false;
+  const nameOk = usernameMatches(username, owner.username);
   const passOk = verifyPassword(password, owner.passwordHash);
   return nameOk && passOk;
 }
 
-export function changeOwnerPassword(current: string, next: string): void {
+/** Thrown by changeOwnerPassword when the current password is wrong (the throttled case). */
+export class WrongPasswordError extends AuthError {}
+
+/**
+ * Verify the current password, apply the rules to the new one, re-hash and
+ * bump the epoch. Returns the new record so the caller can re-issue its own
+ * session; every other session is stale from here on.
+ */
+export function changeOwnerPassword(current: string, next: string): OwnerRecord {
   const owner = readOwner();
   if (!owner) throw new AuthError("No owner yet.");
-  if (!verifyPassword(current, owner.passwordHash)) throw new AuthError("Current password is wrong.");
-  const problem = validateCredentials(owner.username, next);
+  if (!verifyPassword(current, owner.passwordHash)) throw new WrongPasswordError("Current password is wrong.");
+  const problem = passwordProblem(next, owner.username);
   if (problem) throw new AuthError(problem);
-  writeJson(ownerFile(), { ...owner, passwordHash: hashPassword(next) });
+  if (verifyPassword(next, owner.passwordHash)) throw new AuthError("New password must be different from the current one.");
+  const updated = ownerWithPassword(owner, next);
+  writeJson(ownerFile(), updated, OWNER_FILE_MODE);
+  return updated;
 }
 
 // ── Session secret ─────────────────────────────────────────────────────────
 
 let cachedSecret: Uint8Array | null = null;
 
-/** AUTH_SECRET from the environment, else a generated one in DATA_DIR. */
+/** AUTH_SECRET from the environment, else a generated one in DATA_DIR/auth-secret (mode 600). */
 export function getAuthSecret(): Uint8Array {
   const fromEnv = process.env.AUTH_SECRET?.trim();
   if (fromEnv) return new TextEncoder().encode(fromEnv);
@@ -152,18 +137,26 @@ export function resetAuthSecretCache(): void {
 
 // ── Session tokens ─────────────────────────────────────────────────────────
 
-export async function createSessionToken(username: string): Promise<string> {
-  return new SignJWT({ sub: username })
+export interface SessionClaims {
+  username: string;
+  epoch: number;
+}
+
+/** Sign a session for this owner under their current epoch. */
+export async function createSessionToken(owner: Pick<OwnerRecord, "username" | "sessionEpoch">): Promise<string> {
+  return new SignJWT({ sub: owner.username, epoch: currentEpoch(owner) })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DAYS}d`)
     .sign(getAuthSecret());
 }
 
-export async function verifySessionToken(token: string): Promise<string | null> {
+/** Signature, expiry and shape only; the owner/epoch check is sessionFromCookie. */
+export async function verifySessionToken(token: string): Promise<SessionClaims | null> {
   try {
     const { payload } = await jwtVerify(token, getAuthSecret());
-    return typeof payload.sub === "string" && payload.sub ? payload.sub : null;
+    if (typeof payload.sub !== "string" || !payload.sub || typeof payload.epoch !== "number") return null;
+    return { username: payload.sub, epoch: payload.epoch };
   } catch {
     return null;
   }
@@ -179,15 +172,19 @@ export function cookieOptions(secure: boolean) {
   };
 }
 
-/** Resolve a session from a raw cookie value (null when absent/invalid). */
+/**
+ * Resolve a session from a raw cookie value: null when absent, invalid, for a
+ * username that is not the owner, or issued under an older epoch. Demo mode
+ * (explicit DEMO_MODE=true only) is always the fictional user.
+ */
 export async function sessionFromCookie(token: string | undefined): Promise<Session | null> {
   if (isDemoMode()) {
     return { username: DEMO_USER.username, displayName: DEMO_USER.displayName, demo: true };
   }
   if (!token) return null;
-  const username = await verifySessionToken(token);
-  if (!username) return null;
+  const claims = await verifySessionToken(token);
+  if (!claims) return null;
   const owner = readOwner();
-  if (!owner || owner.username !== username) return null;
-  return { username, displayName: username, demo: false };
+  if (!owner || owner.username !== claims.username || claims.epoch !== currentEpoch(owner)) return null;
+  return { username: owner.username, displayName: owner.username, demo: false };
 }

@@ -7,9 +7,13 @@ it keep the app calm and keep private data private".
 
 ```bash
 npm ci
-cp .env.example .env     # optional; demo mode works with no .env
-npm run dev              # http://localhost:3000
+DEMO_MODE=true npm run dev   # fictional data, no account: http://localhost:3000
+npm run dev                  # the real thing: the first visit asks you to create the owner
 ```
+
+`cp .env.example .env` is optional; the example has every variable with a
+comment. There is no built-in login, so `npm run dev` without `DEMO_MODE=true`
+always starts at the setup page.
 
 ## Before you open a pull request
 
@@ -31,6 +35,10 @@ CI runs the same list plus gitleaks over the full history.
 - **No personal data in the repo.** Fixtures are fictional and say so. The
   scrub check must stay green; add to `scripts/scrub-terms.txt` rather than
   weakening it.
+- **No default credentials, ever.** Not in code, seeds, tests, docs, the
+  Dockerfile or `.env.example`. The only account is the one created on the
+  setup page; `tests/auth-hardening.test.ts` and `tests/auth-routes.test.ts`
+  try the usual pairs and must keep failing. See `docs/security.md`.
 - **ADHD-first UI rules** in `docs/design-system.md` apply to every screen:
   44px targets, one loud thing, folded sections that remember.
 - **Modules are self-contained.** Read `docs/modules.md`; add one import to

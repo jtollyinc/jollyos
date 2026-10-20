@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, KeyRound } from "lucide-react";
 import { Card, PageHeader, PageShell } from "@/components/jolly/Foundation";
 import { getSession } from "@/lib/auth/session";
 import { configSummary } from "@/lib/config";
@@ -63,11 +63,18 @@ export default async function SettingsPage() {
           <h2 className="mb-2 text-base font-semibold">Instance</h2>
           <dl>
             <Row k="Signed in as" v={session.demo ? `${session.displayName} (fictional demo)` : session.username} />
+            <Row k="Password" v={session.demo ? "none in demo mode" : "scrypt hash in DATA_DIR/owner.json"} />
             <Row k="Demo mode" v={cfg.demoMode ? "on" : "off"} />
             <Row k="DATA_DIR" v={cfg.dataDir} />
             <Row k="AUTH_SECRET" v={cfg.authSecret === "env" ? "from environment" : "generated in DATA_DIR"} />
             <Row k="Brief feeds" v={String(cfg.briefFeeds)} />
           </dl>
+          {session.demo ? null : (
+            <Link href="/settings/password" className="btn-ghost mt-3">
+              <KeyRound size={14} aria-hidden="true" />
+              Change password
+            </Link>
+          )}
         </Card>
       </div>
     </PageShell>
