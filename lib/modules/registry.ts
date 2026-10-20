@@ -117,7 +117,7 @@ export function quickTabs(statuses: ModuleStatus[]): NavItem[] {
   const tabs: NavItem[] = [{ href: "/", label: "Home", icon: "home", state: "ready", moduleId: "home" }];
   for (const s of statuses) {
     if (!s.enabled || !s.manifest.quickTab || tabs.length >= 5) continue;
-    tabs.push({ href: s.manifest.routes[0].href, label: s.manifest.label, icon: s.manifest.icon, state: s.state, moduleId: s.manifest.id });
+    tabs.push({ href: s.manifest.routes[0].href, label: s.manifest.quickLabel ?? s.manifest.label, icon: s.manifest.icon, state: s.state, moduleId: s.manifest.id });
   }
   tabs.push({ href: "/settings", label: "Settings", icon: "settings", state: "ready", moduleId: "settings" });
   return tabs;

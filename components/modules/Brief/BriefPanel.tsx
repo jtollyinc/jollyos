@@ -50,7 +50,7 @@ export function BriefPanel() {
       {brief ? (
         <>
           <HeroStrip title="Right now" icon={<Activity size={12} aria-hidden="true" />} action={{ href: "/jobs", label: "Open jobs" }}>{brief.headline}</HeroStrip>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
             {brief.sections.map((s) => <Section key={s.id} section={s} />)}
           </div>
           <footer className="mt-4 space-y-1 text-[12px] text-text-subtle">

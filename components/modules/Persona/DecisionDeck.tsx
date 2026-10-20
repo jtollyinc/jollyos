@@ -153,9 +153,9 @@ export function DecisionDeck() {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            <button type="button" className="btn-ghost" onClick={() => pick("a")}><ArrowLeft size={16} aria-hidden="true" />{card.a}</button>
-            <button type="button" className="btn-ghost" onClick={() => pick("depends")}><ArrowUp size={16} aria-hidden="true" />Depends</button>
-            <button type="button" className="btn-ghost" onClick={() => pick("b")}>{card.b}<ArrowRight size={16} aria-hidden="true" /></button>
+            <button type="button" className="btn-ghost min-w-0" onClick={() => pick("a")} aria-label={`A: ${card.a}`}><ArrowLeft size={16} aria-hidden="true" /><span className="sm:hidden">A</span><span className="hidden truncate sm:inline">{card.a}</span></button>
+            <button type="button" className="btn-ghost min-w-0" onClick={() => pick("depends")}><ArrowUp size={16} aria-hidden="true" />Depends</button>
+            <button type="button" className="btn-ghost min-w-0" onClick={() => pick("b")} aria-label={`B: ${card.b}`}><span className="sm:hidden">B</span><span className="hidden truncate sm:inline">{card.b}</span><ArrowRight size={16} aria-hidden="true" /></button>
           </div>
           {why ? (
             <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void saveWhy(); }}>

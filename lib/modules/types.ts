@@ -52,6 +52,8 @@ export interface ModuleManifest {
   enabledByDefault: boolean;
   /** Show in the phone bottom bar (max 4 modules). */
   quickTab?: boolean;
+  /** Short label for the bottom bar when `label` would truncate. */
+  quickLabel?: string;
   accent?: TopicAccent;
 }
 

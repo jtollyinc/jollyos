@@ -64,3 +64,15 @@ describe("shipped manifests", () => {
     expect(s.every((x) => x.state === "ready")).toBe(true);
   });
 });
+
+describe("demo seed date shifting", () => {
+  it("moves the newest seed timestamp to about an hour ago and keeps order", async () => {
+    const { recentOffset, shiftDates } = await import("@/lib/demo");
+    const seed = { a: { at: "2026-01-01T00:00:00.000Z" }, b: [{ at: "2026-01-03T00:00:00.000Z" }], c: "not a date" };
+    const now = Date.parse("2026-06-01T12:00:00.000Z");
+    const shifted = shiftDates(seed, recentOffset(seed, now));
+    expect(Date.parse(shifted.b[0].at)).toBe(now - 3_600_000);
+    expect(Date.parse(shifted.b[0].at) - Date.parse(shifted.a.at)).toBe(2 * 86_400_000);
+    expect(shifted.c).toBe("not a date");
+  });
+});

@@ -30,7 +30,6 @@ function pick<T>(items: T[], seed: number, offset = 0): T {
 
 function askAnswer(req: CompletionRequest, seed: number): string {
   const persona = bullets(req.system);
-  const question = req.prompt.replace(/^.*?decision:\s*/is, "").trim();
   const lead = pick([
     "Here is how I would actually call this.",
     "Short version first, then why.",
@@ -57,7 +56,6 @@ function askAnswer(req: CompletionRequest, seed: number): string {
     "try it, time-boxed, before paying for anything.",
     "say no for now; revisit when it costs you a second time.",
   ], seed, 7)}`);
-  if (question) lines.push("", `_(You asked: ${question.slice(0, 140)})_`);
   return lines.join("\n");
 }
 
@@ -83,9 +81,9 @@ function jobOutput(req: CompletionRequest, seed: number): string {
 export function demoProvider(): Provider {
   return {
     id: "demo",
-    label: "Demo (deterministic)",
+    label: "Demo provider",
     kind: "demo",
-    model: "demo-deterministic",
+    model: "deterministic",
     async complete(req: CompletionRequest): Promise<CompletionResult> {
       const seed = hashString(`${req.system ?? ""}\n${req.prompt}`);
       let text: string;
@@ -102,7 +100,7 @@ export function demoProvider(): Provider {
         default:
           text = `Echo (${req.prompt.length} chars): ${req.prompt.slice(0, 200)}`;
       }
-      return { text: text + NOTE, provider: "demo", model: "demo-deterministic" };
+      return { text: text + NOTE, provider: "demo", model: "deterministic" };
     },
   };
 }

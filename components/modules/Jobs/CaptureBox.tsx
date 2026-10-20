@@ -44,7 +44,7 @@ export function CaptureBox({ onCaptured, autoFocus = false }: { onCaptured?: (jo
           rows={2}
           value={text}
           autoFocus={autoFocus}
-          placeholder="Capture a thought. First line is the title; Enter to save, Shift+Enter for a new line."
+          placeholder="Capture a thought. The first line becomes the title."
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void capture(); } }}
         />
@@ -53,6 +53,7 @@ export function CaptureBox({ onCaptured, autoFocus = false }: { onCaptured?: (jo
           {busy ? "Saving…" : "Capture"}
         </button>
       </div>
+      <p className="text-[12px] text-text-subtle">Enter saves · Shift+Enter adds a line</p>
       {note ? <Notice tone={note.tone}>{note.text}</Notice> : null}
     </div>
   );

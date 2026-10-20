@@ -13,5 +13,6 @@ export const briefModule: ModuleManifest = {
   requiredProviders: ["llm"],
   enabledByDefault: true,
   quickTab: true,
+  quickLabel: "Brief",
   accent: "news",
 };
