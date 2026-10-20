@@ -6,7 +6,7 @@
 [![Node >=22](https://img.shields.io/badge/node-%3E%3D22-339933.svg?logo=node.js&logoColor=white)](package.json)
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-**Try it in 30 seconds:** `docker compose up`, then open http://127.0.0.1:3000 (demo mode, fictional data, no `.env` needed).
+**Try it in one command:** `docker compose up`, then open http://127.0.0.1:3000 (demo mode, fictional data, no `.env` needed).
 
 One owner, no database, pluggable modules, and a privacy rule for AI that is
 enforced in code: anything you tag **local-only** is only ever sent to a model
