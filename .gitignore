@@ -7,6 +7,8 @@ node_modules/
 out/
 next-env.d.ts
 *.tsbuildinfo
+# written by `next dev` on every start (Next 16 agentRules; set agentRules: false to stop it)
+AGENTS.md
 
 # runtime data (DATA_DIR default) — never commit user data
 data/
