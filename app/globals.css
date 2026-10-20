@@ -1,0 +1,152 @@
+/* JollyOS global styles: Tailwind layers + design tokens + a few utilities.
+   The tokens are the whole theme; see docs/design-system.md. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* RGB channels so Tailwind opacity modifiers work (bg-surface/60). */
+  --bg-rgb: 11 11 16;
+  --surface-rgb: 22 22 34;
+  --surface-2-rgb: 28 28 46;
+  --surface-hover-rgb: 32 32 51;
+  --accent-rgb: 139 92 246;
+  --accent-bright-rgb: 168 85 247;
+  --accent-soft-rgb: 196 181 253;
+  --text-primary-rgb: 231 233 241;
+  --text-muted-rgb: 161 161 170;
+  --text-subtle-rgb: 139 139 150;
+  --success-rgb: 34 197 94;
+  --warning-rgb: 245 158 11;
+  --danger-rgb: 239 68 68;
+  --info-rgb: 59 130 246;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.6);
+
+  --page-wide: 1500px;
+  --page-narrow: 768px;
+  --sidebar-width: 256px;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background-color: rgb(var(--bg-rgb));
+    color: rgb(var(--text-primary-rgb));
+    min-height: 100vh;
+    margin: 0;
+  }
+  /* A thick ring: visible from across the room, usable on a TV remote. */
+  :focus-visible {
+    outline: 3px solid rgb(var(--accent-bright-rgb));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background-color: rgba(139, 92, 246, 0.28);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  h1, h2, h3, h4 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  p {
+    line-height: 1.6;
+  }
+  code, pre, kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+  }
+  input, textarea, select {
+    color-scheme: dark;
+  }
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
+* { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.12) transparent; }
+
+@layer components {
+  /* The two page roots. Every page's outermost wrapper is one of these. */
+  .page-shell {
+    @apply mx-auto w-full px-4 py-5 sm:px-6 lg:px-8 lg:py-8;
+    max-width: var(--page-wide);
+  }
+  .page-shell-narrow {
+    @apply mx-auto w-full px-4 py-5 sm:px-6 lg:px-8 lg:py-8;
+    max-width: var(--page-narrow);
+  }
+  /* Form controls share one look. */
+  .field {
+    @apply w-full rounded-control border border-strong bg-surface-2 px-3 py-2.5 text-sm text-text-primary placeholder:text-text-subtle outline-none focus:border-accent/60;
+    min-height: 44px;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-control px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-bright;
+  }
+  .btn-ghost {
+    @apply btn border border-strong bg-transparent text-text-primary hover:bg-white/[0.06];
+  }
+  .btn-quiet {
+    @apply btn text-text-muted hover:bg-white/[0.06] hover:text-text-primary;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-label font-semibold uppercase tracking-wider;
+  }
+}
+
+@layer utilities {
+  /* ADHD-first rule: every tap target is at least 44px on both axes. */
+  .touch-target { min-width: 44px; min-height: 44px; }
+  .safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .scrollbar-hidden { scrollbar-width: none; }
+  .scrollbar-hidden::-webkit-scrollbar { display: none; }
+}
+
+/* Topic accents are landmarks (always the same colour for the same topic),
+   never status colours. */
+[data-topic-accent="today"] { --topic-accent: #f5bd6b; }
+[data-topic-accent="jobs"] { --topic-accent: #a5c98b; }
+[data-topic-accent="news"] { --topic-accent: #7dd3d0; }
+[data-topic-accent="you"] { --topic-accent: #e5a4ca; }
+[data-topic-accent="decisions"] { --topic-accent: #91b8fa; }
+.topic-panel { border-top: 2px solid var(--topic-accent, rgb(var(--accent-rgb))); }
+.topic-icon {
+  color: var(--topic-accent, rgb(var(--accent-soft-rgb)));
+  background: color-mix(in srgb, var(--topic-accent, rgb(var(--accent-rgb))) 12%, transparent);
+  padding: 10px;
+  border-radius: 12px;
+  display: inline-flex;
+}
+
+/* Respect the OS-level reduced-motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

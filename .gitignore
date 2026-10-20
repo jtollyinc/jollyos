@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+.next-*/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# runtime data (DATA_DIR default) — never commit user data
+data/
+
+# env — only the example is tracked
+.env
+.env.*
+!.env.example
+
+# tooling
+coverage/
+.vitest/
+*.log
+.DS_Store
