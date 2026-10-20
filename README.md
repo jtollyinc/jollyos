@@ -1,35 +1,52 @@
 # JollyOS
 
-A self-hosted, ADHD-first personal operations dashboard. One owner, no
-database, pluggable modules, and a privacy rule for AI that is enforced in code:
-anything you tag **local-only** is only ever sent to a model running on your
-own machine, or not sent at all.
+**Your self-hosted personal OS: AI jobs, a Daily Brief that knows you, and private data that never leaves your machine.**
 
-It ships with three modules: a **Jobs board** with a capture box and swappable
-runners (your API, a CLI agent, a local model, or a demo — private cards never
-leave the machine), a **Daily Brief** that folds your feeds into sections written for you,
-and a **Persona** that answers questions the way you would and learns from a
-swipeable **Decision Deck**. **Import your context** from ChatGPT, Claude,
-Gemini, Notion, Obsidian or Apple Notes into a review queue — approve what is
-true, and the Brief gets personal right away: ranked by your interests, feed
-suggestions you accept one tap at a time, and a "why you're seeing this" line
-on every story. Demo mode runs the whole thing on fictional data with no
-configuration.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node >=22](https://img.shields.io/badge/node-%3E%3D22-339933.svg?logo=node.js&logoColor=white)](package.json)
+[![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
+
+**Try it in 30 seconds:** `docker compose up`, then open http://127.0.0.1:3000 (demo mode, fictional data, no `.env` needed).
+
+One owner, no database, pluggable modules, and a privacy rule for AI that is
+enforced in code: anything you tag **local-only** is only ever sent to a model
+running on your own machine, or not sent at all.
+
+- **Jobs board**: a capture box and swappable runners (your API, a CLI agent, a
+  local model, or a demo). Private cards never leave the machine.
+- **Daily Brief**: your feeds folded into sections written for you, ranked by
+  your interests, with a "why you're seeing this" line on every story.
+- **Persona**: answers questions the way you would and learns from a swipeable
+  **Decision Deck**.
+- **Import your context** from ChatGPT, Claude, Gemini, Notion, Obsidian or
+  Apple Notes into a review queue. Approve what is true and the Brief gets
+  personal right away.
+
+![The Daily Brief after importing: ranked, explained, with feed suggestions](docs/screenshots/desktop-brief-after.png)
+
+| Phone | Desktop |
+|---|---|
+| ![Jobs board on a phone](docs/screenshots/phone-jobs.png) | ![Jobs board on a desktop](docs/screenshots/desktop-jobs.png) |
+| ![The Brief after importing, on a phone](docs/screenshots/phone-brief-after.png) | ![Feed suggestions in the Brief after importing, on a desktop](docs/screenshots/desktop-brief-feeds.png) |
+| ![Decision Deck on a phone](docs/screenshots/phone-deck.png) | ![Decision Deck on a desktop](docs/screenshots/desktop-deck.png) |
+
+<details>
+<summary><b>More screenshots</b></summary>
 
 | Phone | Desktop |
 |---|---|
 | ![Home on a phone](docs/screenshots/phone-home.png) | ![Home on a desktop](docs/screenshots/desktop-home.png) |
-| ![Jobs board on a phone](docs/screenshots/phone-jobs.png) | ![Jobs board on a desktop](docs/screenshots/desktop-jobs.png) |
 | ![New job sheet with the runner picker on a phone](docs/screenshots/phone-jobs-new-job.png) | ![New job sheet with the runner picker on a desktop](docs/screenshots/desktop-jobs-new-job.png) |
 | ![A private card forced to the Local runner on a phone](docs/screenshots/phone-jobs-runner.png) | ![A private card forced to the Local runner on a desktop](docs/screenshots/desktop-jobs-runner.png) |
 | ![Daily Brief on a phone](docs/screenshots/phone-brief.png) | ![Daily Brief on a desktop](docs/screenshots/desktop-brief.png) |
 | ![Ask Myself on a phone](docs/screenshots/phone-ask.png) | ![Ask Myself on a desktop](docs/screenshots/desktop-ask.png) |
-| ![Decision Deck on a phone](docs/screenshots/phone-deck.png) | ![Decision Deck on a desktop](docs/screenshots/desktop-deck.png) |
 | ![Import your context on a phone](docs/screenshots/phone-import.png) | ![Import your context on a desktop](docs/screenshots/desktop-import.png) |
 | ![The review queue after the sample import on a phone](docs/screenshots/phone-import-review.png) | ![The review queue on a desktop](docs/screenshots/desktop-import-review.png) |
-| ![The Brief before importing, on a phone](docs/screenshots/phone-brief-before.png) | ![The Brief after importing: ranked, explained, with feed suggestions](docs/screenshots/desktop-brief-after.png) |
+| ![The Brief before importing, on a phone](docs/screenshots/phone-brief-before.png) | ![The Brief before importing, on a desktop](docs/screenshots/desktop-brief-before.png) |
 | ![First-run setup on a phone](docs/screenshots/phone-setup.png) | ![First-run setup with the live password rules on a desktop](docs/screenshots/desktop-setup-rules.png) |
 | ![Settings → Password on a phone](docs/screenshots/phone-change-password.png) | ![Password changed, every other device signed out, on a desktop](docs/screenshots/desktop-change-password-success.png) |
+
+</details>
 
 ## Quick start
 
