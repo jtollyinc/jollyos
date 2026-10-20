@@ -9,6 +9,7 @@
  *
  * The card's own tag decides the file; a request never names a privacy tier.
  */
+import fs from "node:fs";
 import { appendJsonl, dataPath, readJsonl } from "@/lib/data-dir";
 import type { Privacy } from "@/lib/providers/types";
 import { SEED_CARDS } from "@/modules/persona/cards";
@@ -39,12 +40,40 @@ export interface RecordInput {
   reason?: string;
 }
 
+/** Attach a reason to the most recent answer for a card, in its own tier's file. */
+function attachReason(card: TaggedCard, reason: string): DeckAnswer {
+  const file = answersFile(card.privacy);
+  const rows = readJsonl<DeckAnswer>(file);
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (rows[i].cardId !== card.id) continue;
+    rows[i] = { ...rows[i], reason: reason.slice(0, 280) };
+    fs.writeFileSync(file, rows.map((r) => JSON.stringify(r)).join("\n") + "\n", "utf8");
+    return rows[i];
+  }
+  // Unreachable in practice (the caller only reaches here after confirming a
+  // row exists), but keeps the return type honest instead of asserting.
+  return { cardId: card.id, choice: "depends", ms: 0, category: card.category, privacy: card.privacy, at: new Date().toISOString(), reason };
+}
+
 export function recordAnswer(input: RecordInput): { ok: true; answer: DeckAnswer } | { ok: false; reason: string } {
   const card = allCards().find((c) => c.id === input.cardId);
   if (!card) return { ok: false, reason: "no such card" };
   if (input.choice !== "a" && input.choice !== "b" && input.choice !== "depends") {
     return { ok: false, reason: "choice must be a, b or depends" };
   }
+
+  // A card is answered exactly once — nextCards() never re-offers one that
+  // already has a row. A second POST for the same card is always a
+  // resubmission (double tap, Enter racing the Save button, a retried
+  // request), never a deliberate re-answer: merge into the existing row
+  // instead of appending a duplicate.
+  const existing = readAnswers({ includePrivate: true }).find((a) => a.cardId === input.cardId);
+  if (existing) {
+    const reason = input.reason?.trim();
+    if (reason && !existing.reason) return { ok: true, answer: attachReason(card, reason) };
+    return { ok: true, answer: existing };
+  }
+
   const answer: DeckAnswer = {
     cardId: card.id,
     choice: input.choice,

@@ -70,6 +70,27 @@ describe("stores split by privacy on disk", () => {
     expect(recordAnswer({ cardId: "nope", choice: "a", ms: 1 }).ok).toBe(false);
   });
 
+  it("merges a second write for an already-answered card instead of duplicating it — the double-submit guard", () => {
+    const open = SEED_CARDS.find((c) => c.category === "building")!;
+
+    // The Decision Deck's combined depends+reason write: Enter and a
+    // near-simultaneous tap on Save can both reach the server for one card.
+    const first = recordAnswer({ cardId: open.id, choice: "depends", ms: 650, reason: "because the floor is down" });
+    const second = recordAnswer({ cardId: open.id, choice: "depends", ms: 650, reason: "because the floor is down" });
+    expect(first.ok && second.ok).toBe(true);
+    expect(readAnswers({ includePrivate: true }).filter((a) => a.cardId === open.id)).toHaveLength(1);
+    expect((second as { answer: DeckAnswer }).answer.reason).toBe("because the floor is down");
+
+    // An a/b pick, then the "add a why" note (which reuses POST in this
+    // repo): attaches to the existing row rather than appending.
+    const open2 = SEED_CARDS.filter((c) => c.category === "building")[1]!;
+    recordAnswer({ cardId: open2.id, choice: "a", ms: 400 });
+    const withReason = recordAnswer({ cardId: open2.id, choice: "a", ms: 0, reason: "second thought" });
+    expect(withReason.ok).toBe(true);
+    expect(readAnswers({ includePrivate: true }).filter((a) => a.cardId === open2.id)).toHaveLength(1);
+    expect((withReason as { answer: DeckAnswer }).answer.reason).toBe("second thought");
+  });
+
   it("persists persona entries with their tags", () => {
     addEntry({ kind: "rule", text: "Decide fast when reversible.", privacy: "cloud-ok" });
     addEntry({ kind: "preference", text: "Budget line", privacy: "local-only" });
