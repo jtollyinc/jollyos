@@ -1,0 +1,14 @@
+{
+  "entries": [
+    { "id": "demo-p1", "kind": "profile", "privacy": "public", "text": "Alex Rivera, product designer at a four-person studio. Fictional demo user. Splits the week between client work and a side project: a tiny habit-tracking app.", "createdAt": "2026-01-10T09:00:00.000Z", "updatedAt": "2026-01-10T09:00:00.000Z" },
+    { "id": "demo-p2", "kind": "profile", "privacy": "cloud-ok", "text": "Works best in two long morning blocks; afternoons are for calls and small tasks.", "createdAt": "2026-01-10T09:01:00.000Z", "updatedAt": "2026-01-10T09:01:00.000Z" },
+    { "id": "demo-v1", "kind": "value", "privacy": "public", "text": "Clarity over cleverness. If it needs a tooltip, it is not finished.", "createdAt": "2026-01-11T09:00:00.000Z", "updatedAt": "2026-01-11T09:00:00.000Z" },
+    { "id": "demo-v2", "kind": "value", "privacy": "cloud-ok", "text": "Quality first, then learning, then cost, then speed.", "createdAt": "2026-01-11T09:02:00.000Z", "updatedAt": "2026-01-11T09:02:00.000Z" },
+    { "id": "demo-r1", "kind": "rule", "privacy": "cloud-ok", "text": "If a decision is reversible, take it in under five minutes and write down the date to review it.", "createdAt": "2026-01-12T09:00:00.000Z", "updatedAt": "2026-01-12T09:00:00.000Z" },
+    { "id": "demo-r2", "kind": "rule", "privacy": "cloud-ok", "text": "Never add a feature to the side project the week a client deadline lands.", "createdAt": "2026-01-12T09:03:00.000Z", "updatedAt": "2026-01-12T09:03:00.000Z" },
+    { "id": "demo-pr1", "kind": "preference", "privacy": "cloud-ok", "text": "Free tools until the paid plan saves more than two hours a month.", "createdAt": "2026-01-13T09:00:00.000Z", "updatedAt": "2026-01-13T09:00:00.000Z" },
+    { "id": "demo-pr2", "kind": "preference", "privacy": "local-only", "text": "Tool budget is about forty a month total; anything above that needs a client to pay for it.", "createdAt": "2026-01-13T09:05:00.000Z", "updatedAt": "2026-01-13T09:05:00.000Z" },
+    { "id": "demo-e1", "kind": "example", "privacy": "cloud-ok", "text": "Situation: a client asked for a dashboard redesign in two weeks. Call: shipped a one-page version first, iterated weekly. Why: a rough thing in use beats a polished thing in review.", "createdAt": "2026-01-14T09:00:00.000Z", "updatedAt": "2026-01-14T09:00:00.000Z" },
+    { "id": "demo-e2", "kind": "example", "privacy": "local-only", "text": "Situation: a friend offered a paid weekend gig during a planned family trip. Call: declined. Why: trips are the one thing that does not move.", "createdAt": "2026-01-14T09:04:00.000Z", "updatedAt": "2026-01-14T09:04:00.000Z" }
+  ]
+}

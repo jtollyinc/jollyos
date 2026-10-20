@@ -1,0 +1,50 @@
+{
+  "jobs": [
+    {
+      "id": "demo-job-1",
+      "title": "Write the onboarding copy for the habit app",
+      "brief": "Three screens, under 20 words each. Friendly, not cute. First screen explains why streaks are optional.",
+      "lane": "inbox",
+      "runner": null,
+      "progress": 0,
+      "output": null,
+      "error": null,
+      "createdAt": "2026-03-02T08:12:00.000Z",
+      "startedAt": null,
+      "finishedAt": null,
+      "log": [{ "at": "2026-03-02T08:12:00.000Z", "line": "Captured." }]
+    },
+    {
+      "id": "demo-job-2",
+      "title": "Compare three icon libraries for the client dashboard",
+      "brief": "Needs 200+ icons, consistent stroke width, permissive licence. Shortlist two with a one-line reason each.",
+      "lane": "inbox",
+      "runner": null,
+      "progress": 0,
+      "output": null,
+      "error": null,
+      "createdAt": "2026-03-02T08:20:00.000Z",
+      "startedAt": null,
+      "finishedAt": null,
+      "log": [{ "at": "2026-03-02T08:20:00.000Z", "line": "Captured." }]
+    },
+    {
+      "id": "demo-job-3",
+      "title": "Draft the weekly client update",
+      "brief": "What shipped, what is blocked, what is next. Quantified status, no dates.",
+      "lane": "done",
+      "runner": "demo",
+      "progress": 100,
+      "output": "Shipped: the settings page and the empty states (2 of 3 screens).\nBlocked: the export button is waiting on the API contract.\nNext: the activity feed — one of two views done.\n\n_(Seeded demo output.)_",
+      "error": null,
+      "createdAt": "2026-03-01T15:40:00.000Z",
+      "startedAt": "2026-03-01T15:41:00.000Z",
+      "finishedAt": "2026-03-01T15:41:08.000Z",
+      "log": [
+        { "at": "2026-03-01T15:40:00.000Z", "line": "Captured." },
+        { "at": "2026-03-01T15:41:00.000Z", "line": "Demo runner started." },
+        { "at": "2026-03-01T15:41:08.000Z", "line": "Demo runner finished." }
+      ]
+    }
+  ]
+}

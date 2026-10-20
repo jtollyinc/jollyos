@@ -1,0 +1,9 @@
+{
+  "answers": [
+    { "cardId": "seed-01", "choice": "a", "ms": 1800, "category": "building", "privacy": "cloud-ok", "at": "2026-03-01T09:00:00.000Z" },
+    { "cardId": "seed-02", "choice": "a", "ms": 2400, "category": "building", "privacy": "cloud-ok", "at": "2026-03-01T09:00:20.000Z", "reason": "Eighty percent today beats a hundred percent next month." },
+    { "cardId": "seed-04", "choice": "a", "ms": 1500, "category": "tools", "privacy": "cloud-ok", "at": "2026-03-01T09:00:40.000Z" },
+    { "cardId": "seed-06", "choice": "depends", "ms": 5200, "category": "time", "privacy": "cloud-ok", "at": "2026-03-01T09:01:10.000Z" },
+    { "cardId": "seed-09", "choice": "b", "ms": 3100, "category": "money", "privacy": "local-only", "at": "2026-03-01T09:01:40.000Z" }
+  ]
+}
