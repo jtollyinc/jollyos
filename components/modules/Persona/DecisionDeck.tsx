@@ -150,12 +150,24 @@ export function DecisionDeck() {
     else if (d.x <= -SWIPE_PX) pick("a");
     else if (d.x >= SWIPE_PX) pick("b");
   }
-  function onKeyDown(e: React.KeyboardEvent) {
-    if (reveal) return;
-    if (e.key === "ArrowLeft") { e.preventDefault(); pick("a"); }
-    if (e.key === "ArrowRight") { e.preventDefault(); pick("b"); }
-    if (e.key === "ArrowUp") { e.preventDefault(); tapDepends(); }
-  }
+  // Arrow keys, bound to the window rather than the card. The card is a
+  // focusable div but nothing focuses it, so a React onKeyDown on it only ever
+  // fired after the user had tabbed to it — the "use ← → ↑" hint below did
+  // nothing on a freshly loaded deck. Typing still wins: a key pressed inside
+  // the why box (or any field) is left alone.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (reveal || !card) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.isContentEditable || /^(input|textarea|select)$/i.test(el.tagName))) return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); pick("a"); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); pick("b"); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); tapDepends(); }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [card, reveal, pick, tapDepends]);
 
   const answered = (data?.stats.answered ?? 0) + session.length;
   const streak = Math.max(data?.streak ?? 0, session.length ? 1 : 0);
@@ -178,7 +190,7 @@ export function DecisionDeck() {
           <button type="button" className="btn-primary mt-4" onClick={() => setDismissed(session.length)}>Keep going</button>
         </Card>
       ) : card ? (
-        <div className="space-y-3" onKeyDown={onKeyDown}>
+        <div className="space-y-3">
           <div
             role="group"
             aria-label={`Card: ${card.prompt}`}
