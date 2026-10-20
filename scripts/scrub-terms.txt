@@ -1,0 +1,23 @@
+# One banned term per line, matched case-insensitively as a plain substring.
+# Lines starting with # are ignored. This file and scripts/scrub-check.sh are
+# the only files excluded from the scan.
+jaron
+tollefson
+jtolly
+banan
+forpak
+marty
+miata
+jollyserver
+jollydesk
+tailscale
+tailce
+icloud
+100.121.
+10.0.0.
+/opt/jolly
+c:\dev
+gr pc
+frigate
+wrist-token
+google-token

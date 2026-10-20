@@ -1,0 +1,30 @@
+# `docker compose up` from a clean clone starts JollyOS in demo mode on
+# http://127.0.0.1:3000 with no .env needed. Copy .env.example to .env to
+# configure a provider or turn demo mode off; JOLLYOS_PORT changes the host port.
+services:
+  jollyos:
+    build: .
+    image: jollyos:local
+    ports:
+      - "127.0.0.1:${JOLLYOS_PORT:-3000}:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-true}
+      DATA_DIR: /data
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      LOCAL_LLM_BASE_URL: ${LOCAL_LLM_BASE_URL:-}
+      LOCAL_LLM_MODEL: ${LOCAL_LLM_MODEL:-}
+      BRIEF_FEEDS: ${BRIEF_FEEDS:-}
+    volumes:
+      - jollyos-data:/data
+    restart: unless-stopped
+
+volumes:
+  jollyos-data:
