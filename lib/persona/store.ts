@@ -8,6 +8,7 @@
 import crypto from "node:crypto";
 import { dataPath, readJson, writeJson } from "@/lib/data-dir";
 
+import { refreshInterests } from "./interests-store";
 import { type EntryInput, type PersonaEntry } from "./types";
 
 export * from "./types";
@@ -24,8 +25,10 @@ export function readEntries(): PersonaEntry[] {
   return readJson<PersonaFile>(file(), { entries: [] }).entries;
 }
 
+/** Every write re-derives the interest profile (lib/persona/interests-store) so the Brief follows the persona. */
 function writeEntries(entries: PersonaEntry[]): void {
   writeJson(file(), { entries });
+  refreshInterests(entries);
 }
 
 export function addEntry(input: EntryInput): PersonaEntry {
@@ -33,6 +36,7 @@ export function addEntry(input: EntryInput): PersonaEntry {
   if (!text) throw new Error("Entry text is required.");
   const now = new Date().toISOString();
   const entry: PersonaEntry = { id: crypto.randomUUID(), kind: input.kind, text, privacy: input.privacy, createdAt: now, updatedAt: now };
+  if (input.source) entry.source = { kind: input.source.kind, ref: input.source.ref.slice(0, 200) };
   writeEntries([...readEntries(), entry]);
   return entry;
 }

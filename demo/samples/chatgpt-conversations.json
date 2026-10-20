@@ -1,0 +1,511 @@
+[
+  {
+    "title": "Pricing page for the habit app",
+    "create_time": 1770109200,
+    "update_time": 1770109350,
+    "mapping": {
+      "a-root": {
+        "id": "a-root",
+        "parent": null,
+        "children": [
+          "a-sys"
+        ],
+        "message": null
+      },
+      "a-sys": {
+        "id": "a-sys",
+        "parent": "a-root",
+        "children": [
+          "a-1"
+        ],
+        "message": {
+          "id": "a-sys",
+          "author": {
+            "role": "system",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770109200,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              ""
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {
+            "is_visually_hidden_from_conversation": true
+          },
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "a-1": {
+        "id": "a-1",
+        "parent": "a-sys",
+        "children": [
+          "a-2"
+        ],
+        "message": {
+          "id": "a-1",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770109210,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I'm a product designer at a four-person studio, and on the side I'm building a tiny habit-tracking app. I prefer free tools until a paid plan saves me more than two hours a month. Can you help me think through a pricing page?"
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "a-2": {
+        "id": "a-2",
+        "parent": "a-1",
+        "children": [
+          "a-3"
+        ],
+        "message": {
+          "id": "a-2",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770109240,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Happy to help. A pricing page usually works best with three tiers. Which features would be premium?"
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "a-3": {
+        "id": "a-3",
+        "parent": "a-2",
+        "children": [
+          "a-4"
+        ],
+        "message": {
+          "id": "a-3",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770109320,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I always ship a one-page version first and iterate weekly. Never add a feature the week a client deadline lands. For this app I decided to keep streaks optional after user interviews — people with ADHD told me a broken streak made them quit."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "a-4": {
+        "id": "a-4",
+        "parent": "a-3",
+        "children": [],
+        "message": {
+          "id": "a-4",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770109350,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Then a single plan with a free tier is cleaner. Here is a draft..."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      }
+    },
+    "moderation_results": [],
+    "current_node": "a-4",
+    "plugin_ids": null,
+    "conversation_id": "a-conv",
+    "conversation_template_id": null,
+    "gizmo_id": null,
+    "is_archived": false,
+    "safe_urls": [],
+    "default_model_slug": "demo-model",
+    "id": "a-conv"
+  },
+  {
+    "title": "Reading list for design systems",
+    "create_time": 1770832800,
+    "update_time": 1770833000,
+    "mapping": {
+      "b-root": {
+        "id": "b-root",
+        "parent": null,
+        "children": [
+          "b-sys"
+        ],
+        "message": null
+      },
+      "b-sys": {
+        "id": "b-sys",
+        "parent": "b-root",
+        "children": [
+          "b-1"
+        ],
+        "message": {
+          "id": "b-sys",
+          "author": {
+            "role": "system",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770832800,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              ""
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {
+            "is_visually_hidden_from_conversation": true
+          },
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "b-1": {
+        "id": "b-1",
+        "parent": "b-sys",
+        "children": [
+          "b-2"
+        ],
+        "message": {
+          "id": "b-1",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770832805,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I'm into design systems and accessibility, and I read a lot about typography and reduced motion. Give me a reading list for the month."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "b-2": {
+        "id": "b-2",
+        "parent": "b-1",
+        "children": [
+          "b-3"
+        ],
+        "message": {
+          "id": "b-2",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770832830,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Here are ten pieces on design tokens, component libraries and WCAG..."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "b-3": {
+        "id": "b-3",
+        "parent": "b-2",
+        "children": [
+          "b-4"
+        ],
+        "message": {
+          "id": "b-3",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770832980,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Thanks. Also: don't show me crypto news, I'm not interested in it at all, and skip celebrity gossip. Keep answers short and direct."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "b-4": {
+        "id": "b-4",
+        "parent": "b-3",
+        "children": [],
+        "message": {
+          "id": "b-4",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1770833000,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Noted."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      }
+    },
+    "moderation_results": [],
+    "current_node": "b-4",
+    "plugin_ids": null,
+    "conversation_id": "b-conv",
+    "conversation_template_id": null,
+    "gizmo_id": null,
+    "is_archived": false,
+    "safe_urls": [],
+    "default_model_slug": "demo-model",
+    "id": "b-conv"
+  },
+  {
+    "title": "Weekend plans",
+    "create_time": 1772377200,
+    "update_time": 1772377220,
+    "mapping": {
+      "c-root": {
+        "id": "c-root",
+        "parent": null,
+        "children": [
+          "c-sys"
+        ],
+        "message": null
+      },
+      "c-sys": {
+        "id": "c-sys",
+        "parent": "c-root",
+        "children": [
+          "c-1",
+          "c-1b"
+        ],
+        "message": {
+          "id": "c-sys",
+          "author": {
+            "role": "system",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1772377200,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              ""
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {
+            "is_visually_hidden_from_conversation": true
+          },
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "c-1": {
+        "id": "c-1",
+        "parent": "c-sys",
+        "children": [
+          "c-2"
+        ],
+        "message": {
+          "id": "c-1",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1772377205,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I love skydiving and want to book a jump next weekend."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "c-2": {
+        "id": "c-2",
+        "parent": "c-1",
+        "children": [],
+        "message": {
+          "id": "c-2",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1772377220,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "Here are three drop zones nearby..."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "c-1b": {
+        "id": "c-1b",
+        "parent": "c-sys",
+        "children": [
+          "c-2b"
+        ],
+        "message": {
+          "id": "c-1b",
+          "author": {
+            "role": "user",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1772377500,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I ride my gravel bike most weekends and cook on Sundays. My rule is that trips do not move for work, ever. What should I plan for a free Saturday?"
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      },
+      "c-2b": {
+        "id": "c-2b",
+        "parent": "c-1b",
+        "children": [],
+        "message": {
+          "id": "c-2b",
+          "author": {
+            "role": "assistant",
+            "name": null,
+            "metadata": {}
+          },
+          "create_time": 1772377530,
+          "update_time": null,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "A long ride in the morning, then a slow cook in the afternoon."
+            ]
+          },
+          "status": "finished_successfully",
+          "end_turn": true,
+          "weight": 1,
+          "metadata": {},
+          "recipient": "all",
+          "channel": null
+        }
+      }
+    },
+    "moderation_results": [],
+    "current_node": "c-2b",
+    "plugin_ids": null,
+    "conversation_id": "c-conv",
+    "conversation_template_id": null,
+    "gizmo_id": null,
+    "is_archived": false,
+    "safe_urls": [],
+    "default_model_slug": "demo-model",
+    "id": "c-conv"
+  }
+]

@@ -25,6 +25,8 @@ RUN addgroup -S jollyos && adduser -S jollyos -G jollyos \
 COPY --from=build --chown=jollyos:jollyos /app/.next/standalone ./
 COPY --from=build --chown=jollyos:jollyos /app/.next/static ./.next/static
 COPY --from=build --chown=jollyos:jollyos /app/public ./public
+# Fictional sample exports for "Try with sample data" (demo mode); read from disk at runtime.
+COPY --from=build --chown=jollyos:jollyos /app/demo/samples ./demo/samples
 USER jollyos
 EXPOSE 3000
 VOLUME ["/data"]

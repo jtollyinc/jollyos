@@ -1,0 +1,13 @@
+Saved memories
+
+- User is a product designer at a four-person studio and builds a habit-tracking app on the side.
+- User prefers short, direct answers with no padding.
+- User works best in two long morning blocks; afternoons are for calls.
+- User is interested in design systems, accessibility, typography and self-hosting.
+- User does not want to see crypto news or celebrity gossip.
+
+Custom instructions
+
+Always answer in plain language and lead with the recommendation.
+Never open with a restatement of my question.
+When a decision is reversible, say so and suggest a review date.

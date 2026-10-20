@@ -12,6 +12,7 @@
  * the provider router consumes — the router decides what is sent where, but
  * the tags originate here.
  */
+import type { ImportSource } from "@/lib/import/types";
 import type { ContextSegment, Privacy } from "@/lib/providers/types";
 
 export type PersonaKind = "profile" | "value" | "preference" | "rule" | "example";
@@ -31,6 +32,13 @@ export const PRIVACY_LEVELS: { id: Privacy; label: string; hint: string }[] = [
   { id: "local-only", label: "Local only", hint: "Only a model on this machine ever sees it." },
 ];
 
+/** Where an entry came from when it was imported (absent for hand-written entries). */
+export interface EntrySource {
+  kind: ImportSource;
+  /** Human-readable pointer into the export, e.g. "Pricing page › message 3". */
+  ref: string;
+}
+
 export interface PersonaEntry {
   id: string;
   kind: PersonaKind;
@@ -38,12 +46,14 @@ export interface PersonaEntry {
   privacy: Privacy;
   createdAt: string;
   updatedAt: string;
+  source?: EntrySource;
 }
 
 export interface EntryInput {
   kind: PersonaKind;
   text: string;
   privacy: Privacy;
+  source?: EntrySource;
 }
 
 export const isKind = (v: unknown): v is PersonaKind => PERSONA_KINDS.some((k) => k.id === v);

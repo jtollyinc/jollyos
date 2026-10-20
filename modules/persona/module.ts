@@ -11,6 +11,7 @@ export const personaModule: ModuleManifest = {
     { href: "/persona", label: "Persona" },
     { href: "/persona/ask", label: "Ask Myself" },
     { href: "/persona/deck", label: "Decision Deck" },
+    { href: "/persona/import", label: "Import your context" },
   ],
   requiredProviders: ["llm"],
   enabledByDefault: true,

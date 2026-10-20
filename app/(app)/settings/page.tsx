@@ -1,7 +1,11 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Card, PageHeader, PageShell } from "@/components/jolly/Foundation";
 import { getSession } from "@/lib/auth/session";
 import { configSummary } from "@/lib/config";
+import { queueCounts, rawFilesSummary } from "@/lib/import/queue";
 import { loadStatuses } from "@/lib/modules/registry";
+import { readInterests } from "@/lib/persona/interests-store";
 import { providersFromEnv } from "@/lib/providers";
 import { ModulesTable } from "./ModulesTable";
 
@@ -20,6 +24,9 @@ export default async function SettingsPage() {
   const cfg = configSummary();
   const providers = providersFromEnv();
   const statuses = loadStatuses();
+  const raw = rawFilesSummary();
+  const queue = queueCounts();
+  const interests = readInterests();
 
   return (
     <PageShell width="narrow">
@@ -39,6 +46,18 @@ export default async function SettingsPage() {
             <Row k="LLM_PROVIDER" v={cfg.llmProvider} />
           </dl>
           {providers.warnings.length ? <ul className="mt-3 space-y-1 text-[13px] text-warning">{providers.warnings.map((w) => <li key={w}>{w}</li>)}</ul> : null}
+        </Card>
+        <Card className="p-4">
+          <h2 className="mb-2 text-base font-semibold">Your context</h2>
+          <dl>
+            <Row k="Import review queue" v={queue.pending ? `${queue.pending} waiting for you` : queue.total ? `${queue.approved} approved · ${queue.rejected} rejected` : "empty"} />
+            <Row k="Derived interests" v={interests.version === "none" ? "none yet" : `${interests.interests.length} interests · ${interests.avoid.length} avoid`} />
+            <Row k="Raw uploads kept" v={raw.files ? `${raw.files} file${raw.files === 1 ? "" : "s"} · ${Math.max(1, Math.round(raw.bytes / 1024))} KB in DATA_DIR/imports/raw` : "none"} />
+          </dl>
+          <Link href="/persona/import" className="btn-ghost mt-3">
+            Import your context from ChatGPT, Claude, Gemini, Notion or notes
+            <ArrowRight size={14} aria-hidden="true" />
+          </Link>
         </Card>
         <Card className="p-4">
           <h2 className="mb-2 text-base font-semibold">Instance</h2>

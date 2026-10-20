@@ -1,0 +1,28 @@
+{
+  "note": "Public RSS/Atom feeds the Brief may SUGGEST by topic (ids from lib/persona/interests.ts). Suggestions are never auto-subscribed. Every URL answered HTTP 200 with a parseable feed on 2026-10-20.",
+  "feeds": [
+    { "id": "smashing", "title": "Smashing Magazine", "site": "smashingmagazine.com", "url": "https://www.smashingmagazine.com/feed/", "topics": ["design-systems", "frontend", "css", "accessibility"] },
+    { "id": "alistapart", "title": "A List Apart", "site": "alistapart.com", "url": "https://alistapart.com/main/feed/", "topics": ["product-design", "frontend", "writing"] },
+    { "id": "nngroup", "title": "Nielsen Norman Group", "site": "nngroup.com", "url": "https://www.nngroup.com/feed/rss/", "topics": ["ux-research", "product-design"] },
+    { "id": "css-tricks", "title": "CSS-Tricks", "site": "css-tricks.com", "url": "https://css-tricks.com/feed/", "topics": ["css", "frontend"] },
+    { "id": "a11yproject", "title": "The A11Y Project", "site": "a11yproject.com", "url": "https://www.a11yproject.com/feed/feed.xml", "topics": ["accessibility"] },
+    { "id": "adrianroselli", "title": "Adrian Roselli", "site": "adrianroselli.com", "url": "https://adrianroselli.com/feed/", "topics": ["accessibility", "frontend"] },
+    { "id": "sidebar", "title": "Sidebar", "site": "sidebar.io", "url": "https://sidebar.io/feed.xml", "topics": ["product-design", "design-systems", "typography"] },
+    { "id": "ia", "title": "iA Writer blog", "site": "ia.net", "url": "https://ia.net/feed", "topics": ["typography", "writing", "product-design"] },
+    { "id": "hn", "title": "Hacker News front page", "site": "hnrss.org", "url": "https://hnrss.org/frontpage", "topics": ["indie-business", "open-source", "ai-tools", "frontend"] },
+    { "id": "lobsters", "title": "Lobsters", "site": "lobste.rs", "url": "https://lobste.rs/rss", "topics": ["open-source", "frontend", "privacy-security"] },
+    { "id": "selfhst", "title": "selfh.st", "site": "selfh.st", "url": "https://selfh.st/rss/", "topics": ["self-hosting", "open-source"] },
+    { "id": "simonwillison", "title": "Simon Willison", "site": "simonwillison.net", "url": "https://simonwillison.net/atom/everything/", "topics": ["local-models", "ai-tools", "open-source"] },
+    { "id": "huggingface", "title": "Hugging Face blog", "site": "huggingface.co", "url": "https://huggingface.co/blog/feed.xml", "topics": ["local-models", "ai-tools"] },
+    { "id": "eff", "title": "EFF Updates", "site": "eff.org", "url": "https://www.eff.org/rss/updates.xml", "topics": ["privacy-security"] },
+    { "id": "schneier", "title": "Schneier on Security", "site": "schneier.com", "url": "https://www.schneier.com/feed/atom/", "topics": ["privacy-security"] },
+    { "id": "jamesclear", "title": "James Clear", "site": "jamesclear.com", "url": "https://jamesclear.com/feed", "topics": ["adhd-habits", "productivity"] },
+    { "id": "additude", "title": "ADDitude", "site": "additudemag.com", "url": "https://www.additudemag.com/feed/", "topics": ["adhd-habits"] },
+    { "id": "react", "title": "React blog", "site": "react.dev", "url": "https://react.dev/rss.xml", "topics": ["react-next", "frontend"] },
+    { "id": "tailwind", "title": "Tailwind CSS blog", "site": "tailwindcss.com", "url": "https://tailwindcss.com/feeds/feed.xml", "topics": ["css", "design-systems"] },
+    { "id": "bicycling", "title": "Bicycling", "site": "bicycling.com", "url": "https://www.bicycling.com/rss/all.xml/", "topics": ["cycling", "outdoors"] },
+    { "id": "bonappetit", "title": "Bon Appétit", "site": "bonappetit.com", "url": "https://www.bonappetit.com/feed/rss", "topics": ["cooking"] },
+    { "id": "quanta", "title": "Quanta Magazine", "site": "quantamagazine.org", "url": "https://www.quantamagazine.org/feed/", "topics": ["science"] },
+    { "id": "outside", "title": "Outside", "site": "outsideonline.com", "url": "https://www.outsideonline.com/feed/", "topics": ["outdoors", "cycling"] }
+  ]
+}
