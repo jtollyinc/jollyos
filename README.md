@@ -9,8 +9,12 @@ It ships with three modules: a **Jobs board** with a capture box and swappable
 runners (your API, a CLI agent, a local model, or a demo — private cards never
 leave the machine), a **Daily Brief** that folds your feeds into sections written for you,
 and a **Persona** that answers questions the way you would and learns from a
-swipeable **Decision Deck**. Demo mode runs the whole thing on fictional data
-with no configuration.
+swipeable **Decision Deck**. **Import your context** from ChatGPT, Claude,
+Gemini, Notion, Obsidian or Apple Notes into a review queue — approve what is
+true, and the Brief gets personal right away: ranked by your interests, feed
+suggestions you accept one tap at a time, and a "why you're seeing this" line
+on every story. Demo mode runs the whole thing on fictional data with no
+configuration.
 
 | Phone | Desktop |
 |---|---|
@@ -21,6 +25,9 @@ with no configuration.
 | ![Daily Brief on a phone](docs/screenshots/phone-brief.png) | ![Daily Brief on a desktop](docs/screenshots/desktop-brief.png) |
 | ![Ask Myself on a phone](docs/screenshots/phone-ask.png) | ![Ask Myself on a desktop](docs/screenshots/desktop-ask.png) |
 | ![Decision Deck on a phone](docs/screenshots/phone-deck.png) | ![Decision Deck on a desktop](docs/screenshots/desktop-deck.png) |
+| ![Import your context on a phone](docs/screenshots/phone-import.png) | ![Import your context on a desktop](docs/screenshots/desktop-import.png) |
+| ![The review queue after the sample import on a phone](docs/screenshots/phone-import-review.png) | ![The review queue on a desktop](docs/screenshots/desktop-import-review.png) |
+| ![The Brief before importing, on a phone](docs/screenshots/phone-brief-before.png) | ![The Brief after importing: ranked, explained, with feed suggestions](docs/screenshots/desktop-brief-after.png) |
 
 ## Quick start
 
@@ -68,7 +75,7 @@ Every variable is optional. See `.env.example` for the same list with comments.
 | `LOCAL_LLM_BASE_URL`, `LOCAL_LLM_MODEL` | – | Any OpenAI-compatible local server (LM Studio, Ollama, llama.cpp…). Also the **Local** job runner, the only one a private card may use |
 | `JOBS_DEFAULT_RUNNER` | auto | What **Auto** means on the Jobs board: `api` \| `cli` \| `local` \| `demo`; auto = demo in demo mode, else the first configured |
 | `JOBS_CLI`, `JOBS_CLI_CWD`, `JOBS_CLI_TIMEOUT_SEC` | auto, `DATA_DIR/cli-workspace`, `1800` | The **CLI** runner: which agent CLI to prefer (`codex` or `claude`), the folder it may edit, its time limit |
-| `BRIEF_FEEDS` | – | Comma-separated RSS/Atom URLs for the Daily Brief (ignored in demo mode) |
+| `BRIEF_FEEDS` | – | Comma-separated RSS/Atom URLs for the Daily Brief (ignored in demo mode). Feeds you accept from the Brief's suggestions are added from `DATA_DIR/brief-feeds.json` |
 
 ## Providers and privacy routing
 
@@ -91,13 +98,20 @@ rule work in demo mode. The rule is a pure function with unit tests
 stored in a separate file (`DATA_DIR/private/`) so a cloud-safe read cannot
 pick them up by accident.
 
+Imports follow the same rule twice over: extraction with a **local model**
+tags the text local-only (so it can only reach the local provider), and
+extraction in the **cloud** is refused by the server unless the request carries
+an explicit per-batch opt-in. Interests derived from local-only entries may
+rank Brief stories (keyword matching on your server) but are never written
+into a cloud prompt (`tests/brief-personal.test.ts`).
+
 ## Modules
 
 | Module | Route | What it does |
 |---|---|---|
 | Jobs | `/jobs` | Capture box → card in the inbox. One **Runner** control: **Auto** (the configured default), **API** (your key, persona-aware), **CLI** (`codex` or `claude` on this machine, agentic), **Local** (your OpenAI-compatible server, $0), **Demo** (no model). A **Private** card is forced to Local and never reaches a cloud model — with no local server it sits in **Blocked** with the reason. Filters: needs you, running, inbox, blocked, done, failed. See [docs/runners.md](docs/runners.md). |
-| Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Cached per day; refresh on demand. |
-| Persona | `/persona`, `/persona/ask`, `/persona/deck` | Profile, values, preferences, rules and examples, each with a privacy tag. **Ask Myself** answers as you. The **Decision Deck** is twelve starter dilemmas you swipe; money and people cards are local-only by construction. |
+| Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Once you have approved imports, stories are ranked by your derived interests, avoid-topics are hidden behind a toggle, each matched story says why it is there, and a small catalog of public feeds is suggested — accepted one tap at a time, never auto-subscribed. Cached per day; refresh on demand. |
+| Persona | `/persona`, `/persona/ask`, `/persona/deck`, `/persona/import` | Profile, values, preferences, rules and examples, each with a privacy tag. **Ask Myself** answers as you. The **Decision Deck** is twelve starter dilemmas you swipe; money and people cards are local-only by construction. **Import** reads a ChatGPT or Claude export, a Gemini Takeout, a Notion export, a notes folder or pasted text into a review queue; every candidate is local-only until you approve it. See [docs/importing-context.md](docs/importing-context.md). |
 
 A module whose required configuration is missing shows a "needs setup" card
 instead of crashing; modules can be switched off from `/settings`. Writing one
@@ -105,7 +119,8 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 
 ## Docs
 
-- [docs/architecture.md](docs/architecture.md) — request flow, state files, auth, routing, runners
+- [docs/architecture.md](docs/architecture.md) — request flow, state files, auth, routing, runners, imports
+- [docs/importing-context.md](docs/importing-context.md) — export steps per platform (cited), what the importers read, how the Brief uses it
 - [docs/runners.md](docs/runners.md) — the job runners: one picker, one rule (Auto / private → local only), add a runner in one file
 - [docs/modules.md](docs/modules.md) — how to write a module
 - [docs/design-system.md](docs/design-system.md) — the ADHD-first rules and the primitives
