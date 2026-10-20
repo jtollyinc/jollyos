@@ -72,8 +72,9 @@ export function ensureDemoSeeded(): boolean {
   const cloudFile = dataPath("decisions.jsonl");
   const localFile = dataPath("private", "decisions.jsonl");
   if (!fileExists(cloudFile) && !fileExists(localFile)) {
-    // Newest answer lands "yesterday", so the streak reads as alive, not broken.
-    const answers = shiftDates(decisions.answers, recentOffset(decisions.answers, now - 24 * 60 * 60 * 1000));
+    // Newest answer lands ~12 hours ago (today or yesterday in any timezone),
+    // so the streak reads as alive, not broken.
+    const answers = shiftDates(decisions.answers, recentOffset(decisions.answers, now - 11 * 60 * 60 * 1000));
     for (const a of answers) appendJsonl(a.privacy === "local-only" ? localFile : cloudFile, a);
   }
 
