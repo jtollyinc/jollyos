@@ -17,9 +17,11 @@ tests/          Vitest unit tests (plain Node, no DOM)
 
 ## Request flow
 
-1. `proxy.ts` runs on every request. Demo mode passes everything; otherwise
-   it redirects to `/setup` (no owner yet) or `/login` (no session), and
-   returns 401 for anonymous API calls.
+1. `proxy.ts` runs on every request and applies `lib/auth/gate.ts` (a pure
+   function with its own tests). Demo mode passes everything; otherwise it
+   redirects to `/setup` (no owner yet) or `/login` (no session), returns 401
+   for anonymous API calls, and checks the session's epoch against the owner
+   so a password change signs other browsers out at the gate.
 2. `app/(app)/layout.tsx` re-checks the session, seeds demo data once, builds
    the nav from the module registry and renders `NavShell`.
 3. Pages are server components where they can be (home, settings) and client
@@ -32,8 +34,8 @@ Everything lives under `DATA_DIR` as small JSON/JSONL files written atomically
 
 | File | Owner |
 |---|---|
-| `owner.json` | `lib/auth` — username + scrypt hash |
-| `auth-secret` | `lib/auth` — generated when `AUTH_SECRET` is unset |
+| `owner.json` | `lib/auth` — username, scrypt hash, `sessionEpoch` (mode 600) |
+| `auth-secret` | `lib/auth` — generated when `AUTH_SECRET` is unset (mode 600) |
 | `modules.json` | `lib/modules/registry` — Settings toggles |
 | `jobs.json` | `lib/jobs/store` |
 | `persona.json` | `lib/persona/store` |
@@ -46,10 +48,22 @@ Everything lives under `DATA_DIR` as small JSON/JSONL files written atomically
 
 ## Auth
 
-Single owner. First run creates `owner.json`; afterwards `/login` verifies the
-scrypt hash and sets an HS256 JWT cookie (`jose`) for 14 days. `DEMO_MODE`
-replaces all of this with the fictional demo user. Login failures are
-throttled in memory (8 per 15 minutes per client).
+Single owner, no built-in account. First run creates `owner.json` through the
+setup page, which is single-use (`409` afterwards); `/login` then verifies the
+scrypt hash and sets an HS256 JWT cookie (`jose`) for 14 days. The token
+carries the owner's `sessionEpoch`; changing the password (Settings →
+Password, `POST /api/auth/password`) or running `npm run reset-owner` bumps
+it, which rejects every other session. `DEMO_MODE=true`, and only that,
+replaces all of this with the fictional demo user. Failures are throttled in
+memory (login 8, password change 5, per 15 minutes per client).
+
+The pieces: `lib/auth/rules.ts` (the password and username rules, client-safe
+so the forms show them live), `lib/auth/password.ts` (scrypt and the owner
+record, pure), `lib/auth/gate.ts` (the request-gate decision, pure),
+`lib/auth/throttle.ts`, and `lib/auth/index.ts` (the owner file, tokens,
+sessions). `scripts/reset-owner.mjs` imports the first two by relative path,
+so they must stay free of `@/` imports. `docs/security.md` has the operator's
+view.
 
 ## Provider adapter and the privacy rule
 
@@ -138,4 +152,7 @@ extract → review); the platform how-tos live in `lib/import/sources.ts` and
 
 `next.config.mjs` sets `output: "standalone"`; the Dockerfile copies that
 output into a non-root `node:22-alpine` image with `/data` as the volume.
-`docker-compose.yml` binds `127.0.0.1:3000` and defaults to demo mode.
+`docker-compose.yml` binds `127.0.0.1:3000` and defaults to demo mode. The
+image also carries `scripts/reset-owner.mjs` with the two auth files it
+imports and `package.json`, so `docker compose exec jollyos npm run
+reset-owner` works inside the container.

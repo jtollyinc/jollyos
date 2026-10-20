@@ -28,27 +28,42 @@ configuration.
 | ![Import your context on a phone](docs/screenshots/phone-import.png) | ![Import your context on a desktop](docs/screenshots/desktop-import.png) |
 | ![The review queue after the sample import on a phone](docs/screenshots/phone-import-review.png) | ![The review queue on a desktop](docs/screenshots/desktop-import-review.png) |
 | ![The Brief before importing, on a phone](docs/screenshots/phone-brief-before.png) | ![The Brief after importing: ranked, explained, with feed suggestions](docs/screenshots/desktop-brief-after.png) |
+| ![First-run setup on a phone](docs/screenshots/phone-setup.png) | ![First-run setup with the live password rules on a desktop](docs/screenshots/desktop-setup-rules.png) |
+| ![Settings → Password on a phone](docs/screenshots/phone-change-password.png) | ![Password changed, every other device signed out, on a desktop](docs/screenshots/desktop-change-password-success.png) |
 
 ## Quick start
 
-**Docker** (demo mode, no `.env` needed):
+**npm** (Node 22+):
+
+```bash
+npm ci
+npm run dev
+# → http://localhost:3000
+```
+
+The first visit shows a one-time **setup page**: choose a username and a
+password (12+ characters, not a common one, not containing the username) and
+you are in. That is the only account there is; JollyOS ships with **no default
+login** and nothing can sign in before setup. Data lives in `DATA_DIR`
+(`./data` locally, `/data` in Docker). Copy `.env.example` to `.env` when you
+want to configure a model provider or feeds.
+
+**Demo mode** (fictional data, no account):
+
+```bash
+DEMO_MODE=true npm run dev
+```
+
+**Docker** (demo mode by default, no `.env` needed):
 
 ```bash
 docker compose up
 # → http://127.0.0.1:3000
 ```
 
-**npm** (Node 22+):
-
-```bash
-npm ci
-DEMO_MODE=true npm run dev
-# → http://localhost:3000
-```
-
-To run it for real, copy `.env.example` to `.env`, set `DEMO_MODE=false`, and
-the first visit shows a one-time setup page where you create the owner
-account. Data lives in `DATA_DIR` (`./data` locally, `/data` in Docker).
+For the real thing in Docker, `DEMO_MODE=false docker compose up` (or put it
+in `.env`): the first visit shows the setup page, and `/data` is a named
+volume that keeps the owner account.
 
 ## Demo mode
 
@@ -59,15 +74,49 @@ deck answers. A banner on every page says the data is fictional. No network
 calls are made: feeds come from fixtures and, unless you set a key, answers
 come from a deterministic in-process demo provider.
 
+Demo mode is **explicit only**: it is on when `DEMO_MODE` is exactly `true`
+(or `1`, `yes`, `on`) and off for anything else, including unset. A missing
+owner or a missing `.env` never turns it on; the real app lands on setup
+instead. Never expose a demo instance to the internet: there is no password.
+
+## Owner account and passwords
+
+- **Setup is single-use.** Once the owner exists, `/setup` redirects to
+  `/login` and `POST /api/auth/setup` answers `409`, so nobody can take over
+  an instance by finding that page later.
+- **Change your password** at Settings → **Change password** (current
+  password, new one twice, the rules shown live). Every other browser and
+  device is signed out at once; the one you used stays signed in.
+- **Locked out?** Reset it from a shell on the machine:
+
+  ```bash
+  npm run reset-owner              # prompts for the new password, twice
+  npm run reset-owner -- --remove  # deletes the owner; the next visit shows setup again
+  ```
+
+  In Docker:
+
+  ```bash
+  docker compose exec -it jollyos npm run reset-owner
+  printf '%s\n' 'a new long password' | docker compose exec -T jollyos npm run reset-owner -- --stdin
+  docker compose exec -it jollyos npm run reset-owner -- --remove
+  ```
+
+  The reset applies the same rules as setup and signs every session out.
+- Passwords are stored as scrypt hashes in `DATA_DIR/owner.json` (mode 600);
+  sessions are signed cookies with `AUTH_SECRET`, which is generated into
+  `DATA_DIR/auth-secret` (mode 600) when you do not set it. Details, rate
+  limits and the threat model: [docs/security.md](docs/security.md).
+
 ## Configuration
 
 Every variable is optional. See `.env.example` for the same list with comments.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `DEMO_MODE` | `false` (`true` in compose) | Fictional seeded data, auto-login, no setup page |
-| `DATA_DIR` | `./data` | Where owner credentials, jobs, persona, decisions and the brief cache live |
-| `AUTH_SECRET` | generated | Signs the session cookie; auto-generated into `DATA_DIR/auth-secret` when unset |
+| `DEMO_MODE` | `false` (`true` in compose) | Exactly `true` = fictional seeded data, auto-login as the demo user, no account. Anything else = the real app with first-run setup |
+| `DATA_DIR` | `./data` | Where the owner account (`owner.json`, scrypt hash), jobs, persona, decisions and the brief cache live |
+| `AUTH_SECRET` | generated | Signs the session cookie (HS256). Auto-generated into `DATA_DIR/auth-secret` (mode 600) when unset; set it when you run more than one replica |
 | `PORT` | `3000` | HTTP port |
 | `LLM_PROVIDER` | auto | `anthropic` \| `openai` \| `local` \| `demo`; auto = first configured key, else demo |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | –, `claude-opus-5` | Anthropic via the official SDK |
@@ -120,6 +169,7 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 ## Docs
 
 - [docs/architecture.md](docs/architecture.md) — request flow, state files, auth, routing, runners, imports
+- [docs/security.md](docs/security.md) — how auth works, where the hash lives, rate limits, the reset CLI, what is out of scope
 - [docs/importing-context.md](docs/importing-context.md) — export steps per platform (cited), what the importers read, how the Brief uses it
 - [docs/runners.md](docs/runners.md) — the job runners: one picker, one rule (Auto / private → local only), add a runner in one file
 - [docs/modules.md](docs/modules.md) — how to write a module
@@ -135,6 +185,7 @@ npm run lint         # eslint
 npm test             # vitest
 npm run build        # production build (standalone output)
 npm run scrub:history   # scrub-check over the working tree and every commit
+npm run reset-owner     # reset (or --remove) the owner account from a shell
 ```
 
 CI (`.github/workflows/ci.yml`) runs all of the above plus gitleaks over the
