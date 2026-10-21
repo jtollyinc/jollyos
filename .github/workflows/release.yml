@@ -51,8 +51,11 @@ jobs:
       matrix:
         include:
           - { target: windows-x64, os: windows-latest }
-          - { target: macos-arm64, os: macos-14 } # Apple silicon
-          - { target: macos-x64, os: macos-13 } # Intel
+          - { target: macos-arm64, os: macos-latest } # Apple silicon
+          # macos-15-intel is the only Intel macOS runner left (macos-13 was
+          # retired in December 2025) and GitHub drops x86_64 macOS after the
+          # macOS 15 image goes, in autumn 2027.
+          - { target: macos-x64, os: macos-15-intel }
           - { target: linux-x64, os: ubuntu-latest }
     steps:
       # The smoke harness comes from the repo; everything it drives comes from
@@ -77,7 +80,7 @@ jobs:
       - name: Start it, check the setup page, stop it (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: extracted\JollyOS\runtime\node.exe scripts\smoke-release.mjs extracted\JollyOS
+        run: .\extracted\JollyOS\runtime\node.exe scripts\smoke-release.mjs .\extracted\JollyOS
       - name: Start it, check the setup page, stop it (macOS, Linux)
         if: runner.os != 'Windows'
         run: ./extracted/JollyOS/runtime/bin/node scripts/smoke-release.mjs ./extracted/JollyOS

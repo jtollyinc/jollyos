@@ -92,7 +92,9 @@ unzip -q dist/jollyos-0.1.0-linux-x64.zip -d /tmp/check
 2. `git tag v0.1.0 && git push origin v0.1.0`.
 
 `.github/workflows/release.yml` then builds the four zips once on Linux, smoke
-tests each on its own runner (`windows-latest`, `macos-14` for Apple silicon,
-`macos-13` for Intel, `ubuntu-latest`), and only then publishes the tag as the
+tests each on its own runner (`windows-latest`, `macos-latest` for Apple
+silicon, `macos-15-intel` for Intel — the only Intel macOS runner left, and
+only until GitHub drops x86_64 macOS in autumn 2027 — and `ubuntu-latest`),
+and only then publishes the tag as the
 latest release with all four zips and their `.sha256` files attached. Only the
 publishing job gets `contents: write`.
