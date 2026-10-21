@@ -171,7 +171,7 @@ export function StepPrivacy({ answers, patch }: StepProps) {
   return (
     <div className="space-y-2.5">
       <p className="text-[13px] leading-relaxed text-text-muted">
-        Anything on this list is marked <strong className="text-text-primary">local only</strong>. JollyOS will not put it in a request to a model somebody else runs — not in a brief, not in an answer, not in a job. Leave all four on if you are not sure.
+        What you leave on is tagged <strong className="text-text-primary">local only</strong>: JollyOS will not put it in a request to a model somebody else runs — not in a brief, not in an answer, not in a job.
       </p>
       {SENSITIVE.map((c) => {
         const on = answers.localOnly.includes(c.id);
@@ -292,12 +292,13 @@ function TestRow({ test, onTest }: { test: TestState; onTest: () => void }) {
 
 export function StepFinish({ answers, lines, feeds }: { answers: WalkthroughAnswers; lines: number; feeds: string[] }) {
   const brainLine = answers.brain === "api" ? "a hosted key" : answers.brain === "local" ? "a model on this machine" : "the built-in responder (no model needed)";
+  const kept = SENSITIVE.filter((c) => answers.localOnly.includes(c.id)).map((c) => c.label.toLowerCase());
   return (
     <div className="space-y-3">
       <ul className="space-y-1.5">
         <Done>{lines} line{lines === 1 ? "" : "s"} written into your persona{answers.name ? `, starting with what to call you` : ""}.</Done>
         <Done>{feeds.length ? `${feeds.length} feed${feeds.length === 1 ? "" : "s"} subscribed: ${feeds.join(", ")}.` : "No feeds yet — add one any time from the Daily Brief."}</Done>
-        <Done>{answers.localOnly.length ? `${answers.localOnly.length} of 4 topics kept on this machine.` : "Nothing marked local-only — you can change that in your persona."}</Done>
+        <Done>{kept.length ? `Never sent to a hosted model: ${kept.join(", ")}.` : "Nothing marked local-only — you can change that in your persona."}</Done>
         <Done>Answers come from {brainLine}.</Done>
       </ul>
       <Notice tone="info">

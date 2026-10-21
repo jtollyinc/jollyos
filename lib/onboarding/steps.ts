@@ -20,7 +20,7 @@ export const STEPS: readonly WalkthroughStep[] = [
   { id: "about", title: "About you", lede: "So it can talk to you, not at you." },
   { id: "interests", title: "What you follow", lede: "Tap what you are into. This fills your Daily Brief." },
   { id: "style", title: "How you like information", lede: "Length, tone, and when your morning starts." },
-  { id: "privacy", title: "What stays on this machine", lede: "Anything on this list is never sent to a hosted model." },
+  { id: "privacy", title: "What stays on this machine", lede: "Leave all four on if you are not sure." },
   { id: "brain", title: "The AI brain", lede: "Optional. JollyOS works with no model at all." },
   { id: "finish", title: "You are set up", lede: "Here is what got configured." },
 ] as const;

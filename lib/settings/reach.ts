@@ -42,12 +42,32 @@ function modelIds(body: unknown): string[] {
     .slice(0, 5);
 }
 
+/**
+ * Node's fetch reports every network failure as "fetch failed" and hides the
+ * real reason in `cause` (and its `code`), so walk the chain before matching.
+ * Without this, "nothing is listening there" would always read "the connection
+ * failed", which tells the owner nothing they can act on.
+ */
+function reason(err: unknown): string {
+  const parts: string[] = [];
+  let cur: unknown = err;
+  for (let depth = 0; depth < 5 && cur; depth++) {
+    if (!(cur instanceof Error)) { parts.push(String(cur)); break; }
+    parts.push(cur.message);
+    const code = (cur as Error & { code?: unknown }).code;
+    if (typeof code === "string") parts.push(code);
+    cur = (cur as Error & { cause?: unknown }).cause;
+  }
+  return parts.join(" ");
+}
+
 const why = (err: unknown): string => {
-  const msg = err instanceof Error ? err.message : String(err);
-  if (/abort|timeout|timed out/i.test(msg)) return "it did not answer in time";
+  const msg = reason(err);
+  if (/abort|timeout|timed out|ETIMEDOUT|UND_ERR_(CONNECT_)?TIMEOUT/i.test(msg)) return "it did not answer in time";
   if (/ECONNREFUSED|refused/i.test(msg)) return "nothing is listening there";
   if (/ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(msg)) return "that address does not resolve";
-  if (/certificate|SSL|TLS/i.test(msg)) return "its certificate was rejected";
+  if (/certificate|SSL|TLS|CERT_/i.test(msg)) return "its certificate was rejected";
+  if (/ECONNRESET|socket hang up/i.test(msg)) return "it dropped the connection";
   return "the connection failed";
 };
 

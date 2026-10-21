@@ -77,7 +77,7 @@ export function BriefPanel() {
           )}
           <div className="mt-3 grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
             <FeedsEditor defaultCollapsed={brief.sources.length > 0} onChange={() => setStale(true)} />
-            {brief.suggestions.length ? <Suggestions initial={brief.suggestions} /> : null}
+            {brief.suggestions.length ? <Suggestions initial={brief.suggestions} defaultCollapsed={brief.sources.length > 0} /> : null}
             {brief.sections.map((s) => <Section key={s.id} section={s} />)}
           </div>
           <footer className="mt-4 space-y-1 text-[12px] text-text-subtle">
@@ -118,7 +118,7 @@ function PersonalStrip({ brief }: { brief: Brief }) {
 }
 
 /** Suggested feeds. Proposals only: Accept is the only thing that subscribes. */
-function Suggestions({ initial }: { initial: FeedSuggestion[] }) {
+function Suggestions({ initial, defaultCollapsed = false }: { initial: FeedSuggestion[]; defaultCollapsed?: boolean }) {
   const [items, setItems] = useState(initial);
   const [accepted, setAccepted] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
@@ -139,7 +139,7 @@ function Suggestions({ initial }: { initial: FeedSuggestion[] }) {
   }
 
   return (
-    <CollapsibleSection panelId="brief:suggestions" title="Feeds for you" icon={<Rss size={18} aria-hidden="true" />} count={items.length} teaser={items[0] ? `${items[0].title} — ${items[0].why}` : ""} accent="you" defaultCollapsed={false}>
+    <CollapsibleSection panelId="brief:suggestions" title="Feeds for you" icon={<Rss size={18} aria-hidden="true" />} count={items.length} teaser={items[0] ? `${items[0].title} — ${items[0].why}` : ""} accent="you" defaultCollapsed={defaultCollapsed}>
       <p className="mb-2 text-[13px] text-text-muted">Picked from a small public catalog by your interests. Nothing is subscribed until you tap Accept.{demo ? " Demo mode keeps showing fixtures; accepted feeds are fetched when demo mode is off." : ""}</p>
       <ul className="space-y-2">
         {items.map((s) => {

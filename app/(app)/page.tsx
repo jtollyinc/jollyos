@@ -44,6 +44,8 @@ export default async function HomePage() {
 
   const walkthrough = readWalkthrough();
   const settled = walkthroughFinished(walkthrough);
+  // "What should it call you?" beats the login name, which is often lower-case.
+  const callMe = walkthrough.answers.name || session.displayName.split(" ")[0];
   const checklist = checklistItems({
     walkthroughFinished: settled,
     jobs: jobs.length,
@@ -63,7 +65,7 @@ export default async function HomePage() {
 
   return (
     <PageShell>
-      <PageHeader title={`${greeting()}, ${session.displayName.split(" ")[0]}`} help={HELP.home} lede={session.demo ? "You are looking at a fictional demo account." : undefined} />
+      <PageHeader title={`${greeting()}, ${callMe}`} help={HELP.home} lede={session.demo ? "You are looking at a fictional demo account." : undefined} />
 
       {settled ? (
         <HeroStrip title="Right now" icon={<Sparkles size={12} aria-hidden="true" />} action={counts && counts.inbox + counts.running ? { href: "/jobs", label: "Open jobs" } : enabled.has("brief") ? { href: "/brief", label: "Open brief" } : null}>

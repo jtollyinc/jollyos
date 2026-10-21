@@ -107,7 +107,10 @@ export function Walkthrough({ state: initialState, ai: initialAi, demo }: { stat
 
   return (
     <PageShell width="narrow">
-      <PageHeader title="Welcome to JollyOS" help={HELP.welcome} lede="Seven short screens and it is set up for you. Skip any of it — your place is saved." />
+      {/* lede="" on purpose: the step counter already says how long this is, and
+          on a 390px phone the help topic's two lines cost a whole row of chips.
+          The (?) still carries them. */}
+      <PageHeader title="Welcome to JollyOS" help={HELP.welcome} lede="" />
 
       <Card className="p-4 sm:p-5">
         <div className="mb-3">
@@ -173,7 +176,7 @@ export function Walkthrough({ state: initialState, ai: initialAi, demo }: { stat
       </div>
 
       {last ? null : (
-        <p className="mt-2.5 text-center text-[13px]">
+        <p className="mt-2 text-center text-[13px]">
           <button type="button" className="text-text-subtle underline-offset-2 hover:text-text-primary hover:underline" onClick={() => void skip()} disabled={busy}>
             Skip for now
           </button>
