@@ -114,11 +114,19 @@ export function navGroups(statuses: ModuleStatus[]): NavGroup[] {
   return groups;
 }
 
-/** Phone bottom bar: Home + up to four quick-tab modules + Settings. */
+/**
+ * Phone bottom bar: Home + up to MAX_QUICK_TABS modules + Settings, with the
+ * "All" sheet added by MobileNav on top of that.
+ *
+ * Three, not four: at 390px a seventh item truncates the Settings label to
+ * "Setti…". Anything that does not fit stays reachable in the All sheet.
+ */
+export const MAX_QUICK_TABS = 3;
+
 export function quickTabs(statuses: ModuleStatus[]): NavItem[] {
   const tabs: NavItem[] = [{ href: "/", label: "Home", icon: "home", state: "ready", moduleId: "home" }];
   for (const s of statuses) {
-    if (!s.enabled || !s.manifest.quickTab || tabs.length >= 5) continue;
+    if (!s.enabled || !s.manifest.quickTab || tabs.length > MAX_QUICK_TABS) continue;
     tabs.push({ href: s.manifest.routes[0].href, label: s.manifest.quickLabel ?? s.manifest.label, icon: s.manifest.icon, state: s.state, moduleId: s.manifest.id });
   }
   tabs.push({ href: "/settings", label: "Settings", icon: "settings", state: "ready", moduleId: "settings" });

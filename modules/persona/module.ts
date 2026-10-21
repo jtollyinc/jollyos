@@ -15,6 +15,8 @@ export const personaModule: ModuleManifest = {
   ],
   requiredProviders: ["llm"],
   enabledByDefault: true,
-  quickTab: true,
+  // No quickTab: the phone bar holds three modules (lib/modules/registry
+  // MAX_QUICK_TABS) and Goals, Jobs and the Brief are the daily ones. You is
+  // one tap away in the All sheet.
   accent: "you",
 };

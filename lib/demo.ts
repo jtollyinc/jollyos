@@ -17,6 +17,7 @@
 import fs from "node:fs";
 import { isDemoMode } from "@/lib/config";
 import { appendJsonl, dataPath, fileExists, writeJson } from "@/lib/data-dir";
+import { weekKey } from "@/lib/goals/types";
 import briefStories from "@/demo/seed/brief-stories.json";
 import checkins from "@/demo/seed/checkins.json";
 import goals from "@/demo/seed/goals.json";
@@ -78,10 +79,19 @@ export function ensureDemoSeeded(): boolean {
   // ago and every verdict would read "too new to judge"; anchoring on the
   // check-ins keeps the eight-week history the Coach needs.
   const goalOffset = recentOffset(checkins.checkIns, now);
-  writeIfMissing(dataPath("goals.json"), { goals: shiftDates(goals.goals, goalOffset) });
+  // NOT writeIfMissing: that helper shifts whatever it is given by the newest
+  // date INSIDE it, which would drag the goals' createdAt to an hour ago and
+  // make every verdict read "too new to judge". Goals and check-ins have to
+  // move by the SAME offset, taken from the newest check-in, to keep the
+  // eight-week history the Coach needs.
+  const goalsPath = dataPath("goals.json");
+  if (!fileExists(goalsPath)) writeJson(goalsPath, { goals: shiftDates(goals.goals, goalOffset) });
   if (!fileExists(dataPath("checkins.jsonl")) && !fileExists(dataPath("private", "checkins.jsonl"))) {
     for (const row of shiftDates(checkins.checkIns, goalOffset)) {
-      appendJsonl(row.privacy === "local-only" ? dataPath("private", "checkins.jsonl") : dataPath("checkins.jsonl"), row);
+      // `week` is a key, not a timestamp, so shiftDates leaves it alone —
+      // recompute it or every check-in claims to be from last winter.
+      const moved = { ...row, week: weekKey(row.at) };
+      appendJsonl(moved.privacy === "local-only" ? dataPath("private", "checkins.jsonl") : dataPath("checkins.jsonl"), moved);
     }
   }
 

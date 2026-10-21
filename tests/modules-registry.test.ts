@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MANIFESTS } from "@/lib/modules/manifests";
-import { computeStatuses, navGroups, quickTabs } from "@/lib/modules/registry";
+import { computeStatuses, MAX_QUICK_TABS, navGroups, quickTabs } from "@/lib/modules/registry";
 import type { ModuleManifest } from "@/lib/modules/types";
 
 const fixture: ModuleManifest[] = [
@@ -46,6 +46,25 @@ describe("computeStatuses", () => {
     expect(groups[0].items.map((i) => i.moduleId)).toEqual(["a"]);
     const tabs = quickTabs(s);
     expect(tabs.map((t) => t.moduleId)).toEqual(["home", "a", "settings"]);
+  });
+});
+
+describe("the phone bottom bar", () => {
+  it("never exceeds Home + MAX_QUICK_TABS modules + Settings", () => {
+    const many = Array.from({ length: 8 }, (_, i) => ({
+      id: `m${i}`, label: `M${i}`, description: "", icon: "bot" as const, navGroup: "Do",
+      routes: [{ href: `/m${i}`, label: `M${i}` }], enabledByDefault: true, quickTab: true,
+    }));
+    const tabs = quickTabs(computeStatuses({ manifests: many, env: {} }));
+    expect(tabs).toHaveLength(MAX_QUICK_TABS + 2);
+    expect(tabs[0].moduleId).toBe("home");
+    expect(tabs[tabs.length - 1].moduleId).toBe("settings");
+  });
+
+  it("the shipped set fits, so Settings is never truncated at 390px", () => {
+    const shipped = MANIFESTS.filter((m) => m.quickTab);
+    expect(shipped.length).toBeLessThanOrEqual(MAX_QUICK_TABS);
+    expect(shipped.map((m) => m.id)).toEqual(["goals", "jobs", "brief"]);
   });
 });
 

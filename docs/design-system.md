@@ -52,8 +52,10 @@ opacity modifiers work (`bg-surface/60`). Change the theme by editing the one
 - `PageShell` (wide, 1500px) or `PageShell width="narrow"` (768px) is the
   outermost wrapper of every page. Nothing else sets page padding.
 - Desktop: `Sidebar` (256px) + scrolling `main`. Phone: `TopBar` + `MobileNav`
-  bottom bar with Home, up to four quick-tab modules and Settings; the "All"
-  sheet lists every module. No horizontal scrolling at the bottom edge.
+  bottom bar with Home, up to **three** quick-tab modules and Settings, plus
+  the "All" sheet that lists every module. Three because a seventh item
+  truncates the Settings label at 390px (`MAX_QUICK_TABS`). No horizontal
+  scrolling at the bottom edge.
 - The demo banner sits above everything in demo mode.
 
 ## Primitives (`components/jolly/Foundation.tsx`)
