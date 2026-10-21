@@ -203,7 +203,7 @@ export function StepInterests({ answers, patch }: StepProps) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={`Search ${ALL_PICKS.length} topics — try "f1" or "sourdough"`}
+          placeholder={`Search ${ALL_PICKS.length} topics`}
           autoCapitalize="none"
           spellCheck={false}
         />
