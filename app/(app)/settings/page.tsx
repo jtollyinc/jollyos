@@ -9,6 +9,7 @@ import { loadStatuses } from "@/lib/modules/registry";
 import { checklistProgress, checklistItems } from "@/lib/onboarding/checklist";
 import { readWalkthrough, walkthroughFinished } from "@/lib/onboarding/store";
 import { readCachedBrief } from "@/lib/brief/build";
+import { readCheckIns, readGoals } from "@/lib/goals/store";
 import { readJobs } from "@/lib/jobs/store";
 import { deckStats } from "@/lib/persona/deck-store";
 import { readInterests } from "@/lib/persona/interests-store";
@@ -44,6 +45,8 @@ export default async function SettingsPage() {
     briefBuilt: Boolean(readCachedBrief()),
     deckAnswers: deckStats({ includePrivate: true }).answered,
     imports: queue.total,
+    goals: readGoals({ includePrivate: true }).length,
+    checkIns: readCheckIns({ includePrivate: true }).length,
   }));
   const brainLabel = ai.brain === "api" ? `hosted key (${ai.vendor}${ai.apiKeyHint ? ` ${ai.apiKeyHint}` : ""})` : ai.brain === "local" ? `a model on this machine${ai.localBaseUrl ? ` at ${ai.localBaseUrl}` : ""}` : "none — the built-in responder answers";
 

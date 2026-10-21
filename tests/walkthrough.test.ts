@@ -9,6 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { readAcceptedFeeds } from "@/lib/brief/feeds-store";
+import { readGoals } from "@/lib/goals/store";
 import { checklistItems, checklistProgress, DECK_TARGET } from "@/lib/onboarding/checklist";
 import { walkthroughEntries, walkthroughFeeds, MAX_SEEDED_FEEDS } from "@/lib/onboarding/seed";
 import { FIRST_STEP, LAST_STEP, STEPS } from "@/lib/onboarding/steps";
@@ -45,7 +46,7 @@ afterEach(() => {
 const ANSWERS = {
   name: "Alex",
   role: "product designer at a two-person studio",
-  goals: "ship the design system and stop losing my mornings",
+  goals: [{ area: "career" as const, want: "ship the design system", why: "it unblocks the whole team", baselineNote: "half of v1 is undocumented", obstacles: ["time"], hoursClaimed: 4 }],
   topics: ["design", "accessibility", "personal-finance"],
   interestsText: "espresso gear",
   briefLength: "short" as const,
@@ -111,10 +112,16 @@ describe("walkthrough persistence", () => {
   });
 
   it("caps long free text instead of writing a novel into the persona", () => {
-    const a = sanitiseAnswers({ goals: "x".repeat(5000), interestsText: "y".repeat(5000), name: "z".repeat(500) });
-    expect(a.goals).toHaveLength(400);
+    const a = sanitiseAnswers({ interestsText: "y".repeat(5000), name: "z".repeat(500) });
     expect(a.interestsText).toHaveLength(400);
     expect(a.name).toHaveLength(60);
+  });
+
+  it("an older walkthrough.json with a free-text goals field is read, not crashed on", () => {
+    fs.writeFileSync(file(), JSON.stringify({ version: 1, status: "done", stepId: "finish", answers: { name: "Alex", goals: "ship the thing" } }));
+    const state = readWalkthrough();
+    expect(state.answers.name).toBe("Alex");
+    expect(state.answers.goals).toEqual([]);
   });
 
   it("survives a corrupt file rather than throwing", () => {
@@ -194,6 +201,43 @@ describe("re-running it", () => {
     expect(after.length).toBeGreaterThan(0);
   });
 
+  it("goals are created for real, and replaced rather than stacked on a re-run", () => {
+    const first = completeWalkthrough({ answers: ANSWERS });
+    expect(first.state.seeded.goalIds).toHaveLength(1);
+    expect(first.receipt.goals).toBe(1);
+    expect(readGoals({ includePrivate: true })).toHaveLength(1);
+    expect(readGoals({ includePrivate: true })[0].want).toBe("ship the design system");
+    expect(readGoals({ includePrivate: true })[0].hoursClaimed).toBe(4);
+
+    const second = completeWalkthrough({ answers: ANSWERS });
+    expect(readGoals({ includePrivate: true })).toHaveLength(1);
+    expect(second.state.seeded.goalIds).not.toEqual(first.state.seeded.goalIds);
+  });
+
+  it("a goal in a protected area is created local-only", () => {
+    completeWalkthrough({ answers: { ...ANSWERS, localOnly: ["health"], goals: [{ area: "health", want: "run 5k without stopping", why: "stairs", baselineNote: "1.5k", obstacles: [], hoursClaimed: 2 }] } });
+    const goal = readGoals({ includePrivate: true })[0];
+    expect(goal.privacy).toBe("local-only");
+    // ...and the persona line about it carries the same tag.
+    expect(readEntries().find((e) => e.text.includes("run 5k"))!.privacy).toBe("local-only");
+  });
+
+  it("the same goal is cloud-ok when the area is not protected", () => {
+    completeWalkthrough({ answers: { ...ANSWERS, localOnly: [], goals: [{ area: "health", want: "run 5k without stopping", why: "stairs", baselineNote: "1.5k", obstacles: [], hoursClaimed: 2 }] } });
+    expect(readGoals({ includePrivate: true })[0].privacy).toBe("cloud-ok");
+  });
+
+  it("an empty goal is not created", () => {
+    completeWalkthrough({ answers: { ...ANSWERS, goals: [{ area: "career", want: "   ", why: "", baselineNote: "", obstacles: [], hoursClaimed: 2 }] } });
+    expect(readGoals({ includePrivate: true })).toHaveLength(0);
+  });
+
+  it("restart removes the goals it created too", () => {
+    completeWalkthrough({ answers: ANSWERS });
+    restartWalkthrough();
+    expect(readGoals({ includePrivate: true })).toHaveLength(0);
+  });
+
   it("restart clears the answers, removes the seeded state and goes back to step one", () => {
     completeWalkthrough({ answers: ANSWERS });
     const state = restartWalkthrough();
@@ -217,7 +261,7 @@ describe("what each step seeds (pure)", () => {
     expect(texts).toEqual([
       "Call me Alex.",
       "What I do: product designer at a two-person studio.",
-      "Right now I am focused on: ship the design system and stop losing my mornings.",
+      "Right now I am working on: ship the design system.",
       "I follow design.",
       "I follow accessibility.",
       "I follow personal finance.",
@@ -242,8 +286,10 @@ describe("what each step seeds (pure)", () => {
 
 describe("the screens", () => {
   it("has exactly seven, with a distinct id each", () => {
-    expect(STEPS).toHaveLength(7);
-    expect(new Set(STEPS.map((s) => s.id)).size).toBe(7);
+    expect(STEPS).toHaveLength(8);
+    expect(new Set(STEPS.map((s) => s.id)).size).toBe(8);
+    // Goals sit right after "about": who you are, then what you are chasing.
+    expect(STEPS.map((s) => s.id)).toEqual(["what", "about", "goals", "interests", "style", "privacy", "brain", "finish"]);
   });
 });
 
@@ -395,11 +441,11 @@ describe("privacy still works across the bigger catalog", () => {
 });
 
 describe("the getting started checklist", () => {
-  const base = { walkthroughFinished: false, jobs: 0, briefBuilt: false, deckAnswers: 0, imports: 0 };
+  const base = { walkthroughFinished: false, jobs: 0, briefBuilt: false, deckAnswers: 0, imports: 0, goals: 0, checkIns: 0 };
 
   it("ticks off from real state, not from a stored flag", () => {
     const empty = checklistItems(base);
-    expect(checklistProgress(empty)).toEqual({ done: 0, total: 5, complete: false });
+    expect(checklistProgress(empty)).toEqual({ done: 0, total: 7, complete: false });
 
     const some = checklistItems({ ...base, walkthroughFinished: true, jobs: 2, briefBuilt: true });
     expect(checklistProgress(some).done).toBe(3);
@@ -418,7 +464,7 @@ describe("the getting started checklist", () => {
   });
 
   it("is complete only when every row is", () => {
-    const all = checklistItems({ walkthroughFinished: true, jobs: 1, briefBuilt: true, deckAnswers: DECK_TARGET, imports: 1 });
+    const all = checklistItems({ walkthroughFinished: true, jobs: 1, briefBuilt: true, deckAnswers: DECK_TARGET, imports: 1, goals: 1, checkIns: 1 });
     expect(checklistProgress(all).complete).toBe(true);
   });
 

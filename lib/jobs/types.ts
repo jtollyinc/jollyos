@@ -40,6 +40,9 @@ export interface Job {
   private: boolean;
   /** Why it sits in Blocked (local runner unreachable / not configured). */
   blockedReason: string | null;
+  /** The goal this job serves, when it serves one. A finished linked job is
+   *  evidence in that goal's reality check (lib/goals/reality). */
+  goalId?: string | null;
   /** The model or CLI that answered, when known ("claude-sonnet-5", "codex 0.162"). */
   model: string | null;
   /** 0-100 */

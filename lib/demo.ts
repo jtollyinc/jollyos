@@ -18,6 +18,8 @@ import fs from "node:fs";
 import { isDemoMode } from "@/lib/config";
 import { appendJsonl, dataPath, fileExists, writeJson } from "@/lib/data-dir";
 import briefStories from "@/demo/seed/brief-stories.json";
+import checkins from "@/demo/seed/checkins.json";
+import goals from "@/demo/seed/goals.json";
 import decisions from "@/demo/seed/decisions.json";
 import jobs from "@/demo/seed/jobs.json";
 import persona from "@/demo/seed/persona.json";
@@ -68,6 +70,20 @@ export function ensureDemoSeeded(): boolean {
   writeIfMissing(dataPath("persona.json"), persona);
   writeIfMissing(dataPath("jobs.json"), jobs);
   writeIfMissing(dataPath("brief-stories.json"), briefStories);
+  // Goals + eight weeks of check-ins, so the Coach has something real to read:
+  // one goal on track, one where the claimed hours never happened.
+  //
+  // Both files share ONE offset, taken from the newest CHECK-IN rather than the
+  // newest goal. Anchoring on the goals would drag their createdAt to an hour
+  // ago and every verdict would read "too new to judge"; anchoring on the
+  // check-ins keeps the eight-week history the Coach needs.
+  const goalOffset = recentOffset(checkins.checkIns, now);
+  writeIfMissing(dataPath("goals.json"), { goals: shiftDates(goals.goals, goalOffset) });
+  if (!fileExists(dataPath("checkins.jsonl")) && !fileExists(dataPath("private", "checkins.jsonl"))) {
+    for (const row of shiftDates(checkins.checkIns, goalOffset)) {
+      appendJsonl(row.privacy === "local-only" ? dataPath("private", "checkins.jsonl") : dataPath("checkins.jsonl"), row);
+    }
+  }
 
   const cloudFile = dataPath("decisions.jsonl");
   const localFile = dataPath("private", "decisions.jsonl");

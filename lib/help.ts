@@ -29,6 +29,13 @@ export const HELP: Record<string, HelpTopic> = {
     example: "You think of something on the stairs, type it into the capture box, and it is a job card before you sit down.",
     start: "Type anything into the capture box. The first line becomes the title.",
   },
+  goals: {
+    title: "Goals & Coach",
+    line: "What you are actually working towards, how far along you really are, and the one thing to change this week.",
+    what: "A goal records what you want, where you honestly are today and the hours you can really give it. A weekly check-in records the same shape again, and the Coach reads the gap between the two. The verdict is arithmetic, not an opinion — it works with no AI at all.",
+    example: "\"You planned 5h a week and have been spending 1h. That is 5× less than the plan, every week, for 6 weeks.\" — then one adjustment: shrink it to 1h.",
+    start: "Set one goal. One is better than three, and the first check-in is where it starts being useful.",
+  },
   jobs: {
     title: "Jobs",
     line: "Capture a thought as a card, then pick who does the work: a hosted model, a CLI agent, or a model on this machine.",

@@ -7,7 +7,7 @@
  * Add a line here when a manifest needs a new icon.
  */
 import {
-  Bot, Brain, LayoutDashboard, Layers, ListChecks, Mic, Newspaper, Settings, Sparkles, UserRound,
+  Bot, Brain, LayoutDashboard, Layers, ListChecks, Mic, Newspaper, Settings, Sparkles, Target, UserRound,
   type LucideProps,
 } from "lucide-react";
 import type { ComponentType } from "react";
@@ -24,6 +24,7 @@ const ICONS: Record<IconName, ComponentType<LucideProps>> = {
   mic: Mic,
   brain: Brain,
   layers: Layers,
+  target: Target,
 };
 
 export function Icon({ name, ...props }: LucideProps & { name: IconName }) {

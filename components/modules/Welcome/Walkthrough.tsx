@@ -24,7 +24,7 @@ import { HELP } from "@/lib/help";
 import { STEPS, stepIndex } from "@/lib/onboarding/steps";
 import type { WalkthroughAnswers, WalkthroughReceipt, WalkthroughState } from "@/lib/onboarding/types";
 import type { PublicAiSettings } from "@/lib/settings/ai";
-import { StepAbout, StepBrain, StepFinish, StepInterests, StepPrivacy, StepStyle, StepWhat } from "./WalkthroughSteps";
+import { StepAbout, StepBrain, StepFinish, StepGoals, StepInterests, StepPrivacy, StepStyle, StepWhat } from "./WalkthroughSteps";
 
 const host = (url: string) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return url; } };
 
@@ -135,6 +135,7 @@ export function Walkthrough({ state: initialState, ai: initialAi, demo }: { stat
 
         {step.id === "what" ? <StepWhat /> : null}
         {step.id === "about" ? <StepAbout answers={answers} patch={patch} /> : null}
+        {step.id === "goals" ? <StepGoals answers={answers} patch={patch} /> : null}
         {step.id === "interests" ? <StepInterests answers={answers} patch={patch} /> : null}
         {step.id === "style" ? <StepStyle answers={answers} patch={patch} /> : null}
         {step.id === "privacy" ? <StepPrivacy answers={answers} patch={patch} /> : null}

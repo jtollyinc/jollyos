@@ -13,7 +13,7 @@
  * With no feeds at all the page says so and offers the two ways to fix it
  * (pick topics, or paste a URL into FeedsEditor) — never a blank screen.
  */
-import { Activity, ArrowRight, Bot, Check, EyeOff, ListChecks, Newspaper, Plus, RefreshCw, Rss, Sparkles } from "lucide-react";
+import { Activity, ArrowRight, Bot, Check, EyeOff, ListChecks, Newspaper, Plus, RefreshCw, Rss, Sparkles, Target } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Chip, CollapsibleSection, EmptyState, HeroStrip, Notice, PageHeader, PageShell, Prose, StoryCard } from "@/components/jolly/Foundation";
@@ -193,6 +193,7 @@ function Section({ section }: { section: BriefSection }) {
           {visible.map((s) => (
             <StoryCard key={s.id} title={s.title} href={s.url} source={s.source} date={s.publishedAt}>
               {s.snippet}
+              {s.goal ? <span className="mt-1 flex items-start gap-1 text-[12px] font-semibold text-success"><Target size={11} className="mt-[3px] shrink-0" aria-hidden="true" />For your goal: {s.goal.want}</span> : null}
               {s.why ? <span className="mt-1 flex items-start gap-1 text-[12px] text-accent-soft"><Sparkles size={11} className="mt-[3px] shrink-0" aria-hidden="true" />{s.why}</span> : null}
             </StoryCard>
           ))}

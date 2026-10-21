@@ -14,6 +14,8 @@ export interface ChecklistInput {
   briefBuilt: boolean;
   deckAnswers: number;
   imports: number;
+  goals: number;
+  checkIns: number;
 }
 
 export interface ChecklistItem {
@@ -32,6 +34,8 @@ export const DECK_TARGET = 5;
 export function checklistItems(input: ChecklistInput): ChecklistItem[] {
   const items: ChecklistItem[] = [
     { id: "walkthrough", label: "Finish the welcome walkthrough", hint: "Five minutes, and the app knows what you are into.", href: "/welcome", cta: "Open", done: input.walkthroughFinished },
+    { id: "goal", label: "Set your first goal", hint: "What you actually want, and the hours you can really give it.", href: "/goals/new", cta: "Set", done: input.goals > 0 },
+    { id: "checkin", label: "Do your first check-in", hint: "Two minutes. It is what makes the Coach honest.", href: "/goals", cta: "Open", done: input.checkIns > 0 },
     { id: "brief", label: "Read today's Daily Brief", hint: "Your feeds, summarised for you.", href: "/brief", cta: "Open", done: input.briefBuilt },
     { id: "job", label: "Capture your first job", hint: "Type a thought; it becomes a card you can hand to a model.", href: "/jobs", cta: "Open", done: input.jobs > 0 },
     { id: "deck", label: `Swipe ${DECK_TARGET} Decision Deck cards`, hint: "Each swipe teaches it how you actually decide.", href: "/persona/deck", cta: "Swipe", done: input.deckAnswers >= DECK_TARGET },

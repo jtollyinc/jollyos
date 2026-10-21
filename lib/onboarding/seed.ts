@@ -14,6 +14,7 @@
  *    router withholds it from any hosted model.
  */
 import type { FeedCatalogEntry } from "@/lib/persona/interests";
+import { goalPrivacy } from "@/lib/goals/types";
 import type { EntryInput } from "@/lib/persona/types";
 import type { Privacy } from "@/lib/providers/types";
 import { BRIEF_LENGTHS, BRIEF_TONES, type WalkthroughAnswers } from "./types";
@@ -36,10 +37,16 @@ export function walkthroughEntries(answers: WalkthroughAnswers): EntryInput[] {
 
   const name = clean(answers.name, 60);
   const role = clean(answers.role, 160);
-  const goals = clean(answers.goals, 400);
   if (name) add("profile", `Call me ${name}.`, "cloud-ok");
   if (role) add("profile", `What I do: ${role}.`, "cloud-ok");
-  if (goals) add("profile", `Right now I am focused on: ${goals}.`, "cloud-ok");
+  // One line per goal, carrying the goal's own privacy: a health goal is
+  // local-only when Health is protected, so Ask Myself and the Brief can use
+  // it while a hosted model never sees it.
+  for (const goal of answers.goals) {
+    const want = clean(goal.want, 160);
+    if (!want) continue;
+    add("profile", `Right now I am working on: ${want}.`, goalPrivacy(goal.area, answers.localOnly));
+  }
 
   // Interests, in catalog order so the result is stable. A pick inherits its
   // category's privacy tag (Money, Health, Local) unless it sets its own.

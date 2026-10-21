@@ -35,6 +35,10 @@ export function JobsBoard() {
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
+  // Linking a job to a goal makes finishing it count as evidence in that
+  // goal's reality check (lib/goals/reality).
+  const [goalId, setGoalId] = useState("");
+  const [goals, setGoals] = useState<{ id: string; want: string }[]>([]);
   const [text, setText] = useState("");
   const [runner, setRunner] = useState<RunnerChoice>("auto");
   const [privateJob, setPrivateJob] = useState(false);
@@ -74,13 +78,22 @@ export function JobsBoard() {
     } catch { setError("Network error — nothing changed."); return { ok: false }; }
     finally { await load(); }
   }
+  // The goal list is only needed when the sheet is open, so it is fetched then.
+  useEffect(() => {
+    if (!showNew || goals.length) return;
+    fetch("/api/goals?plain=1", { cache: "no-store" })
+      .then((res) => (res.ok ? (res.json() as Promise<{ goals: { id: string; want: string }[] }>) : Promise.reject(new Error("no"))))
+      .then((json) => setGoals(json.goals.map((g) => ({ id: g.id, want: g.want }))))
+      .catch(() => setGoals([]));
+  }, [showNew, goals.length]);
+
   async function submit(run: boolean) {
     const body = text.trim();
     if (!body || busy) return;
     setBusy(true);
-    const r = await act("/api/jobs", { method: "POST", body: JSON.stringify({ text: body, private: isPrivate, runner, run }) });
+    const r = await act("/api/jobs", { method: "POST", body: JSON.stringify({ text: body, private: isPrivate, runner, run, goalId: goalId || null }) });
     setBusy(false);
-    if (r.ok) { setText(""); setPrivateJob(false); setShowNew(false); }
+    if (r.ok) { setText(""); setPrivateJob(false); setGoalId(""); setShowNew(false); }
   }
   const runJob = (job: Job, choice: RunnerChoice) => act(`/api/jobs/${job.id}/run`, { method: "POST", body: JSON.stringify({ runner: choice }) });
   const move = (job: Job, lane: JobLane) => act(`/api/jobs/${job.id}`, { method: "PATCH", body: JSON.stringify({ lane }) });
@@ -108,6 +121,15 @@ export function JobsBoard() {
           <div className="mt-3">
             <RunnerPicker value={runner} onChange={setRunner} isPrivate={isPrivate} onPrivate={setPrivateJob} lockDisabled={!privateJob && briefIsPrivate(text)} runners={data?.runners ?? null} defaultRunner={data?.defaultRunner ?? "demo"} />
           </div>
+          {goals.length ? (
+            <label className="mt-3 block">
+              <span className="block text-label font-bold uppercase tracking-wider text-text-subtle">For a goal?</span>
+              <select className="field mt-1" value={goalId} onChange={(e) => setGoalId(e.target.value)}>
+                <option value="">Not linked to a goal</option>
+                {goals.map((g) => <option key={g.id} value={g.id}>{g.want}</option>)}
+              </select>
+            </label>
+          ) : null}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" className="btn-primary" disabled={busy || !text.trim()} onClick={() => void submit(true)}><Play size={16} aria-hidden="true" />{busy ? "Starting…" : "Run now"}</button>
             <button type="button" className="btn-ghost" disabled={busy || !text.trim()} onClick={() => void submit(false)}><Inbox size={16} aria-hidden="true" />Save to inbox</button>

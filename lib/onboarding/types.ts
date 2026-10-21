@@ -14,7 +14,29 @@
  *   done         finished; Home shows the Getting started checklist instead
  */
 
+import type { GoalAreaId } from "@/lib/goals/types";
+
 export type WalkthroughStatus = "new" | "in-progress" | "skipped" | "done";
+
+/** At most this many goals from the walkthrough. One good one beats three wishes. */
+export const MAX_WALKTHROUGH_GOALS = 3;
+
+/**
+ * A goal as the walkthrough collects it. Deliberately the same five questions
+ * the Goals page asks, so there is one definition of a goal in the product:
+ * what, why, where you actually are, what stops you, and the hours you can
+ * really give it. The last one is what the Coach later checks you against.
+ */
+export interface WalkthroughGoal {
+  area: GoalAreaId;
+  want: string;
+  why: string;
+  baselineNote: string;
+  obstacles: string[];
+  hoursClaimed: number;
+}
+
+export const EMPTY_GOAL = (area: GoalAreaId): WalkthroughGoal => ({ area, want: "", why: "", baselineNote: "", obstacles: [], hoursClaimed: 2 });
 
 /** How long the Daily Brief's summaries should be. */
 export type BriefLength = "short" | "medium" | "long";
@@ -40,8 +62,8 @@ export interface WalkthroughAnswers {
   name: string;
   /** What they do, one line. */
   role: string;
-  /** What they are trying to get done right now. */
-  goals: string;
+  /** 1-3 goals, the spine the rest of the app hangs off. */
+  goals: WalkthroughGoal[];
   /** Topic chip ids (lib/onboarding/topics). */
   topics: string[];
   /** Anything the chips missed, in their own words. */
@@ -58,7 +80,7 @@ export interface WalkthroughAnswers {
 export const DEFAULT_ANSWERS: WalkthroughAnswers = {
   name: "",
   role: "",
-  goals: "",
+  goals: [],
   topics: [],
   interestsText: "",
   briefLength: "short",
@@ -74,6 +96,8 @@ export const DEFAULT_ANSWERS: WalkthroughAnswers = {
 export interface WalkthroughSeeded {
   entryIds: string[];
   feedUrls: string[];
+  /** Goal ids, so a re-run replaces them instead of stacking duplicates. */
+  goalIds: string[];
 }
 
 export interface WalkthroughState {
@@ -93,6 +117,7 @@ export interface WalkthroughState {
 /** What `complete` set up, for the finish screen and the report. */
 export interface WalkthroughReceipt {
   entries: number;
+  goals: number;
   feeds: { url: string; title: string }[];
   localOnly: string[];
   interests: number;

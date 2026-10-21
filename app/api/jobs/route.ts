@@ -30,12 +30,12 @@ export async function GET() {
 export async function POST(req: Request) {
   const gate = await requireSession();
   if ("response" in gate) return gate.response;
-  const body = (await req.json().catch(() => null)) as { text?: string; title?: string; brief?: string; private?: boolean; runner?: string; run?: boolean } | null;
+  const body = (await req.json().catch(() => null)) as { text?: string; title?: string; brief?: string; private?: boolean; runner?: string; run?: boolean; goalId?: string } | null;
   const input = body?.text ? captureToJob(body.text) : body?.title ? { title: body.title, brief: body.brief } : null;
   if (!input) return NextResponse.json({ error: "text or title is required" }, { status: 400 });
   let job;
   try {
-    job = createJob({ ...input, private: body?.private === true || input.private === true });
+    job = createJob({ ...input, private: body?.private === true || input.private === true, goalId: typeof body?.goalId === "string" ? body.goalId : null });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Could not create the job" }, { status: 400 });
   }

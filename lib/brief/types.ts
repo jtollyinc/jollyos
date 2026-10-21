@@ -17,6 +17,8 @@ export interface Story {
   matched?: string[];
   /** On an avoid-topic: kept in the list, shown only behind "show hidden". */
   hidden?: boolean;
+  /** Set when the story relates to one of the owner's goals ("For your goal: …"). */
+  goal?: { want: string; hits: string[] } | null;
 }
 
 export interface BriefSection {

@@ -17,7 +17,7 @@
 
 export type IconName =
   | "home" | "bot" | "newspaper" | "user" | "sparkles" | "settings"
-  | "list-checks" | "mic" | "brain" | "layers";
+  | "list-checks" | "mic" | "brain" | "layers" | "target";
 
 /** Shared topic accents from globals.css ([data-topic-accent]). */
 export type TopicAccent = "today" | "jobs" | "news" | "you" | "decisions";

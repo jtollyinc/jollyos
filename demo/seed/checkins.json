@@ -1,0 +1,136 @@
+{
+  "fictional": true,
+  "checkIns": [
+    {
+      "id": "demo-ci-run-0",
+      "goalId": "demo-goal-run",
+      "at": "2026-01-12T09:00:00Z",
+      "week": "2026-W03",
+      "did": "yes",
+      "value": 2.0,
+      "hoursActual": 2.0,
+      "blockers": [],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-1",
+      "goalId": "demo-goal-run",
+      "at": "2026-01-19T09:00:00Z",
+      "week": "2026-W04",
+      "did": "yes",
+      "value": 2.4,
+      "hoursActual": 2.5,
+      "blockers": [],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-2",
+      "goalId": "demo-goal-run",
+      "at": "2026-01-26T09:00:00Z",
+      "week": "2026-W05",
+      "did": "partly",
+      "value": 2.8,
+      "hoursActual": 1.5,
+      "blockers": [
+        "energy"
+      ],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-3",
+      "goalId": "demo-goal-run",
+      "at": "2026-02-02T09:00:00Z",
+      "week": "2026-W06",
+      "did": "yes",
+      "value": 3.2,
+      "hoursActual": 2.0,
+      "blockers": [],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-4",
+      "goalId": "demo-goal-run",
+      "at": "2026-02-09T09:00:00Z",
+      "week": "2026-W07",
+      "did": "yes",
+      "value": 3.5,
+      "hoursActual": 2.0,
+      "blockers": [],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-5",
+      "goalId": "demo-goal-run",
+      "at": "2026-02-16T09:00:00Z",
+      "week": "2026-W08",
+      "did": "partly",
+      "value": 3.6,
+      "hoursActual": 1.5,
+      "blockers": [
+        "energy"
+      ],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-run-6",
+      "goalId": "demo-goal-run",
+      "at": "2026-02-23T09:00:00Z",
+      "week": "2026-W09",
+      "did": "yes",
+      "value": 4.1,
+      "hoursActual": 2.5,
+      "blockers": [],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-book-0",
+      "goalId": "demo-goal-book",
+      "at": "2026-01-12T09:00:00Z",
+      "week": "2026-W03",
+      "did": "partly",
+      "value": 6400,
+      "hoursActual": 1.0,
+      "blockers": [
+        "time"
+      ],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-book-1",
+      "goalId": "demo-goal-book",
+      "at": "2026-01-26T09:00:00Z",
+      "week": "2026-W05",
+      "did": "no",
+      "value": 6400,
+      "hoursActual": 0.0,
+      "blockers": [
+        "time",
+        "starting"
+      ],
+      "note": "",
+      "privacy": "cloud-ok"
+    },
+    {
+      "id": "demo-ci-book-2",
+      "goalId": "demo-goal-book",
+      "at": "2026-02-16T09:00:00Z",
+      "week": "2026-W08",
+      "did": "partly",
+      "value": 7100,
+      "hoursActual": 1.5,
+      "blockers": [
+        "time"
+      ],
+      "note": "",
+      "privacy": "cloud-ok"
+    }
+  ]
+}

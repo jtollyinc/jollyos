@@ -23,6 +23,9 @@
 import fs from "node:fs";
 import { briefFeeds, isDemoMode } from "@/lib/config";
 import { dataPath, readJson, writeJson } from "@/lib/data-dir";
+import { readGoals } from "@/lib/goals/store";
+import { matchGoals } from "@/lib/goals/match";
+import type { Goal } from "@/lib/goals/types";
 import { jobCounts, readJobs } from "@/lib/jobs/store";
 import { allCards, readAnswers } from "@/lib/persona/deck-store";
 import { summariseSession } from "@/lib/persona/deck";
@@ -104,11 +107,32 @@ const SUMMARY_INSTRUCTIONS =
   "for tone and length (short and direct if they say so), lead with what touches their interests, and skip their avoid topics. " +
   "No preamble, no headings, plain bullets starting with '- '.";
 
-/** Attach rank, why-line and hidden flag to every story; hidden ones sort last. */
-export function personaliseStories(stories: Story[], profile: InterestProfile): { stories: Story[]; hidden: number } {
-  if (profile.version === "none") return { stories, hidden: 0 };
-  const ranked = rankStories(stories, profile).map(({ match, ...s }) => ({ ...s, why: match.why, matched: match.matched, hidden: match.hidden }));
-  return { stories: ranked, hidden: ranked.filter((s) => s.hidden).length };
+/**
+ * Attach rank, why-line, hidden flag and goal label to every story; hidden ones
+ * sort last, and anything touching a goal is pulled to the front of its section
+ * — a story about what you are actually trying to do outranks one that merely
+ * matches an interest.
+ */
+export function personaliseStories(stories: Story[], profile: InterestProfile, goals: Goal[] = []): { stories: Story[]; hidden: number; forGoals: number } {
+  const label = (list: Story[]): Story[] =>
+    goals.length
+      ? list.map((s) => {
+          const m = matchGoals(s, goals);
+          return m ? { ...s, goal: { want: m.want, hits: m.hits } } : s;
+        })
+      : list;
+
+  if (profile.version === "none") {
+    const labelled = label(stories);
+    const sorted = [...labelled].sort((a, b) => Number(Boolean(b.goal)) - Number(Boolean(a.goal)));
+    return { stories: sorted, hidden: 0, forGoals: labelled.filter((s) => s.goal).length };
+  }
+  const ranked = label(rankStories(stories, profile).map(({ match, ...s }) => ({ ...s, why: match.why, matched: match.matched, hidden: match.hidden })));
+  const sorted = [...ranked].sort((a, b) => {
+    if (a.hidden !== b.hidden) return a.hidden ? 1 : -1;
+    return Number(Boolean(b.goal)) - Number(Boolean(a.goal));
+  });
+  return { stories: sorted, hidden: ranked.filter((s) => s.hidden).length, forGoals: ranked.filter((s) => s.goal).length };
 }
 
 export function personalSummary(profile: InterestProfile, hidden: number): BriefPersonal | null {
@@ -126,6 +150,10 @@ export function personalSummary(profile: InterestProfile, hidden: number): Brief
 export async function buildBrief(providers: ProviderSet = providersFromEnv(runtimeEnv())): Promise<Brief> {
   const { sections: raw, sources } = await collectStories();
   const profile = readInterests();
+  // Local-only goals may label a story (keyword matching on this machine), the
+  // same rule interests follow. Only cloud-safe ones reach the prompt body.
+  const goals = readGoals({ includePrivate: true });
+  const promptSafeGoals = new Set(goals.filter((g) => g.privacy !== "local-only").map((g) => g.want));
   // Persona entries plus one segment per interest, each with its own privacy
   // tag: the router withholds the local-only ones from a cloud model.
   const persona = [...personaSegments(readEntries()), ...interestSegments(profile)];
@@ -143,12 +171,13 @@ export async function buildBrief(providers: ProviderSet = providersFromEnv(runti
 
   for (const src of raw) {
     if (!src.stories.length) continue;
-    const { stories, hidden } = personaliseStories(src.stories, profile);
+    const { stories, hidden } = personaliseStories(src.stories, profile, goals);
     hiddenTotal += hidden;
     const visible = stories.filter((s) => !s.hidden);
     const list = visible.map((s) => {
       const tags = (s.matched ?? []).filter((m) => promptSafe.has(m));
-      return `- ${s.title}${s.snippet ? ` — ${s.snippet}` : ""}${tags.length ? ` (matches: ${tags.join(", ")})` : ""}`;
+      const goalTag = s.goal && promptSafeGoals.has(s.goal.want) ? ` (for their goal: ${s.goal.want})` : "";
+      return `- ${s.title}${s.snippet ? ` — ${s.snippet}` : ""}${tags.length ? ` (matches: ${tags.join(", ")})` : ""}${goalTag}`;
     }).join("\n");
     let summary: string;
     try {
@@ -166,6 +195,8 @@ export async function buildBrief(providers: ProviderSet = providersFromEnv(runti
     const facts = [`${src.stories.length} stories`];
     const matched = stories.filter((s) => s.matched?.length).length;
     if (matched) facts.push(`${matched} for you`);
+    const forGoals = stories.filter((s) => s.goal).length;
+    if (forGoals) facts.push(`${forGoals} for your goals`);
     if (hidden) facts.push(`${hidden} hidden`);
     sections.push({
       id: `src-${sections.length + 1}`,

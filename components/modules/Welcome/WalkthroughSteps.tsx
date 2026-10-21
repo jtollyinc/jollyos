@@ -16,7 +16,8 @@ import Link from "next/link";
 import { useId, useState, type ReactNode } from "react";
 import { Card, Chip, Notice } from "@/components/jolly/Foundation";
 import { ALL_PICKS, CATEGORIES, CHIPS_BEFORE_MORE, SENSITIVE, searchPicks, subsOf, type FlatPick } from "@/lib/onboarding/topics";
-import { BRIEF_LENGTHS, BRIEF_TONES, type BrainChoice, type WalkthroughAnswers } from "@/lib/onboarding/types";
+import { GOAL_AREAS, OBSTACLES, areaById, type GoalAreaId } from "@/lib/goals/types";
+import { BRIEF_LENGTHS, BRIEF_TONES, EMPTY_GOAL, MAX_WALKTHROUGH_GOALS, type BrainChoice, type WalkthroughAnswers, type WalkthroughGoal } from "@/lib/onboarding/types";
 import type { PublicAiSettings } from "@/lib/settings/ai";
 
 export interface StepProps {
@@ -91,8 +92,105 @@ export function StepAbout({ answers, patch }: StepProps) {
       <Field label="What do you do?" hint="One line. It shapes how answers are written.">
         <input className="field" value={answers.role} onChange={(e) => patch({ role: e.target.value })} maxLength={160} placeholder="Product designer at a two-person studio" />
       </Field>
-      <Field label="What are you trying to get done right now?" hint="Your top one or two. You can change this any time.">
-        <textarea className="field" rows={3} value={answers.goals} onChange={(e) => patch({ goals: e.target.value })} maxLength={400} placeholder="Ship the design system v2 and stop losing half my week to email" />
+    </div>
+  );
+}
+
+// ── 3. What you are working towards ────────────────────────────────────────
+
+/**
+ * The Goals screen. Pick up to three life areas; each one opens the same five
+ * questions the Goals page asks. The hours field is the one that matters most
+ * later — it is what the Coach checks the check-ins against — so it says what
+ * it is for rather than just asking for a number.
+ */
+export function StepGoals({ answers, patch }: StepProps) {
+  const goals = answers.goals;
+  const chosenAreas = goals.map((g) => g.area);
+
+  const toggleArea = (area: GoalAreaId) => {
+    if (chosenAreas.includes(area)) {
+      patch({ goals: goals.filter((g) => g.area !== area) });
+      return;
+    }
+    if (goals.length >= MAX_WALKTHROUGH_GOALS) return;
+    patch({ goals: [...goals, EMPTY_GOAL(area)] });
+  };
+  const edit = (area: GoalAreaId, partial: Partial<WalkthroughGoal>) =>
+    patch({ goals: goals.map((g) => (g.area === area ? { ...g, ...partial } : g)) });
+
+  return (
+    <div className="space-y-3.5">
+      <div>
+        <p className="mb-1.5 text-label font-bold uppercase tracking-wider text-text-subtle">
+          Which part of your life? {goals.length ? `${goals.length} of ${MAX_WALKTHROUGH_GOALS}` : ""}
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {GOAL_AREAS.map((a) => {
+            const on = chosenAreas.includes(a.id);
+            const full = !on && goals.length >= MAX_WALKTHROUGH_GOALS;
+            return (
+              <button
+                key={a.id}
+                type="button"
+                aria-pressed={on}
+                disabled={full}
+                onClick={() => toggleArea(a.id)}
+                className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[13px] font-semibold disabled:opacity-40 ${on ? "border-accent bg-accent/15 text-accent-soft" : "border-strong bg-surface-2 text-text-muted"}`}
+              >
+                {a.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {goals.map((goal) => <GoalFields key={goal.area} goal={goal} edit={edit} protectedIds={answers.localOnly} />)}
+
+      {goals.length ? null : (
+        <p className="text-[13px] text-text-muted">
+          Skip this if you want — but this is the part JollyOS is actually for. A goal here gets a weekly check-in and an honest read on whether it is moving.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function GoalFields({ goal, edit, protectedIds }: { goal: WalkthroughGoal; edit: (area: GoalAreaId, partial: Partial<WalkthroughGoal>) => void; protectedIds: string[] }) {
+  const area = areaById(goal.area)!;
+  const isPrivate = Boolean(area.sensitive && protectedIds.includes(area.sensitive));
+  const toggleObstacle = (id: string) =>
+    edit(goal.area, { obstacles: goal.obstacles.includes(id) ? goal.obstacles.filter((x) => x !== id) : [...goal.obstacles, id] });
+
+  return (
+    <div className="space-y-2.5 rounded-control border border-accent/30 bg-surface-2/40 p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm font-semibold">{area.label}</span>
+        {isPrivate ? <Chip tone="info">local only</Chip> : null}
+      </div>
+      <Field label="What exactly?">
+        <input className="field" value={goal.want} onChange={(e) => edit(goal.area, { want: e.target.value })} maxLength={160} placeholder={area.example} />
+      </Field>
+      <Field label="Why does it matter?">
+        <input className="field" value={goal.why} onChange={(e) => edit(goal.area, { why: e.target.value })} maxLength={300} placeholder="The reason that survives a bad week" />
+      </Field>
+      <Field label="Where are you honestly today?">
+        <input className="field" value={goal.baselineNote} onChange={(e) => edit(goal.area, { baselineNote: e.target.value })} maxLength={300} placeholder="Plain words are fine" />
+      </Field>
+      <div>
+        <p className="mb-1.5 text-label font-bold uppercase tracking-wider text-text-subtle">What usually stops you?</p>
+        <div className="flex flex-wrap gap-1.5">
+          {OBSTACLES.map((o) => (
+            <button key={o.id} type="button" aria-pressed={goal.obstacles.includes(o.id)} onClick={() => toggleObstacle(o.id)}
+              className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[13px] font-semibold ${goal.obstacles.includes(o.id) ? "border-accent bg-accent/15 text-accent-soft" : "border-strong bg-surface text-text-muted"}`}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <Field label="Hours a week you can really give it" hint="Be honest, not ambitious. This is the number the Coach checks you against.">
+        <input className="field" type="number" inputMode="decimal" step="0.5" min={0} max={80} value={goal.hoursClaimed}
+          onChange={(e) => edit(goal.area, { hoursClaimed: e.target.value === "" ? 0 : Number(e.target.value) })} />
       </Field>
     </div>
   );

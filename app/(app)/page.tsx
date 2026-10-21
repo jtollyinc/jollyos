@@ -22,6 +22,9 @@ import { queueCounts } from "@/lib/import/queue";
 import { jobCounts, readJobs } from "@/lib/jobs/store";
 import { loadStatuses } from "@/lib/modules/registry";
 import { checklistItems, checklistProgress } from "@/lib/onboarding/checklist";
+import { readCheckIns, readGoals } from "@/lib/goals/store";
+import { realityCheck, derivedNextStep } from "@/lib/goals/reality";
+import { weekKey } from "@/lib/goals/types";
 import { readWalkthrough, walkthroughFinished } from "@/lib/onboarding/store";
 import { deckStats } from "@/lib/persona/deck-store";
 import { personaCounts, readEntries } from "@/lib/persona/store";
@@ -42,6 +45,14 @@ export default async function HomePage() {
   const persona = enabled.has("persona") ? personaCounts(readEntries()) : null;
   const providers = providersFromEnv(runtimeEnv());
 
+  // Goals are the spine: Home shows the one next step before anything else.
+  const goals = enabled.has("goals") ? readGoals({ includePrivate: true }) : [];
+  const checkIns = goals.length ? readCheckIns({ includePrivate: true }) : [];
+  const thisWeek = weekKey();
+  const needsCheckIn = goals.filter((g) => !checkIns.some((c) => c.goalId === g.id && c.week === thisWeek));
+  const topGoal = needsCheckIn[0] ?? goals[0] ?? null;
+  const todayStep = topGoal ? derivedNextStep(topGoal, realityCheck({ goal: topGoal, checkIns })) : null;
+
   const walkthrough = readWalkthrough();
   const settled = walkthroughFinished(walkthrough);
   // "What should it call you?" beats the login name, which is often lower-case.
@@ -52,6 +63,8 @@ export default async function HomePage() {
     briefBuilt: Boolean(brief),
     deckAnswers: deck?.answered ?? 0,
     imports: queueCounts().total,
+    goals: goals.length,
+    checkIns: checkIns.length,
   });
   const progress = checklistProgress(checklist);
   const showChecklist = settled && !walkthrough.checklistDismissedAt && !progress.complete;
@@ -59,6 +72,7 @@ export default async function HomePage() {
   const needs: string[] = [];
   if (counts && counts.inbox + counts.running) needs.push(`${counts.inbox + counts.running} job${counts.inbox + counts.running === 1 ? "" : "s"} on the board`);
   if (counts && counts.blocked) needs.push(`${counts.blocked} blocked`);
+  if (needsCheckIn.length) needs.push(`${needsCheckIn.length} goal${needsCheckIn.length === 1 ? "" : "s"} need${needsCheckIn.length === 1 ? "s" : ""} a check-in`);
   if (enabled.has("brief")) needs.push(brief ? "today's brief is ready" : "today's brief is not built yet");
   if (deck && deck.cards - deck.answered > 0) needs.push(`${deck.cards - deck.answered} deck cards waiting`);
   const needsSetup = statuses.filter((s) => s.state === "needs-setup");
@@ -78,6 +92,16 @@ export default async function HomePage() {
             : "Nothing is set up for you yet. Seven short screens and JollyOS knows what to call you, what you follow and what must never leave this machine."}
         </HeroStrip>
       )}
+
+      {todayStep && topGoal ? (
+        <Card className="mb-4 flex flex-wrap items-center gap-3 p-4">
+          <span className="min-w-0 flex-1">
+            <span className="block text-label font-bold uppercase tracking-wider text-text-subtle">Today, for &ldquo;{topGoal.want}&rdquo;</span>
+            <span className="mt-0.5 block text-[15px] font-semibold">{todayStep}</span>
+          </span>
+          <Link href="/goals" className="btn-ghost shrink-0">Open Goals</Link>
+        </Card>
+      ) : null}
 
       {enabled.has("jobs") ? <Card className="mb-4 p-4"><CaptureBox /></Card> : null}
 

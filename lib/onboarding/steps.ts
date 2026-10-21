@@ -18,6 +18,7 @@ export interface WalkthroughStep {
 export const STEPS: readonly WalkthroughStep[] = [
   { id: "what", title: "What JollyOS is", lede: "Three things. That is the whole app." },
   { id: "about", title: "About you", lede: "So it can talk to you, not at you." },
+  { id: "goals", title: "What you are working towards", lede: "One or two. Be specific — vague goals cannot be checked." },
   { id: "interests", title: "What you follow", lede: "Tap what you are into. This fills your Daily Brief." },
   { id: "style", title: "How you like information", lede: "Length, tone, and when your morning starts." },
   { id: "privacy", title: "What stays on this machine", lede: "Leave all four on if you are not sure." },

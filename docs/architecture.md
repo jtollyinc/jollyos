@@ -43,7 +43,9 @@ Everything lives under `DATA_DIR` as small JSON/JSONL files written atomically
 | `decisions.jsonl`, `private/decisions.jsonl` | `lib/persona/deck-store` — split by privacy |
 | `brief.json`, `brief-stories.json` | `lib/brief/build` — day cache (keyed on the interest version) and demo fixtures |
 | `brief-feeds.json` | `lib/brief/feeds-store` — the owner's feeds (accepted, picked in the walkthrough, or pasted in); `enabled: false` mutes one without losing it |
-| `walkthrough.json` | `lib/onboarding/store` — welcome progress, answers, what it seeded, checklist dismissal |
+| `goals.json`, `private/goals.json` | `lib/goals/store` — split by privacy, like decisions |
+| `checkins.jsonl`, `private/checkins.jsonl` | `lib/goals/store` — a check-in inherits its goal's tier |
+| `walkthrough.json` | `lib/onboarding/store` — welcome progress, answers, what it seeded (entries, feeds, goals), checklist dismissal |
 | `ai-settings.json` | `lib/settings/ai` — the model chosen in the app (mode 600; the key never leaves the server) |
 | `interests.json` | `lib/persona/interests-store` — derived interests and avoid-topics (recomputed on every persona write) |
 | `imports/queue.json`, `imports/batches.json`, `imports/raw/<batch>/` | `lib/import/queue` — the review queue, one row per import, the uploaded bytes |
@@ -125,6 +127,26 @@ Privacy: ranking is keyword matching on the server, so local-only interests may
 rank. They are never put into a prompt body; each interest is a tagged
 `ContextSegment`, so the router withholds the local-only ones from a cloud
 model, and the story-list annotations only name cloud-safe interests.
+
+## Goals and the Coach
+
+`lib/goals/reality.ts` is a pure function: a goal, its check-ins and the count
+of finished linked jobs go in; a verdict, its receipts and exactly one
+adjustment come out. It compares showing up (weeks vs check-ins), hours
+(claimed vs median actual), movement (baseline vs latest against the target)
+and doing (yes/partly/no), in that order of bluntness. No model is involved and
+none is required.
+
+`lib/goals/coach.ts` may ask a model to rewrite the two lines — never to decide
+them — and enforces privacy by choosing the provider rather than filtering a
+prompt: a `local-only` goal goes to the local provider or to no model at all,
+never to a hosted one. The deterministic demo provider is deliberately not used
+for a rewrite.
+
+`lib/goals/match.ts` labels Brief stories that relate to a goal (two distinct
+keyword hits minimum). Local-only goals may label a story — keyword matching on
+this server — but are never named in a prompt body, the same rule interests
+follow.
 
 ## Importing context
 

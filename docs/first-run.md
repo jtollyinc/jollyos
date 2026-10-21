@@ -2,23 +2,27 @@
 
 A brand-new JollyOS knows nothing about you, and a dashboard with nothing on it
 is indistinguishable from a broken one. So the moment the setup page creates the
-owner, you land on `/welcome`: seven short screens that leave you with a JollyOS
+owner, you land on `/welcome`: eight short screens that leave you with a JollyOS
 that is actually configured, and an idea of what each part is for.
 
 It is skippable on every screen, resumable on any device, and re-runnable from
 Settings. Nothing it does is permanent.
 
-## The seven screens
+## The eight screens
+
+Goals come second on purpose: who you are, then what you are chasing, then
+everything else tuned around it.
 
 | # | Screen | What it asks | What it writes |
 |---|---|---|---|
 | 1 | What JollyOS is | nothing — three cards: Jobs, Daily Brief, You | nothing |
-| 2 | About you | what to call you, what you do, what you are working on | three `profile` entries in `persona.json`, `cloud-ok` |
-| 3 | What you follow | 18 topic chips in two groups, plus free text | one `preference` entry per chip ("I follow accessibility."), one for the free text, and up to six feeds in `brief-feeds.json` |
-| 4 | How you like information | brief length, tone, when your morning starts | three `preference` entries the Brief's summariser is told to obey |
-| 5 | What stays on this machine | money, health, family, location (all on by default) | one `local-only` **rule** entry per protected category |
-| 6 | The AI brain | none / a model on this machine / a hosted key, with a **Test** button | `ai-settings.json`, mode 600 |
-| 7 | You are set up | nothing — a receipt of the above | marks the walkthrough done |
+| 2 | About you | what to call you, what you do | two `profile` entries in `persona.json`, `cloud-ok` |
+| 3 | What you are working towards | 1-3 life areas; per goal: what exactly, why, where you honestly are, what stops you, hours a week | real goals in `goals.json` / `private/goals.json`, plus one `profile` entry each |
+| 4 | What you follow | 18 topic chips in two groups, plus free text | one `preference` entry per chip ("I follow accessibility."), one for the free text, and up to six feeds in `brief-feeds.json` |
+| 5 | How you like information | brief length, tone, when your morning starts | three `preference` entries the Brief's summariser is told to obey |
+| 6 | What stays on this machine | money, health, family, location (all on by default) | one `local-only` **rule** entry per protected category |
+| 7 | The AI brain | none / a model on this machine / a hosted key, with a **Test** button | `ai-settings.json`, mode 600 |
+| 8 | You are set up | nothing — a receipt of the above | marks the walkthrough done |
 
 Every answer is written after each Back and Next, so closing the tab loses
 nothing and another device picks up where you stopped.
@@ -37,7 +41,7 @@ that ship (`tests/walkthrough.test.ts`).
 
 ## Privacy: what "local only" actually does
 
-Protecting a category on screen 5 does two things.
+Protecting a category on the privacy screen does two things.
 
 1. It writes a rule into your persona tagged `local-only` — "Anything about my
    money … stays on this machine."
@@ -59,7 +63,7 @@ swiped is never touched.
 
 ## Feeds
 
-Screen 3 subscribes you to feeds from `lib/brief/feed-catalog.json`, at most two
+The topics screen subscribes you to feeds from `lib/brief/feed-catalog.json`, at most two
 per topic and six in total — the Brief reads six sources. Every URL in that
 catalog answered HTTP 200 with a parseable RSS or Atom body when it was added,
 fetched with the same User-Agent `lib/brief/rss.ts` sends.
@@ -71,7 +75,7 @@ belongs to whoever runs the server.
 
 ## The AI brain, and who wins
 
-Screen 6 writes `DATA_DIR/ai-settings.json` with mode `600`. The API never
+The AI brain screen writes `DATA_DIR/ai-settings.json` with mode `600`. The API never
 answers with a key — only `apiKeySet` and a four-character hint.
 
 **The environment always wins.** `runtimeEnv()` (`lib/settings/ai.ts`) starts
@@ -95,7 +99,7 @@ dismissible, and that is reversible from Settings.
 ## Demo mode
 
 `DEMO_MODE=true` shows the whole walkthrough (it is worth recording) and
-`/welcome?replay=1` restarts it. A key typed on screen 6 is tested and then
+`/welcome?replay=1` restarts it. A key typed on the AI brain screen is tested and then
 thrown away: demo mode never persists a secret.
 
 ## Where the code is

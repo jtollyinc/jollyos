@@ -18,6 +18,8 @@
 import { invalidateBriefCache } from "@/lib/brief/build";
 import { acceptFeed, feedCatalog, readAcceptedFeeds, removeFeed } from "@/lib/brief/feeds-store";
 import { dataPath, fileExists, readJson, writeJson } from "@/lib/data-dir";
+import { createGoal, deleteGoal } from "@/lib/goals/store";
+import { goalPrivacy, isGoalArea, isObstacle, type GoalAreaId } from "@/lib/goals/types";
 import { readInterests } from "@/lib/persona/interests-store";
 import { addEntry, deleteEntry } from "@/lib/persona/store";
 import { readAiSettings } from "@/lib/settings/ai";
@@ -28,6 +30,8 @@ import {
   BRIEF_LENGTHS,
   BRIEF_TONES,
   DEFAULT_ANSWERS,
+  MAX_WALKTHROUGH_GOALS,
+  type WalkthroughGoal,
   type WalkthroughAnswers,
   type WalkthroughReceipt,
   type WalkthroughState,
@@ -47,12 +51,35 @@ const EMPTY: WalkthroughState = {
   updatedAt: null,
   completedAt: null,
   checklistDismissedAt: null,
-  seeded: { entryIds: [], feedUrls: [] },
+  seeded: { entryIds: [], feedUrls: [], goalIds: [] },
 };
 
 const STATUSES: WalkthroughStatus[] = ["new", "in-progress", "skipped", "done"];
 const text = (v: unknown, max: number) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "");
 const strings = (v: unknown, max: number) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, max) : []);
+
+/**
+ * Goals from the browser. An older walkthrough.json holds a single string here
+ * (the field this screen replaced), so anything that is not an array becomes an
+ * empty list rather than a crash.
+ */
+export function sanitiseGoals(input: unknown): WalkthroughGoal[] {
+  if (!Array.isArray(input)) return [];
+  const out: WalkthroughGoal[] = [];
+  for (const row of input.slice(0, MAX_WALKTHROUGH_GOALS)) {
+    const g = (row ?? {}) as Partial<Record<keyof WalkthroughGoal, unknown>>;
+    if (!isGoalArea(g.area)) continue;
+    out.push({
+      area: g.area as GoalAreaId,
+      want: text(g.want, 160),
+      why: text(g.why, 300),
+      baselineNote: text(g.baselineNote, 300),
+      obstacles: strings(g.obstacles, 9).filter(isObstacle),
+      hoursClaimed: Math.max(0, Math.min(80, typeof g.hoursClaimed === "number" && Number.isFinite(g.hoursClaimed) ? g.hoursClaimed : 0)),
+    });
+  }
+  return out;
+}
 
 /** Whatever the browser sent → a complete, valid answer set. Never throws. */
 export function sanitiseAnswers(input: unknown, base: WalkthroughAnswers = DEFAULT_ANSWERS): WalkthroughAnswers {
@@ -64,7 +91,7 @@ export function sanitiseAnswers(input: unknown, base: WalkthroughAnswers = DEFAU
   return {
     name: has("name") ? text(raw.name, 60) : base.name,
     role: has("role") ? text(raw.role, 160) : base.role,
-    goals: has("goals") ? text(raw.goals, 400) : base.goals,
+    goals: has("goals") ? sanitiseGoals(raw.goals) : base.goals,
     topics: has("topics") ? [...new Set(strings(raw.topics, 200).filter((t) => pickIds.has(t)))] : base.topics,
     interestsText: has("interestsText") ? text(raw.interestsText, 400) : base.interestsText,
     briefLength: BRIEF_LENGTHS.some((l) => l.id === raw.briefLength) ? (raw.briefLength as WalkthroughAnswers["briefLength"]) : base.briefLength,
@@ -90,7 +117,7 @@ export function readWalkthrough(): WalkthroughState {
     updatedAt: text(raw.updatedAt, 40) || null,
     completedAt: text(raw.completedAt, 40) || null,
     checklistDismissedAt: text(raw.checklistDismissedAt, 40) || null,
-    seeded: { entryIds: strings(seeded.entryIds, 200), feedUrls: strings(seeded.feedUrls, 50) },
+    seeded: { entryIds: strings(seeded.entryIds, 200), feedUrls: strings(seeded.feedUrls, 50), goalIds: strings(seeded.goalIds, 20) },
   };
 }
 
@@ -140,6 +167,7 @@ export function dismissChecklist(dismissed: boolean): WalkthroughState {
 /** Remove exactly what a previous completion created. Hand-written entries are safe. */
 function unseed(state: WalkthroughState): void {
   for (const id of state.seeded.entryIds) deleteEntry(id);
+  for (const id of state.seeded.goalIds ?? []) deleteGoal(id);
   const accepted = new Set(readAcceptedFeeds().map((f) => f.url.toLowerCase()));
   for (const url of state.seeded.feedUrls) if (accepted.has(url.toLowerCase())) removeFeed(url);
 }
@@ -153,6 +181,18 @@ export function completeWalkthrough(patch: PatchInput = {}): { state: Walkthroug
   const current = patchWalkthrough({ ...patch, stepId: LAST_STEP });
   unseed(current);
 
+  // Real goals, not a note about goals: the Coach reads these from day one.
+  const goalIds = current.answers.goals
+    .filter((g) => g.want.trim())
+    .map((g) => createGoal({
+      area: g.area,
+      want: g.want,
+      why: g.why,
+      baselineNote: g.baselineNote,
+      obstacles: g.obstacles,
+      hoursClaimed: g.hoursClaimed,
+      privacy: goalPrivacy(g.area, current.answers.localOnly),
+    }).id);
   const entryIds = walkthroughEntries(current.answers).map((e) => addEntry(e).id);
   const feeds = walkthroughFeeds(current.answers, feedCatalog()).slice(0, MAX_SEEDED_FEEDS);
   const feedUrls: string[] = [];
@@ -163,11 +203,12 @@ export function completeWalkthrough(patch: PatchInput = {}): { state: Walkthroug
   invalidateBriefCache();
 
   const now = new Date().toISOString();
-  const state = save({ ...current, status: "done", stepId: LAST_STEP, completedAt: now, updatedAt: now, seeded: { entryIds, feedUrls } });
+  const state = save({ ...current, status: "done", stepId: LAST_STEP, completedAt: now, updatedAt: now, seeded: { entryIds, feedUrls, goalIds } });
   return {
     state,
     receipt: {
       entries: entryIds.length,
+      goals: goalIds.length,
       feeds: feeds.map((f) => ({ url: f.url, title: f.title })),
       localOnly: current.answers.localOnly,
       interests: readInterests().interests.length,

@@ -65,7 +65,12 @@ One owner, no database, pluggable modules, and a privacy rule for AI that is
 enforced in code: anything you tag **local-only** is only ever sent to a model
 running on your own machine, or not sent at all.
 
-- **Welcome walkthrough**: seven screens that configure the app from your
+- **Goals & Coach**: the spine. A goal records what you want, where you
+  honestly are and the hours you can really give it; a weekly check-in records
+  the same shape again; the Coach reads the gap and says it out loud, with
+  numbers and one adjustment. Rule-based arithmetic — it works with no AI at
+  all, and a private goal never leaves your machine.
+- **Welcome walkthrough**: eight screens that configure the app from your
   answers, and a "what is this?" explainer on every page after it. No file
   editing: feeds, interests, privacy and the model are all set from the UI.
 - **Jobs board**: a capture box and swappable runners (your API, a CLI agent, a
@@ -267,6 +272,7 @@ into a cloud prompt (`tests/brief-personal.test.ts`).
 
 | Module | Route | What it does |
 |---|---|---|
+| Goals & Coach | `/goals` | One to three goals, each with a baseline, an obstacle and the hours you claimed. A two-minute weekly check-in records what actually happened. The reality check compares the two — missed weeks, claimed vs actual hours, whether the number moved, jobs finished against it — and gives exactly one adjustment: shrink it, replan it, or drop it. No flattery, and no model required: the verdict is arithmetic (`lib/goals/reality.ts`), and an AI only ever rewrites the wording. Goals in a protected area (health, money, family) are local-only and are never sent to a hosted model. |
 | Jobs | `/jobs` | Capture box → card in the inbox. One **Runner** control: **Auto** (the configured default), **API** (your key, persona-aware), **CLI** (`codex` or `claude` on this machine, agentic), **Local** (your OpenAI-compatible server, $0), **Demo** (no model). A **Private** card is forced to Local and never reaches a cloud model — with no local server it sits in **Blocked** with the reason. Filters: needs you, running, inbox, blocked, done, failed. See [docs/runners.md](docs/runners.md). |
 | Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Once you have approved imports, stories are ranked by your derived interests, avoid-topics are hidden behind a toggle, each matched story says why it is there, and a small catalog of public feeds is suggested — accepted one tap at a time, never auto-subscribed. Feeds are yours to edit on the page — paste any RSS or Atom URL, mute one without losing it — so nothing here needs a `.env`. Cached per day; refresh on demand. |
 | Persona | `/persona`, `/persona/ask`, `/persona/deck`, `/persona/import` | Profile, values, preferences, rules and examples, each with a privacy tag. **Ask Myself** answers as you. The **Decision Deck** is twelve starter dilemmas you swipe; money and people cards are local-only by construction. **Import** reads a ChatGPT or Claude export, a Gemini Takeout, a Notion export, a notes folder or pasted text into a review queue; every candidate is local-only until you approve it. See [docs/importing-context.md](docs/importing-context.md). |

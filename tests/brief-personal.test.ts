@@ -7,6 +7,7 @@ import { acceptFeed, readAcceptedFeeds } from "@/lib/brief/feeds-store";
 import { deriveInterests } from "@/lib/persona/interests";
 import { readInterests } from "@/lib/persona/interests-store";
 import { addEntry } from "@/lib/persona/store";
+import { createGoal } from "@/lib/goals/store";
 import type { ProviderSet } from "@/lib/providers/routing";
 import type { Provider } from "@/lib/providers/types";
 
@@ -118,8 +119,42 @@ describe("the Brief gets personal", () => {
     expect(() => acceptFeed({ url: "not a url" })).toThrow();
   });
 
+  it("labels a story that relates to a goal, and pulls it to the front", async () => {
+    createGoal({ area: "creative", want: "Build a component library", why: "design tokens keep drifting", privacy: "cloud-ok" });
+    const cloud = fake("anthropic", "cloud");
+    const brief = await buildBrief({ default: cloud, local: null, warnings: [] });
+    const feed = brief.sections.find((s) => s.title === "Fixture feed")!;
+
+    const tagged = feed.stories.find((s) => s.goal);
+    expect(tagged?.id).toBe("a"); // "Design tokens for a component library"
+    expect(tagged?.goal?.want).toBe("Build a component library");
+    expect(feed.stories[0].id).toBe("a");
+    expect(feed.facts.join(" ")).toContain("1 for your goals");
+    // A cloud-ok goal may be named in the prompt, so the summary can use it.
+    expect(cloud.calls.map((c) => c.prompt).join("\n")).toContain("for their goal: Build a component library");
+  });
+
+  it("a local-only goal may label a story but never reaches a cloud prompt", async () => {
+    // LOCAL_SENTINEL is a word in a fixture STORY, so it legitimately reaches
+    // the prompt. GOAL_SENTINEL exists only inside the private goal, which is
+    // what must not travel.
+    const GOAL_SENTINEL = "quibblewort";
+    createGoal({ area: "health", want: `Grow ${LOCAL_SENTINEL} for the annual report`, why: `${GOAL_SENTINEL} keeps me sane`, privacy: "local-only" });
+    const cloud = fake("anthropic", "cloud");
+    const brief = await buildBrief({ default: cloud, local: null, warnings: [] });
+    const feed = brief.sections.find((s) => s.title === "Fixture feed")!;
+
+    // The owner's own screen sees the label...
+    expect(feed.stories.find((s) => s.id === "b")?.goal?.want).toContain(LOCAL_SENTINEL);
+    // ...and the hosted model is told nothing about the goal: not the private
+    // words, and not even that the story belongs to one.
+    const sent = cloud.calls.map((c) => `${c.system ?? ""} ${c.prompt}`).join("\n");
+    expect(sent).not.toContain(GOAL_SENTINEL);
+    expect(sent).not.toContain("for their goal");
+  });
+
   it("personaliseStories is a no-op for an empty profile", () => {
     const stories = [{ id: "x", title: "t", url: "u", source: "s", publishedAt: null, snippet: "" }];
-    expect(personaliseStories(stories, deriveInterests([]))).toEqual({ stories, hidden: 0 });
+    expect(personaliseStories(stories, deriveInterests([]))).toEqual({ stories, hidden: 0, forGoals: 0 });
   });
 });

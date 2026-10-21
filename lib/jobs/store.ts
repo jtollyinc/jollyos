@@ -118,6 +118,8 @@ export interface CreateJobInput {
   brief?: string;
   /** The lock on the new-job sheet; a PRIVACY: local-only line in the text means the same. */
   private?: boolean;
+  /** Optional: the goal this job serves. */
+  goalId?: string | null;
 }
 
 /** Capture: the first line is the title, the rest the brief; a tag line is a flag, not a title. */
@@ -142,6 +144,7 @@ export function createJob(input: CreateJobInput): Job {
     runner: null,
     private: isPrivate,
     blockedReason: null,
+    goalId: input.goalId ?? null,
     model: null,
     progress: 0,
     output: null,

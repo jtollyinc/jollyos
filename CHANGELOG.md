@@ -5,7 +5,28 @@ that release's notes (`.github/workflows/release.yml`).
 
 ## 0.2.0 — 2026-10-21
 
-**You no longer land in an empty app.**
+**You no longer land in an empty app, and the app knows what you are for.**
+
+### Goals & Coach — the spine
+
+A new tool, and the thing the rest now hangs off. A goal is not a wish here: it
+records what you want, where you honestly are today, what usually stops you,
+and the hours a week you can really give it. A two-minute weekly check-in
+records the same shape again.
+
+The Coach then does the part people cannot do for themselves — it holds the two
+next to each other and says the number out loud. Missed weeks, hours claimed
+against hours actually spent, whether the number moved, jobs you finished
+against it. Kind, blunt, no flattery, and exactly one adjustment: shrink it,
+change the plan, or drop it.
+
+It needs no AI. The verdict is arithmetic; a model, if you have one, only
+rewrites the wording. A goal about your health, money or family is local-only
+and never goes to a hosted model at all.
+
+Goals show up everywhere else too: today's one step on Home, "For your goal: …"
+on Brief stories that relate to one, and jobs you can link so that finishing
+them counts as evidence.
 
 ### A welcome walkthrough that actually configures JollyOS
 

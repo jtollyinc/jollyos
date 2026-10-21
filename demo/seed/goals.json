@@ -1,0 +1,47 @@
+{
+  "fictional": true,
+  "goals": [
+    {
+      "id": "demo-goal-run",
+      "area": "health",
+      "want": "Run 5k without stopping",
+      "why": "I want to stop being out of breath on the stairs with the shopping.",
+      "baselineNote": "I can jog about 1.5k before I have to walk.",
+      "baseline": 1.5,
+      "target": 5,
+      "unit": "km",
+      "obstacles": [
+        "energy",
+        "consistency"
+      ],
+      "obstacleNote": "",
+      "hoursClaimed": 2,
+      "nextStep": "",
+      "privacy": "cloud-ok",
+      "createdAt": "2026-01-05T09:00:00Z",
+      "updatedAt": "2026-01-05T09:00:00Z",
+      "archivedAt": null
+    },
+    {
+      "id": "demo-goal-book",
+      "area": "creative",
+      "want": "Finish the first draft of the book",
+      "why": "I have been talking about it for three years and it is starting to bother me.",
+      "baselineNote": "About 6,000 words in, and nothing new since January.",
+      "baseline": 6000,
+      "target": 50000,
+      "unit": "words",
+      "obstacles": [
+        "time",
+        "starting"
+      ],
+      "obstacleNote": "",
+      "hoursClaimed": 5,
+      "nextStep": "",
+      "privacy": "cloud-ok",
+      "createdAt": "2026-01-05T09:00:00Z",
+      "updatedAt": "2026-01-05T09:00:00Z",
+      "archivedAt": null
+    }
+  ]
+}
