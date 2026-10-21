@@ -11,7 +11,8 @@ lib/            everything that is not a page (see below)
 modules/<id>/   manifests (and the Decision Deck starter cards)
 demo/seed/      fictional seed data for DEMO_MODE
 demo/samples/   fictional export files for "Try with sample data"
-scripts/        scrub-check.sh + its banned-terms list
+scripts/        scrub-check.sh + terms, reset-owner, release packaging
+scripts/launcher/  the launcher the release zips ship (see docs/releases.md)
 tests/          Vitest unit tests (plain Node, no DOM)
 ```
 
@@ -150,8 +151,11 @@ extract → review); the platform how-tos live in `lib/import/sources.ts` and
 
 ## Build and deploy
 
-`next.config.mjs` sets `output: "standalone"`; the Dockerfile copies that
-output into a non-root `node:22-alpine` image with `/data` as the volume.
+`next.config.mjs` sets `output: "standalone"`, which both ways of shipping
+JollyOS consume. `scripts/package-release.sh` wraps that build and an official
+Node 22 runtime into the per-OS double-click zips on the Releases page
+(`docs/releases.md`); the Dockerfile copies the same output into a non-root
+`node:22-alpine` image with `/data` as the volume.
 `docker-compose.yml` binds `127.0.0.1:3000` and defaults to demo mode. The
 image also carries `scripts/reset-owner.mjs` with the two auth files it
 imports and `package.json`, so `docker compose exec jollyos npm run

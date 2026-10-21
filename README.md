@@ -6,7 +6,55 @@
 [![Node >=22](https://img.shields.io/badge/node-%3E%3D22-339933.svg?logo=node.js&logoColor=white)](package.json)
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-**Try it in one command:** `docker compose up`, then open http://127.0.0.1:3000 (demo mode, fictional data, no `.env` needed).
+## Download
+
+### **[Download JollyOS for your computer](../../releases/latest)**
+
+Nothing to install: no Node, no terminal, no Docker. Four steps.
+
+1. **Download the file for your computer** from the page above:
+
+   | Your computer | The file |
+   |---|---|
+   | Windows | `jollyos-…-windows-x64.zip` |
+   | Mac with Apple silicon (M1 or newer) | `jollyos-…-macos-arm64.zip` |
+   | Mac with an Intel chip | `jollyos-…-macos-x64.zip` |
+   | Linux (x86-64) | `jollyos-…-linux-x64.zip` |
+
+   Which Mac do you have? Apple menu → **About This Mac**: "Chip: Apple M…" is
+   Apple silicon, "Processor: Intel…" is Intel.
+
+2. **Unzip it.** Windows: right-click the downloaded file → **Extract All**
+   (JollyOS will not run from inside the zip). Mac: double-click it. Linux:
+   right-click → **Extract Here**.
+3. **Double-click `Start JollyOS`** in the unzipped folder — on Linux,
+   `start-jollyos.sh`. A window opens and says JollyOS is running, and your
+   browser opens at `http://127.0.0.1:3000`.
+4. **Pick a username and a password.** That is your account. There is no
+   default login and nothing is sent anywhere.
+
+Your computer warns you once, because the download is new and not signed by a
+big company:
+
+- **Windows** — "Windows protected your PC": click **More info**, then **Run
+  anyway**.
+- **macOS** — "cannot verify the developer": **right-click** (or Control-click)
+  **Start JollyOS → Open**, then **Open** in the box. On macOS 15 (Sequoia) and
+  newer that box may only offer Done, so open **System Settings → Privacy &
+  Security**, scroll to Security, click **Open Anyway** next to Start JollyOS,
+  and start it again.
+- **Linux** — if the launcher will not run, allow it to:
+  `chmod +x start-jollyos.sh runtime/bin/node`.
+
+Keep that window open while you use JollyOS; closing it (or pressing Ctrl+C in
+it) stops JollyOS. Everything you save lives in the **`data` folder next to the
+app** — copy it into a newer version to keep your account and your data.
+JollyOS listens on `127.0.0.1` only, so nothing on your network can reach it.
+Each zip carries the official [Node.js](https://nodejs.org) 22 runtime for your
+system, so nothing is installed: delete the folder and JollyOS is gone.
+
+Prefer Docker, or want to run it from source? See
+[For developers](#for-developers).
 
 One owner, no database, pluggable modules, and a privacy rule for AI that is
 enforced in code: anything you tag **local-only** is only ever sent to a model
@@ -48,9 +96,17 @@ running on your own machine, or not sent at all.
 
 </details>
 
-## Quick start
+## For developers
 
-**npm** (Node 22+):
+Everything below is for running JollyOS from source. If you only want to use
+it, the [Download](#download) above needs none of it.
+
+**npm** — install **Node 22 or newer first**; it is not on a fresh Windows or
+Mac. Windows: `winget install OpenJS.NodeJS.LTS`, or the LTS installer from
+[nodejs.org](https://nodejs.org). Mac: `brew install node@22` or the same
+installer. Then **open a new terminal** so `node` and `npm` are on your PATH
+(otherwise `npm ci` answers "npm is not recognized"). In Windows `cmd` or
+PowerShell, `npm.cmd ci` works when script execution is disabled.
 
 ```bash
 npm ci
@@ -205,6 +261,7 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 - [docs/runners.md](docs/runners.md) — the job runners: one picker, one rule (Auto / private → local only), add a runner in one file
 - [docs/modules.md](docs/modules.md) — how to write a module
 - [docs/design-system.md](docs/design-system.md) — the ADHD-first rules and the primitives
+- [docs/releases.md](docs/releases.md) — how the one-click zips are built, and how to cut a release
 - [CONTRIBUTING.md](CONTRIBUTING.md) — checks to run, ground rules
 
 ## Development
@@ -217,7 +274,16 @@ npm test             # vitest
 npm run build        # production build (standalone output)
 npm run scrub:history   # scrub-check over the working tree and every commit
 npm run reset-owner     # reset (or --remove) the owner account from a shell
+
+scripts/package-release.sh linux-x64    # one ready-to-run zip (any target, from Linux)
 ```
+
+`scripts/package-release.sh <windows-x64|macos-arm64|macos-x64|linux-x64>`
+builds the download above: the standalone build plus a checksum-verified
+official Node 22 runtime, zipped with the double-click launchers. Pushing a
+`v*` tag runs `.github/workflows/release.yml`, which builds all four, smoke
+tests each on its own OS and publishes the release. See
+[docs/releases.md](docs/releases.md).
 
 CI (`.github/workflows/ci.yml`) runs all of the above plus gitleaks over the
 full history.

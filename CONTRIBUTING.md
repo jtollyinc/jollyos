@@ -47,6 +47,24 @@ CI runs the same list plus gitleaks over the full history.
   and why it exists.
 - Keep dependencies few. Prefer a small function over a package.
 
+## Releases
+
+The download on the README is built by `scripts/package-release.sh <target>`
+and published by `.github/workflows/release.yml` when a `v*` tag is pushed.
+If you change anything the zips carry — the launcher, the standalone payload,
+`.env` handling, a new dependency — build and start one before you open the
+pull request:
+
+```bash
+npm run build
+scripts/package-release.sh linux-x64 --out dist --no-build
+unzip -q dist/jollyos-*-linux-x64.zip -d /tmp/check
+/tmp/check/JollyOS/runtime/bin/node scripts/smoke-release.mjs /tmp/check/JollyOS
+```
+
+A new native dependency needs a per-target plan: see "Native modules" in
+[docs/releases.md](docs/releases.md).
+
 ## Commit style
 
 `type(scope): what changed` — e.g. `feat(brief): atom feed support`,
