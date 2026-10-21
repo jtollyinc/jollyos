@@ -32,6 +32,11 @@ Nothing to install: no Node, no terminal, no Docker. Four steps.
    browser opens at `http://127.0.0.1:3000`.
 4. **Pick a username and a password.** That is your account. There is no
    default login and nothing is sent anywhere.
+5. **Answer seven short questions.** The welcome walkthrough asks what to call
+   you, what you follow, how you like information and what must never leave your
+   machine — and sets JollyOS up from your answers: feeds subscribed, interests
+   recorded, privacy enforced. Skip any of it; your place is saved, and you can
+   run it again from Settings. See [docs/first-run.md](docs/first-run.md).
 
 Your computer warns you once, because the download is new and not signed by a
 big company:
@@ -60,6 +65,9 @@ One owner, no database, pluggable modules, and a privacy rule for AI that is
 enforced in code: anything you tag **local-only** is only ever sent to a model
 running on your own machine, or not sent at all.
 
+- **Welcome walkthrough**: seven screens that configure the app from your
+  answers, and a "what is this?" explainer on every page after it. No file
+  editing: feeds, interests, privacy and the model are all set from the UI.
 - **Jobs board**: a capture box and swappable runners (your API, a CLI agent, a
   local model, or a demo). Private cards never leave the machine.
 - **Daily Brief**: your feeds folded into sections written for you, ranked by
@@ -74,6 +82,8 @@ running on your own machine, or not sent at all.
 
 | Phone | Desktop |
 |---|---|
+| ![Picking topics in the welcome walkthrough, on a phone](docs/screenshots/phone-welcome-interests.png) | ![Picking topics in the welcome walkthrough, on a desktop](docs/screenshots/desktop-welcome-interests.png) |
+| ![The walkthrough's receipt of what it set up, on a phone](docs/screenshots/phone-welcome-finish.png) | ![Choosing the AI brain: none, a local model, or a hosted key](docs/screenshots/desktop-welcome-brain.png) |
 | ![Jobs board on a phone](docs/screenshots/phone-jobs.png) | ![Jobs board on a desktop](docs/screenshots/desktop-jobs.png) |
 | ![The Brief after importing, on a phone](docs/screenshots/phone-brief-after.png) | ![Feed suggestions in the Brief after importing, on a desktop](docs/screenshots/desktop-brief-feeds.png) |
 | ![Decision Deck on a phone](docs/screenshots/phone-deck.png) | ![Decision Deck on a desktop](docs/screenshots/desktop-deck.png) |
@@ -83,7 +93,9 @@ running on your own machine, or not sent at all.
 
 | Phone | Desktop |
 |---|---|
-| ![Home on a phone](docs/screenshots/phone-home.png) | ![Home on a desktop](docs/screenshots/desktop-home.png) |
+| ![What JollyOS is: screen one of the walkthrough](docs/screenshots/phone-welcome-what.png) | ![Editing the Daily Brief's feeds on a desktop](docs/screenshots/desktop-brief-feeds-editor.png) |
+| ![Home with the Getting started checklist, on a phone](docs/screenshots/phone-home-checklist.png) | ![Home on a desktop](docs/screenshots/desktop-home.png) |
+| ![A (?) explainer open on a phone](docs/screenshots/phone-help.png) | ![Home on a phone](docs/screenshots/phone-home.png) |
 | ![New job sheet with the runner picker on a phone](docs/screenshots/phone-jobs-new-job.png) | ![New job sheet with the runner picker on a desktop](docs/screenshots/desktop-jobs-new-job.png) |
 | ![A private card forced to the Local runner on a phone](docs/screenshots/phone-jobs-runner.png) | ![A private card forced to the Local runner on a desktop](docs/screenshots/desktop-jobs-runner.png) |
 | ![Daily Brief on a phone](docs/screenshots/phone-brief.png) | ![Daily Brief on a desktop](docs/screenshots/desktop-brief.png) |
@@ -211,7 +223,17 @@ Every variable is optional. See `.env.example` for the same list with comments.
 | `LOCAL_LLM_BASE_URL`, `LOCAL_LLM_MODEL` | – | Any OpenAI-compatible local server (LM Studio, Ollama, llama.cpp…). Also the **Local** job runner, the only one a private card may use |
 | `JOBS_DEFAULT_RUNNER` | auto | What **Auto** means on the Jobs board: `api` \| `cli` \| `local` \| `demo`; auto = demo in demo mode, else the first configured |
 | `JOBS_CLI`, `JOBS_CLI_CWD`, `JOBS_CLI_TIMEOUT_SEC` | auto, `DATA_DIR/cli-workspace`, `1800` | The **CLI** runner: which agent CLI to prefer (`codex` or `claude`), the folder it may edit, its time limit |
-| `BRIEF_FEEDS` | – | Comma-separated RSS/Atom URLs for the Daily Brief (ignored in demo mode). Feeds you accept from the Brief's suggestions are added from `DATA_DIR/brief-feeds.json` |
+| `BRIEF_FEEDS` | – | Comma-separated RSS/Atom URLs for the Daily Brief (ignored in demo mode). **Added to**, never replaced by, the feeds you chose in the app (`DATA_DIR/brief-feeds.json`); feeds set here are read-only in the UI |
+
+Nothing above is required. Everything the app needs can be configured from
+inside it — the welcome walkthrough writes your feeds, your interests, your
+privacy rules and (optionally) a model into `DATA_DIR`.
+
+**Precedence, where the two overlap:** the environment always wins. A model
+chosen in the app fills in `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` /
+`LOCAL_LLM_BASE_URL` only when they are unset or empty, so your `.env` or
+`docker-compose.yml` stays authoritative; Settings shows which is in effect.
+Feeds are the one additive case: `BRIEF_FEEDS` and your own list are both read.
 
 ## Providers and privacy routing
 
@@ -246,7 +268,7 @@ into a cloud prompt (`tests/brief-personal.test.ts`).
 | Module | Route | What it does |
 |---|---|---|
 | Jobs | `/jobs` | Capture box → card in the inbox. One **Runner** control: **Auto** (the configured default), **API** (your key, persona-aware), **CLI** (`codex` or `claude` on this machine, agentic), **Local** (your OpenAI-compatible server, $0), **Demo** (no model). A **Private** card is forced to Local and never reaches a cloud model — with no local server it sits in **Blocked** with the reason. Filters: needs you, running, inbox, blocked, done, failed. See [docs/runners.md](docs/runners.md). |
-| Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Once you have approved imports, stories are ranked by your derived interests, avoid-topics are hidden behind a toggle, each matched story says why it is there, and a small catalog of public feeds is suggested — accepted one tap at a time, never auto-subscribed. Cached per day; refresh on demand. |
+| Daily Brief | `/brief` | One folded section per feed with a summary written for you, plus model-free sections for your jobs and decisions. Once you have approved imports, stories are ranked by your derived interests, avoid-topics are hidden behind a toggle, each matched story says why it is there, and a small catalog of public feeds is suggested — accepted one tap at a time, never auto-subscribed. Feeds are yours to edit on the page — paste any RSS or Atom URL, mute one without losing it — so nothing here needs a `.env`. Cached per day; refresh on demand. |
 | Persona | `/persona`, `/persona/ask`, `/persona/deck`, `/persona/import` | Profile, values, preferences, rules and examples, each with a privacy tag. **Ask Myself** answers as you. The **Decision Deck** is twelve starter dilemmas you swipe; money and people cards are local-only by construction. **Import** reads a ChatGPT or Claude export, a Gemini Takeout, a Notion export, a notes folder or pasted text into a review queue; every candidate is local-only until you approve it. See [docs/importing-context.md](docs/importing-context.md). |
 
 A module whose required configuration is missing shows a "needs setup" card
@@ -256,6 +278,7 @@ takes a manifest and one import: see [docs/modules.md](docs/modules.md).
 ## Docs
 
 - [docs/architecture.md](docs/architecture.md) — request flow, state files, auth, routing, runners, imports
+- [docs/first-run.md](docs/first-run.md) — the welcome walkthrough: what each screen asks, what it writes, how to re-run it
 - [docs/security.md](docs/security.md) — how auth works, where the hash lives, rate limits, the reset CLI, what is out of scope
 - [docs/importing-context.md](docs/importing-context.md) — export steps per platform (cited), what the importers read, how the Brief uses it
 - [docs/runners.md](docs/runners.md) — the job runners: one picker, one rule (Auto / private → local only), add a runner in one file

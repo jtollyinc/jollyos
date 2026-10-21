@@ -42,7 +42,9 @@ Everything lives under `DATA_DIR` as small JSON/JSONL files written atomically
 | `persona.json` | `lib/persona/store` |
 | `decisions.jsonl`, `private/decisions.jsonl` | `lib/persona/deck-store` — split by privacy |
 | `brief.json`, `brief-stories.json` | `lib/brief/build` — day cache (keyed on the interest version) and demo fixtures |
-| `brief-feeds.json` | `lib/brief/feeds-store` — feeds the owner accepted from suggestions |
+| `brief-feeds.json` | `lib/brief/feeds-store` — the owner's feeds (accepted, picked in the walkthrough, or pasted in); `enabled: false` mutes one without losing it |
+| `walkthrough.json` | `lib/onboarding/store` — welcome progress, answers, what it seeded, checklist dismissal |
+| `ai-settings.json` | `lib/settings/ai` — the model chosen in the app (mode 600; the key never leaves the server) |
 | `interests.json` | `lib/persona/interests-store` — derived interests and avoid-topics (recomputed on every persona write) |
 | `imports/queue.json`, `imports/batches.json`, `imports/raw/<batch>/` | `lib/import/queue` — the review queue, one row per import, the uploaded bytes |
 | `demo-seeded.json` | `lib/demo` — marker |
@@ -111,7 +113,7 @@ starts. `docs/runners.md` has the table and the "add a runner" steps.
 ## Daily Brief
 
 `lib/brief/build.ts` collects stories (RSS via `lib/brief/rss.ts` from
-`BRIEF_FEEDS` plus accepted feeds, or demo fixtures), ranks them by the
+`BRIEF_FEEDS` plus the owner's switched-on feeds, or demo fixtures), ranks them by the
 derived interest profile (`lib/persona/interests.ts`: boost on matched
 interests, hide on avoid-topics, a why-line per story), writes one section per
 source with a persona-aware summary through the router, adds model-free

@@ -88,13 +88,16 @@ unzip -q dist/jollyos-0.1.0-linux-x64.zip -d /tmp/check
 
 ## Cutting a release
 
-1. Bump `version` in `package.json` and commit.
-2. `git tag v0.1.0 && git push origin v0.1.0`.
+1. Bump `version` in `package.json`, add the matching section to
+   `CHANGELOG.md` (`## 0.2.0 — YYYY-MM-DD`), and commit.
+2. `git tag v0.2.0 && git push origin v0.2.0`.
 
 `.github/workflows/release.yml` then builds the four zips once on Linux, smoke
 tests each on its own runner (`windows-latest`, `macos-latest` for Apple
 silicon, `macos-15-intel` for Intel — the only Intel macOS runner left, and
 only until GitHub drops x86_64 macOS in autumn 2027 — and `ubuntu-latest`),
 and only then publishes the tag as the
-latest release with all four zips and their `.sha256` files attached. Only the
+latest release with all four zips and their `.sha256` files attached. The
+release notes are that version's `CHANGELOG.md` section (when it has one)
+followed by the standing download instructions. Only the
 publishing job gets `contents: write`.

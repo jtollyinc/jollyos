@@ -52,6 +52,20 @@ key, compared in constant time. The parameters are stored in the string so
 they can be raised later without a migration. Usernames are compared
 case-insensitively with a length-hiding compare.
 
+## The model key you type into the app
+
+The welcome walkthrough's "AI brain" screen can store a hosted API key so a
+one-click install needs no `.env`. It lands in `DATA_DIR/ai-settings.json` with
+mode `600`, the same treatment as `owner.json` and `auth-secret`.
+
+No API route ever answers with the value: `publicAiSettings` returns
+`apiKeySet` and a four-character hint (`…a1b2`), and the Test endpoint returns
+one sentence. The environment still wins — a key in `.env` is never overridden
+by one typed into the app (`runtimeEnv()`, `lib/settings/ai.ts`). Demo mode
+tests a key and then throws it away rather than writing it.
+
+Proof: `tests/ai-settings.test.ts`.
+
 ## Sessions
 
 A signed HS256 JWT (`jose`) in an `HttpOnly`, `SameSite=Lax` cookie

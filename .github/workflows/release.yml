@@ -102,7 +102,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
         run: |
-          cat > notes.md <<'NOTES'
+          # Lead with this version's CHANGELOG section, when it has one.
+          : > notes.md
+          VERSION="${TAG#v}"
+          awk -v want="## $VERSION" 'index($0, want) == 1 { found = 1; next } found && /^## / { exit } found' CHANGELOG.md > changes.md || true
+          if [ -s changes.md ]; then
+            { printf '## What changed in %s\n' "$TAG"; cat changes.md; printf '\n---\n\n'; } >> notes.md
+          fi
+          cat >> notes.md <<'NOTES'
           ## Download JollyOS
 
           Nothing to install. Download the file for your computer, unzip it, and

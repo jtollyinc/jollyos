@@ -23,6 +23,13 @@ make the app usable on a bad day, on a phone, with one thumb.
 7. **Reduced motion is respected globally** (`prefers-reduced-motion` in
    `globals.css`). No animation is load-bearing.
 8. **Finished action screens, not documents.** Short, dense, few clicks.
+9. **Every screen says what it is for.** One plain line under the title and a
+   (?) that answers three questions: what it does, one example, how to start.
+   The copy lives in `lib/help.ts`, one entry per page, so there is one wording
+   to keep true. Pass it as `<PageHeader help={HELP.jobs} />`.
+10. **An empty state is a screen, not a hole.** It says why it is empty and
+   offers exactly one next action. "Needs setup" must name something the owner
+   can actually do from where they are standing.
 
 ## Tokens
 
@@ -61,6 +68,7 @@ opacity modifiers work (`bg-surface/60`). Change the theme by editing the one
 | `ToolTile` | home grid tile with an optional badge |
 | `StoryCard` | a feed item with source and age |
 | `Chip`, `Notice`, `EmptyState` | status marks, inline messages, empty lanes |
+| `HelpButton` | the (?) beside a page title; a native `<dialog>` over `lib/help` |
 | `Prose` | minimal markdown (bullets, bold, italic) for model output |
 | `SideDrawer` | a right-hand sheet on a native `<dialog>` |
 
@@ -71,7 +79,7 @@ classes from `globals.css`.
 
 ```tsx
 <PageShell>
-  <PageHeader title="Thing" lede="One sentence on what this is." />
+  <PageHeader title="Thing" help={HELP.thing} />
   <HeroStrip title="Right now" action={{ href: "/thing/new", label: "Do it" }}>…</HeroStrip>
   <CollapsibleSection panelId="thing:details" title="Details" count={3} teaser="…" accent="jobs">…</CollapsibleSection>
 </PageShell>
