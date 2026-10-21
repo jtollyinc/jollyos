@@ -9,6 +9,7 @@
 import { Loader2, RotateCcw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Card, Notice, PageHeader, PageShell, Prose } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
 import { PersonaTabs } from "./PersonaTabs";
 
 interface AskResponse { answer: string; provider: string; model: string; used: number; withheld: number; withheldTitles: string[]; reason: string }
@@ -48,7 +49,7 @@ export function AskMyself() {
 
   return (
     <PageShell width="narrow">
-      <PageHeader title="Ask Myself" lede="Pose a decision. It answers the way you would, from your persona and your past swipes." />
+      <PageHeader title="Ask Myself" help={HELP.ask} />
       <PersonaTabs />
       <div className="space-y-3">
         <textarea

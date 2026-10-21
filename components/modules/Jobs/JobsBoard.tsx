@@ -9,6 +9,7 @@
 import { Ban, Bot, Inbox, Lock, Play, Plus, RotateCcw, Search, Trash2, Unlock } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, Chip, EmptyState, Notice, PageHeader, PageShell, Prose } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
 import { SideDrawer } from "@/components/jolly/SideDrawer";
 import { briefIsPrivate, costLabel, jobCounts, runnerManifest, type Job, type JobLane, type RunnerChoice, type RunnerId } from "@/lib/jobs/types";
 import { ago, cn } from "@/lib/utils";
@@ -87,7 +88,7 @@ export function JobsBoard() {
 
   return (
     <PageShell>
-      <PageHeader title="Jobs" lede="Capture a card, pick who runs it, watch it move.">
+      <PageHeader title="Jobs" help={HELP.jobs}>
         <button type="button" className="btn-primary" onClick={() => setShowNew((v) => !v)} aria-expanded={showNew}><Plus size={16} aria-hidden="true" />New job</button>
         {attention.length ? (
           <button type="button" onClick={() => { setFilter("needs-you"); setOpenId(attention[0].id); }} className="touch-target inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/10 px-3 text-xs font-semibold text-warning">
@@ -134,7 +135,14 @@ export function JobsBoard() {
       </label>
 
       {data && visible.length === 0 ? (
-        <EmptyState title={jobs.length === 0 ? "Nothing on the board" : "Nothing matches this filter"}>{jobs.length === 0 ? "Capture a thought with New job. The first line becomes the title." : null}</EmptyState>
+        <EmptyState
+          title={jobs.length === 0 ? "Nothing on the board — that is the goal" : "Nothing matches this filter"}
+          action={jobs.length === 0 ? <button type="button" className="btn-primary" onClick={() => setShowNew(true)}><Plus size={16} aria-hidden="true" />New job</button> : <button type="button" className="btn-ghost" onClick={() => { setFilter("all"); setQuery(""); }}>Show everything</button>}
+        >
+          {jobs.length === 0
+            ? "A job is one thought: \u201cdraft a reply to the landlord\u201d, \u201ccompare these two laptops\u201d. The first line becomes the title, and the Runner control decides who does the work."
+            : "Your filter or your search is hiding them, not the board."}
+        </EmptyState>
       ) : (
         <ul className="space-y-2">
           {visible.map((job) => <li key={job.id}><JobRow job={job} active={openId === job.id} onOpen={() => setOpenId(job.id)} /></li>)}

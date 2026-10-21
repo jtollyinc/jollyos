@@ -5,9 +5,11 @@
  * that make up the model of you. Grouped by kind; each entry shows its privacy
  * tag so you always know what a cloud model could see.
  */
+import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CollapsibleSection, EmptyState, Notice, PageHeader, PageShell } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
 import { PERSONA_KINDS, PRIVACY_LEVELS, type PersonaEntry, type PersonaKind } from "@/lib/persona/types";
 import type { Privacy } from "@/lib/providers/types";
 import { PersonaTabs } from "./PersonaTabs";
@@ -56,7 +58,7 @@ export function PersonaEditor() {
   const counts = data?.counts;
   return (
     <PageShell>
-      <PageHeader title="Persona" lede="What a model needs to answer as you. Every entry carries a privacy tag; local-only never leaves this machine." />
+      <PageHeader title="Persona" help={HELP.persona} />
       <PersonaTabs />
 
       <Card className="mb-4 p-4">
@@ -91,7 +93,12 @@ export function PersonaEditor() {
       ) : null}
 
       {data && data.entries.length === 0 ? (
-        <EmptyState title="Nothing here yet">Add a value, a rule and a profile line — three entries are enough for Ask Myself to start sounding like you.</EmptyState>
+        <EmptyState
+          title="Nothing here yet"
+          action={<><Link href="/welcome" className="btn-primary">Answer seven questions</Link><Link href="/persona/import" className="btn-ghost">Import instead</Link></>}
+        >
+          Three entries are enough for Ask Myself to start sounding like you: one value, one decision rule, one line about what you do. Add them in the box above, let the welcome walkthrough ask you, or import what ChatGPT already knows.
+        </EmptyState>
       ) : null}
 
       <div className="space-y-3">

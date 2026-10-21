@@ -11,6 +11,7 @@ import { AlertTriangle, ArrowRight, Check, CloudUpload, FileText, Loader2, Lock,
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, Notice, PageHeader, PageShell } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
 import { SOURCES, sourceInfo } from "@/lib/import/sources";
 import type { Candidate, CandidateCategory, CandidateStatus, ExtractionMode, ImportBatch, ImportSource } from "@/lib/import/types";
 import type { Privacy } from "@/lib/providers/types";
@@ -180,7 +181,7 @@ export function ImportPanel() {
 
   return (
     <PageShell width="narrow">
-      <PageHeader title="Import your context" lede="Bring what ChatGPT, Claude, Gemini, Notion or your notes already know about you. Nothing enters your persona until you approve it." />
+      <PageHeader title="Import your context" help={HELP.import} />
       <PersonaTabs />
 
       <Stepper step={step} canReview={(counts?.total ?? 0) > 0} onGo={(s) => { if (s === "source" || (s === "add" && source) || (s === "review" && counts?.total)) setStep(s); }} />

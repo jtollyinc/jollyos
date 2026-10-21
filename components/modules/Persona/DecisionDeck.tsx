@@ -8,9 +8,11 @@
  * reveal says what the picks support — computed here, no model. A local-only
  * card wears a lock; that tag comes from the server-side gate.
  */
+import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUp, Flame, Lock, MessageSquarePlus, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Card, Chip, EmptyState, Notice, PageHeader, PageShell } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
 import { CATEGORY_LABEL, summariseSession, type DeckAnswer, type DeckChoice, type Reveal, type TaggedCard } from "@/lib/persona/deck";
 import { cn } from "@/lib/utils";
 import { PersonaTabs } from "./PersonaTabs";
@@ -175,7 +177,7 @@ export function DecisionDeck() {
 
   return (
     <PageShell width="narrow">
-      <PageHeader title="Decision Deck" lede="Two defensible sides. Swipe the way you actually lean. Speed counts too.">
+      <PageHeader title="Decision Deck" help={HELP.deck}>
         <Chip tone="accent" icon={Flame}>{streak} day streak</Chip>
         <Chip>{answered} / {data?.stats.cards ?? "…"} answered</Chip>
       </PageHeader>
@@ -240,7 +242,12 @@ export function DecisionDeck() {
           <p className="text-center text-[12px] text-text-subtle">Drag the card, tap a side, or use ← → ↑.</p>
         </div>
       ) : data ? (
-        <EmptyState title="Deck complete">You have answered every card. Add more in modules/persona/cards.ts, or come back when a new one lands.</EmptyState>
+        <EmptyState
+          title="Deck complete — every card answered"
+          action={<Link href="/persona/ask" className="btn-primary">Ask yourself something</Link>}
+        >
+          Your swipes are in your persona now, so Ask Myself and the Daily Brief both read them. New cards arrive with new versions of JollyOS.
+        </EmptyState>
       ) : (
         <div className="h-64 animate-pulse rounded-card bg-surface" />
       )}

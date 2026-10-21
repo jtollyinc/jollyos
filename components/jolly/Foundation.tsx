@@ -13,7 +13,9 @@
 import Link from "next/link";
 import { ArrowRight, ChevronDown, type LucideIcon } from "lucide-react";
 import { useId, type HTMLAttributes, type ReactNode } from "react";
+import type { HelpTopic } from "@/lib/help";
 import type { TopicAccent } from "@/lib/modules/types";
+import { HelpButton } from "./HelpButton";
 import { usePanelCollapsed } from "@/lib/use-panel-collapsed";
 import { ago, cn } from "@/lib/utils";
 
@@ -27,12 +29,21 @@ export function PageShell({ width = "wide", className, ...props }: BoxProps & { 
   return <div className={cn(width === "wide" ? "page-shell" : "page-shell-narrow", className)} {...props} />;
 }
 
-export function PageHeader({ title, lede, children, className }: { title: string; lede?: string; children?: ReactNode; className?: string }) {
+/**
+ * Every page's title row. `help` adds the (?) beside the title and, when no
+ * `lede` is given, uses the topic's own one-liner — so "what is this page?"
+ * is answered on every screen by passing one prop (lib/help).
+ */
+export function PageHeader({ title, lede, help, children, className }: { title: string; lede?: string; help?: HelpTopic; children?: ReactNode; className?: string }) {
+  const line = lede ?? help?.line;
   return (
     <header className={cn("mb-4 flex flex-wrap items-end justify-between gap-3", className)}>
       <div className="min-w-0">
-        <h1 className="text-xl font-bold lg:text-2xl">{title}</h1>
-        {lede ? <p className="mt-1 text-sm text-text-muted">{lede}</p> : null}
+        <div className="flex items-center gap-1">
+          <h1 className="text-xl font-bold lg:text-2xl">{title}</h1>
+          {help ? <HelpButton topic={help} className="-my-2" /> : null}
+        </div>
+        {line ? <p className="mt-1 text-sm text-text-muted">{line}</p> : null}
       </div>
       {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </header>
