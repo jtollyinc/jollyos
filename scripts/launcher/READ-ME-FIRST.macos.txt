@@ -1,0 +1,43 @@
+JollyOS - READ ME FIRST (macOS)
+===============================
+
+Three steps:
+
+  1. Double-click the downloaded ZIP to unzip it. Move the JollyOS folder
+     somewhere you keep things, like your Documents folder.
+
+  2. Open the JollyOS folder, then RIGHT-CLICK (or Control-click)
+     "Start JollyOS" and choose Open. Use right-click > Open the first time:
+     double-clicking a brand new download is what macOS blocks.
+
+  3. A Terminal window opens and says JollyOS is running, and your browser
+     opens at http://127.0.0.1:3000 (another number if 3000 is busy). Pick a
+     username and a password - that is your account.
+
+The warning you will see
+------------------------
+macOS says it "cannot verify the developer" of Start JollyOS, because this
+download is not signed by a paid Apple developer account.
+
+  * Click Open in that box if it offers Open.
+  * On macOS 15 (Sequoia) and newer the box may only offer Done or Cancel.
+    Then open System Settings > Privacy & Security, scroll down to Security,
+    and click "Open Anyway" next to Start JollyOS (Touch ID or your password),
+    and run Start JollyOS again.
+
+macOS only asks the first time.
+
+Good to know
+------------
+  * Leave the Terminal window open while you use JollyOS. Closing it (or
+    pressing Ctrl+C in it) stops JollyOS.
+  * Everything you save lives in the "data" folder next to this file. To move
+    to a newer version of JollyOS, copy that "data" folder into the new one.
+  * JollyOS only listens on your own machine (127.0.0.1). Nobody on your
+    network or the internet can reach it.
+  * Nothing is installed. The folder contains its own copy of the official
+    Node.js runtime. Dragging the folder to the Trash removes JollyOS
+    completely.
+  * If something goes wrong, the reason is in data/server.log.
+  * Forgot your password? In Terminal, cd to this folder and run:
+        ./runtime/bin/node --experimental-strip-types app/scripts/reset-owner.mjs

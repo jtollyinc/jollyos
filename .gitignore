@@ -13,6 +13,9 @@ AGENTS.md
 # runtime data (DATA_DIR default) — never commit user data
 data/
 
+# release zips from scripts/package-release.sh
+dist/
+
 # env — only the example is tracked
 .env
 .env.*

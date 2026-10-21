@@ -1,0 +1,35 @@
+JollyOS - READ ME FIRST (Windows)
+=================================
+
+Three steps:
+
+  1. Extract this ZIP first. Right-click the downloaded ZIP file, choose
+     "Extract All...", and pick a place like your Desktop or Documents.
+     JollyOS will NOT run from inside the ZIP.
+
+  2. Open the extracted JollyOS folder and double-click "Start JollyOS".
+
+  3. A black window opens and says JollyOS is running, and your browser opens
+     at http://127.0.0.1:3000 (another number if 3000 is busy). Pick a
+     username and a password - that is your account.
+
+The warning you will see
+------------------------
+Windows shows a blue "Windows protected your PC" box, because this download is
+new and not signed by a big company. Click "More info", then "Run anyway".
+Windows only asks the first time.
+
+Good to know
+------------
+  * Leave the black window open while you use JollyOS. Closing it (or pressing
+    Ctrl+C in it) stops JollyOS.
+  * Everything you save lives in the "data" folder next to this file. To move
+    to a newer version of JollyOS, copy that "data" folder into the new one.
+  * JollyOS only listens on your own machine (127.0.0.1). Nobody on your
+    network or the internet can reach it.
+  * Nothing is installed. The folder contains its own copy of the official
+    Node.js runtime. Deleting the folder removes JollyOS completely.
+  * If something goes wrong, the reason is in data\server.log.
+  * Forgot your password? Open the JollyOS folder, hold Shift and right-click
+    in it, choose "Open in Terminal" or "Open PowerShell window here", and run:
+        runtime\node.exe --experimental-strip-types app\scripts\reset-owner.mjs

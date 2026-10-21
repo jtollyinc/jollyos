@@ -1,0 +1,38 @@
+JollyOS - READ ME FIRST (Linux)
+===============================
+
+Three steps:
+
+  1. Unzip the download:  unzip jollyos-*-linux-x64.zip
+     (or right-click > Extract Here in your file manager)
+
+  2. Run the launcher. In a terminal:
+        cd JollyOS
+        ./start-jollyos.sh
+     In a file manager, double-click start-jollyos.sh and choose
+     "Run in Terminal" if you are asked.
+
+  3. The terminal says JollyOS is running, and your browser opens at
+     http://127.0.0.1:3000 (another number if 3000 is busy). Pick a username
+     and a password - that is your account.
+
+If it will not run
+------------------
+Some desktops and some unzip tools drop the "may be executed" flag. Then:
+
+    chmod +x start-jollyos.sh runtime/bin/node
+
+Good to know
+------------
+  * Leave the terminal open while you use JollyOS. Closing it (or pressing
+    Ctrl+C in it) stops JollyOS.
+  * Everything you save lives in the "data" folder next to this file. To move
+    to a newer version of JollyOS, copy that "data" folder into the new one.
+  * JollyOS only listens on your own machine (127.0.0.1). Nobody on your
+    network or the internet can reach it.
+  * Nothing is installed. The folder contains its own copy of the official
+    Node.js runtime (x86-64, glibc). Deleting the folder removes JollyOS
+    completely.
+  * If something goes wrong, the reason is in data/server.log.
+  * Forgot your password? From this folder, run:
+        ./runtime/bin/node --experimental-strip-types app/scripts/reset-owner.mjs
