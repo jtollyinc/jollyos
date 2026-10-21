@@ -9,11 +9,16 @@
  * Personal layer: a strip of the interests the brief was ranked by, a
  * "Feeds for you" card whose suggestions do nothing until Accept, a why-line
  * under each matched story, and avoid-topic stories behind "show hidden".
+ *
+ * With no feeds at all the page says so and offers the two ways to fix it
+ * (pick topics, or paste a URL into FeedsEditor) — never a blank screen.
  */
 import { Activity, ArrowRight, Bot, Check, EyeOff, ListChecks, Newspaper, Plus, RefreshCw, Rss, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Chip, CollapsibleSection, HeroStrip, Notice, PageHeader, PageShell, Prose, StoryCard } from "@/components/jolly/Foundation";
+import { Chip, CollapsibleSection, EmptyState, HeroStrip, Notice, PageHeader, PageShell, Prose, StoryCard } from "@/components/jolly/Foundation";
+import { HELP } from "@/lib/help";
+import { FeedsEditor } from "./FeedsEditor";
 import type { Brief, BriefSection } from "@/lib/brief/types";
 import type { FeedSuggestion } from "@/lib/persona/interests";
 import { ago } from "@/lib/utils";
@@ -24,6 +29,9 @@ export function BriefPanel() {
   const [brief, setBrief] = useState<Brief | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Set when the feed list changes: rebuilding costs a model call, so the
+  // owner decides when to spend it.
+  const [stale, setStale] = useState(false);
 
   const fetchBrief = useCallback(
     (refresh: boolean) =>
@@ -40,12 +48,13 @@ export function BriefPanel() {
   async function refresh() {
     setBusy(true);
     await fetchBrief(true);
+    setStale(false);
     setBusy(false);
   }
 
   return (
     <PageShell>
-      <PageHeader title="Daily Brief" lede={brief ? `Built ${ago(brief.generatedAt)} · ${brief.provider} (${brief.model})` : error ? "Not available" : "Building…"}>
+      <PageHeader title="Daily Brief" help={HELP.brief} lede={brief ? `Built ${ago(brief.generatedAt)} · ${brief.provider} (${brief.model})` : error ? "Not available" : "Building…"}>
         <button type="button" className="btn-ghost" onClick={() => void refresh()} disabled={busy}>
           <RefreshCw size={16} className={busy ? "animate-spin" : undefined} aria-hidden="true" />
           {busy ? "Building…" : "Refresh"}
@@ -57,7 +66,17 @@ export function BriefPanel() {
         <>
           <HeroStrip title="Right now" icon={<Activity size={12} aria-hidden="true" />} action={{ href: "/jobs", label: "Open jobs" }}>{brief.headline}</HeroStrip>
           <PersonalStrip brief={brief} />
-          <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+          {stale ? <Notice tone="info" className="mb-3">Your feeds changed. Tap Refresh to rebuild today&rsquo;s brief with them.</Notice> : null}
+          {brief.sources.length ? null : (
+            <EmptyState
+              title="No feeds yet, so there is nothing to read"
+              action={<Link href="/welcome" className="btn-primary">Pick your topics</Link>}
+            >
+              Pick a few topics and JollyOS subscribes you to working public feeds, or open <strong>Your feeds</strong> below and paste any blog&rsquo;s RSS URL. Your jobs and your decisions already have sections here either way.
+            </EmptyState>
+          )}
+          <div className="mt-3 grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+            <FeedsEditor defaultCollapsed={brief.sources.length > 0} onChange={() => setStale(true)} />
             {brief.suggestions.length ? <Suggestions initial={brief.suggestions} /> : null}
             {brief.sections.map((s) => <Section key={s.id} section={s} />)}
           </div>

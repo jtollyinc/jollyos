@@ -1,5 +1,5 @@
 {
-  "note": "Public RSS/Atom feeds the Brief may SUGGEST by topic (ids from lib/persona/interests.ts). Suggestions are never auto-subscribed. Every URL answered HTTP 200 with a parseable feed on 2026-10-20.",
+  "note": "Public RSS/Atom feeds the Brief may SUGGEST by topic, and the pool the welcome walkthrough subscribes from (ids from lib/persona/interests.ts). Suggestions are never auto-subscribed; the walkthrough subscribes only to the topics you tapped. Every URL here answered HTTP 200 with a parseable RSS or Atom body on 2026-10-21, fetched with the same User-Agent lib/brief/rss.ts sends.",
   "feeds": [
     { "id": "smashing", "title": "Smashing Magazine", "site": "smashingmagazine.com", "url": "https://www.smashingmagazine.com/feed/", "topics": ["design-systems", "frontend", "css", "accessibility"] },
     { "id": "alistapart", "title": "A List Apart", "site": "alistapart.com", "url": "https://alistapart.com/main/feed/", "topics": ["product-design", "frontend", "writing"] },
@@ -23,6 +23,20 @@
     { "id": "bicycling", "title": "Bicycling", "site": "bicycling.com", "url": "https://www.bicycling.com/rss/all.xml/", "topics": ["cycling", "outdoors"] },
     { "id": "bonappetit", "title": "Bon Appétit", "site": "bonappetit.com", "url": "https://www.bonappetit.com/feed/rss", "topics": ["cooking"] },
     { "id": "quanta", "title": "Quanta Magazine", "site": "quantamagazine.org", "url": "https://www.quantamagazine.org/feed/", "topics": ["science"] },
-    { "id": "outside", "title": "Outside", "site": "outsideonline.com", "url": "https://www.outsideonline.com/feed/", "topics": ["outdoors", "cycling"] }
+    { "id": "outside", "title": "Outside", "site": "outsideonline.com", "url": "https://www.outsideonline.com/feed/", "topics": ["outdoors", "cycling"] },
+    { "id": "petapixel", "title": "PetaPixel", "site": "petapixel.com", "url": "https://petapixel.com/feed/", "topics": ["photography"] },
+    { "id": "dpreview", "title": "DPReview news", "site": "dpreview.com", "url": "https://www.dpreview.com/feeds/news.xml", "topics": ["photography"] },
+    { "id": "smittenkitchen", "title": "Smitten Kitchen", "site": "smittenkitchen.com", "url": "https://www.smittenkitchen.com/feed/", "topics": ["cooking"] },
+    { "id": "sciencedaily", "title": "ScienceDaily", "site": "sciencedaily.com", "url": "https://www.sciencedaily.com/rss/all.xml", "topics": ["science"] },
+    { "id": "nasa", "title": "NASA breaking news", "site": "nasa.gov", "url": "https://nasa.gov/rss/dyn/breaking_news.rss", "topics": ["science"] },
+    { "id": "rps", "title": "Rock Paper Shotgun", "site": "rockpapershotgun.com", "url": "https://www.rockpapershotgun.com/feed", "topics": ["gaming"] },
+    { "id": "nintendolife", "title": "Nintendo Life", "site": "nintendolife.com", "url": "https://www.nintendolife.com/feeds/latest", "topics": ["gaming"] },
+    { "id": "stereogum", "title": "Stereogum", "site": "stereogum.com", "url": "https://www.stereogum.com/feed/", "topics": ["music"] },
+    { "id": "mrmoneymustache", "title": "Mr. Money Mustache", "site": "mrmoneymustache.com", "url": "https://www.mrmoneymustache.com/feed/", "topics": ["personal-finance"] },
+    { "id": "ofdollarsanddata", "title": "Of Dollars And Data", "site": "ofdollarsanddata.com", "url": "https://ofdollarsanddata.com/feed/", "topics": ["personal-finance"] },
+    { "id": "insideclimate", "title": "Inside Climate News", "site": "insideclimatenews.org", "url": "https://insideclimatenews.org/feed/", "topics": ["climate"] },
+    { "id": "grist", "title": "Grist", "site": "grist.org", "url": "https://grist.org/feed/", "topics": ["climate"] },
+    { "id": "caranddriver", "title": "Car and Driver", "site": "caranddriver.com", "url": "https://www.caranddriver.com/rss/all.xml/", "topics": ["cars"] },
+    { "id": "apartmenttherapy", "title": "Apartment Therapy", "site": "apartmenttherapy.com", "url": "https://www.apartmenttherapy.com/main.rss", "topics": ["home"] }
   ]
 }

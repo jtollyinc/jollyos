@@ -103,8 +103,10 @@ describe("feed suggestions never auto-subscribe", () => {
   });
 
   it("ships a small catalog of real, topic-tagged feeds", () => {
+    // Small enough to read in one sitting, big enough that every welcome
+    // walkthrough chip has a feed (tests/walkthrough.test.ts proves that).
     expect(catalog.length).toBeGreaterThanOrEqual(18);
-    expect(catalog.length).toBeLessThanOrEqual(26);
+    expect(catalog.length).toBeLessThanOrEqual(45);
     const ids = new Set(TOPICS.map((t) => t.id));
     for (const f of catalog) {
       expect(f.url).toMatch(/^https:\/\//);

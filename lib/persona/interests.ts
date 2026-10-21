@@ -55,7 +55,7 @@ export const TOPICS: Topic[] = [
   { id: "cars", label: "cars", keywords: ["cars", "roadster", "track day", "engine", "jdm"] },
   { id: "home", label: "home", keywords: ["renovation", "diy", "furniture", "apartment", "mortgage", "interior"] },
   { id: "parenting", label: "parenting", keywords: ["parenting", "kids", "toddler", "daycare"] },
-  { id: "personal-finance", label: "personal finance", keywords: ["budget", "budgeting", "savings", "investing", "index fund", "retirement", "taxes"] },
+  { id: "personal-finance", label: "personal finance", keywords: ["personal finance", "budget", "budgeting", "savings", "investing", "index fund", "retirement", "taxes"] },
   { id: "crypto", label: "crypto", keywords: ["crypto", "bitcoin", "ethereum", "blockchain", "nft", "nfts", "web3", "memecoin", "token price"] },
   { id: "politics", label: "politics", keywords: ["election", "politics", "congress", "parliament", "senate", "campaign"] },
   { id: "celebrity", label: "celebrity gossip", keywords: ["celebrity", "celebrities", "gossip", "reality tv", "royal family", "red carpet"] },

@@ -30,7 +30,8 @@ import { interestSegments, rankStories, suggestFeeds, type InterestProfile } fro
 import { readInterests } from "@/lib/persona/interests-store";
 import { personaSegments, readEntries } from "@/lib/persona/store";
 import { completeWithContext, providersFromEnv, type ProviderSet } from "@/lib/providers";
-import { feedCatalog, readAcceptedFeeds } from "./feeds-store";
+import { runtimeEnv } from "@/lib/settings/ai";
+import { enabledFeedUrls, feedCatalog, readAcceptedFeeds } from "./feeds-store";
 import { fetchFeed } from "./rss";
 import type { Brief, BriefPersonal, BriefSection, BriefSource, Story } from "./types";
 
@@ -78,8 +79,9 @@ async function collectStories(): Promise<Collected> {
     return { sections, sources };
   }
 
-  // Environment feeds first, then the ones accepted from suggestions; never a suggestion itself.
-  const urls = [...briefFeeds(), ...readAcceptedFeeds().map((f) => f.url)];
+  // Environment feeds first, then the ones the owner chose and left switched
+  // on; never a suggestion itself.
+  const urls = [...briefFeeds(), ...enabledFeedUrls()];
   const feeds = [...new Set(urls.map((u) => u.trim()))].filter(Boolean).slice(0, MAX_SOURCES);
   const results = await Promise.allSettled(feeds.map((url) => fetchFeed(url)));
   results.forEach((r, i) => {
@@ -119,7 +121,7 @@ export function personalSummary(profile: InterestProfile, hidden: number): Brief
   };
 }
 
-export async function buildBrief(providers: ProviderSet = providersFromEnv()): Promise<Brief> {
+export async function buildBrief(providers: ProviderSet = providersFromEnv(runtimeEnv())): Promise<Brief> {
   const { sections: raw, sources } = await collectStories();
   const profile = readInterests();
   // Persona entries plus one segment per interest, each with its own privacy
