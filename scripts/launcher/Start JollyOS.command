@@ -9,6 +9,10 @@ cd -- "$(dirname -- "$0")" || exit 1
 # system change) is what makes the bundled runtime start without a prompt.
 xattr -dr com.apple.quarantine . 2>/dev/null || true
 
+# Some unzip tools drop the "may be executed" bit. Put it back rather than
+# making a first-time user work out why nothing happens.
+[ -x "./runtime/bin/node" ] || chmod +x "./runtime/bin/node" 2>/dev/null || true
+
 if [ ! -x "./runtime/bin/node" ] || [ ! -f "./app/launcher.mjs" ]; then
   echo "This folder is incomplete. Unzip the download again and keep every file together."
   read -r -p "Press Return to close this window. " _

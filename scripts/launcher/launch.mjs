@@ -140,6 +140,13 @@ async function main() {
   server.stderr.on("data", (chunk) => process.stderr.write(chunk));
 
   let stopping = false;
+  let failed = false; // a timeout must not look like a clean shutdown
+  // Next's standalone server signals its whole process group on SIGTERM, so
+  // killing it sends SIGTERM back here too. The handlers below swallow that
+  // (we are already stopping); on a timeout the process can still land on exit
+  // code 143 instead of 1 — either way it is non-zero, which is what the
+  // wrappers check before they show the error and pause.
+
   const stop = (signal) => {
     if (stopping) return;
     stopping = true;
@@ -154,7 +161,7 @@ async function main() {
     if (!stopping) {
       console.error(`\nJollyOS stopped unexpectedly (${signal ?? `code ${code}`}). The reason is in:\n  ${logFile}`);
     }
-    process.exit(stopping ? 0 : (code ?? 1));
+    process.exit(!stopping || failed ? (code || 1) : 0);
   });
   server.on("error", (error) => {
     console.error(`Could not start JollyOS: ${error.message}`);
@@ -166,6 +173,7 @@ async function main() {
   const ready = await waitForReady(port, Date.now() + READY_TIMEOUT_MS);
   if (!ready) {
     console.error(`JollyOS did not answer within ${Math.round(READY_TIMEOUT_MS / 1000)} seconds. See ${logFile}`);
+    failed = true;
     stop("SIGTERM");
     process.exitCode = 1;
     return;

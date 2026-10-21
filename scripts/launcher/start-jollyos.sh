@@ -4,6 +4,10 @@
 # Uses only the bundled Node runtime; nothing is installed on this machine.
 cd -- "$(dirname -- "$0")" || exit 1
 
+# Some unzip tools drop the "may be executed" bit. Put it back rather than
+# making a first-time user work out why nothing happens.
+[ -x "./runtime/bin/node" ] || chmod +x "./runtime/bin/node" 2>/dev/null || true
+
 if [ ! -x "./runtime/bin/node" ] || [ ! -f "./app/launcher.mjs" ]; then
   echo "This folder is incomplete, or the launcher is not executable."
   echo "Unzip the download again (keeping every file together). If needed:"
