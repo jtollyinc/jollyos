@@ -107,6 +107,23 @@ describe("precedence: the environment always wins", () => {
     expect(providers.default.id).toBe("local");
   });
 
+  it("choosing a local model without committing an address does not point the app at a dead server", () => {
+    // The walkthrough sends an empty localBaseUrl when the owner merely selects
+    // the option: tapping it to read the hint must not commit the placeholder.
+    writeAiSettings({ brain: "local", localBaseUrl: "" });
+    expect(readAiSettings().localBaseUrl).toBe("");
+    expect(runtimeEnv({}).LOCAL_LLM_BASE_URL).toBeUndefined();
+    expect(runtimeEnv({}).LLM_PROVIDER).toBeUndefined();
+    expect(defaultRunner(runtimeEnv({}))).toBe("demo");
+    expect(providersFromEnv(runtimeEnv({})).default.id).toBe("demo");
+  });
+
+  it("an address committed earlier survives re-selecting the option", () => {
+    writeAiSettings({ brain: "local", localBaseUrl: "http://127.0.0.1:1234/v1" });
+    writeAiSettings({ brain: "local", localBaseUrl: "" });
+    expect(readAiSettings().localBaseUrl).toBe("http://127.0.0.1:1234/v1");
+  });
+
   it("brain=none leaves the environment exactly as it was", () => {
     writeAiSettings({ brain: "none" });
     expect(runtimeEnv({})).toEqual({});

@@ -206,6 +206,10 @@ interface TestState { busy: boolean; ok: boolean | null; message: string }
 
 export function StepBrain({ answers, patch, ai, onSaved, demo }: StepProps & { ai: PublicAiSettings; onSaved: (ai: PublicAiSettings) => void; demo: boolean }) {
   const [baseUrl, setBaseUrl] = useState(ai.localBaseUrl || "http://localhost:1234/v1");
+  // The address box starts pre-filled with the LM Studio default, so "there is
+  // text in it" is not consent. Only an edit, or a Test that actually answered,
+  // commits it as the model this JollyOS uses.
+  const [addressEdited, setAddressEdited] = useState(false);
   const [vendor, setVendor] = useState(ai.vendor);
   const [apiKey, setApiKey] = useState("");
   const [test, setTest] = useState<TestState>({ busy: false, ok: null, message: "" });
@@ -213,15 +217,23 @@ export function StepBrain({ answers, patch, ai, onSaved, demo }: StepProps & { a
 
   const choose = (next: BrainChoice) => {
     setTest({ busy: false, ok: null, message: "" });
+    setAddressEdited(false);
     patch({ brain: next });
-    void save(next);
+    // Selecting an option must NOT commit the address box's placeholder value.
+    // Tapping "a model on this machine" just to read the hint would otherwise
+    // point the whole app at http://localhost:1234/v1 — and if nothing is
+    // listening there, every summary comes back "Summary unavailable". The
+    // address is committed when the owner actually acts on it (blur or Test);
+    // an empty one means "keep what is stored", and brain=local with nothing
+    // stored falls back to the built-in responder (lib/settings/ai runtimeEnv).
+    void save(next, { commitUrl: false });
   };
 
-  async function save(next: BrainChoice = brain) {
+  async function save(next: BrainChoice = brain, { commitUrl = true } = {}) {
     const res = await fetch("/api/welcome/brain", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brain: next, vendor, localBaseUrl: baseUrl, apiKey }),
+      body: JSON.stringify({ brain: next, vendor, localBaseUrl: commitUrl ? baseUrl : "", apiKey }),
     });
     const json = (await res.json().catch(() => null)) as { ai?: PublicAiSettings; error?: string } | null;
     if (json?.ai) onSaved(json.ai);
@@ -249,7 +261,7 @@ export function StepBrain({ answers, patch, ai, onSaved, demo }: StepProps & { a
       {brain === "local" ? (
         <div className="space-y-2 rounded-control border border-subtle bg-surface-2/40 p-3">
           <Field label="Its address" hint="LM Studio: http://localhost:1234/v1 · Ollama: http://localhost:11434/v1">
-            <input className="field" type="url" inputMode="url" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} autoCapitalize="none" spellCheck={false} />
+            <input className="field" type="url" inputMode="url" value={baseUrl} onChange={(e) => { setBaseUrl(e.target.value); setAddressEdited(true); }} onBlur={() => { if (addressEdited && baseUrl.trim()) void save(); }} autoCapitalize="none" spellCheck={false} />
           </Field>
           <TestRow test={test} onTest={runTest} />
         </div>
