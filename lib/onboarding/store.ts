@@ -23,7 +23,7 @@ import { addEntry, deleteEntry } from "@/lib/persona/store";
 import { readAiSettings } from "@/lib/settings/ai";
 import { FIRST_STEP, LAST_STEP, isStepId } from "./steps";
 import { MAX_SEEDED_FEEDS, walkthroughEntries, walkthroughFeeds } from "./seed";
-import { TOPIC_CHIPS, isSensitiveId } from "./topics";
+import { ALL_PICKS, isSensitiveId } from "./topics";
 import {
   BRIEF_LENGTHS,
   BRIEF_TONES,
@@ -58,14 +58,14 @@ const strings = (v: unknown, max: number) => (Array.isArray(v) ? v.filter((x): x
 export function sanitiseAnswers(input: unknown, base: WalkthroughAnswers = DEFAULT_ANSWERS): WalkthroughAnswers {
   const raw = (input ?? {}) as Partial<Record<keyof WalkthroughAnswers, unknown>>;
   const has = (k: keyof WalkthroughAnswers) => Object.prototype.hasOwnProperty.call(raw, k);
-  const chipIds = new Set(TOPIC_CHIPS.map((c) => c.id));
+  const pickIds = new Set(ALL_PICKS.map((p) => p.id));
   const time = text(raw.morningTime, 5);
   const ai = readAiSettings();
   return {
     name: has("name") ? text(raw.name, 60) : base.name,
     role: has("role") ? text(raw.role, 160) : base.role,
     goals: has("goals") ? text(raw.goals, 400) : base.goals,
-    topics: has("topics") ? [...new Set(strings(raw.topics, 40).filter((t) => chipIds.has(t)))] : base.topics,
+    topics: has("topics") ? [...new Set(strings(raw.topics, 200).filter((t) => pickIds.has(t)))] : base.topics,
     interestsText: has("interestsText") ? text(raw.interestsText, 400) : base.interestsText,
     briefLength: BRIEF_LENGTHS.some((l) => l.id === raw.briefLength) ? (raw.briefLength as WalkthroughAnswers["briefLength"]) : base.briefLength,
     tone: BRIEF_TONES.some((t) => t.id === raw.tone) ? (raw.tone as WalkthroughAnswers["tone"]) : base.tone,

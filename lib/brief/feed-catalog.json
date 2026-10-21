@@ -1,42 +1,1285 @@
 {
-  "note": "Public RSS/Atom feeds the Brief may SUGGEST by topic, and the pool the welcome walkthrough subscribes from (ids from lib/persona/interests.ts). Suggestions are never auto-subscribed; the walkthrough subscribes only to the topics you tapped. Every URL here answered HTTP 200 with a parseable RSS or Atom body on 2026-10-21, fetched with the same User-Agent lib/brief/rss.ts sends.",
+  "note": "Public RSS/Atom feeds the Brief may SUGGEST by topic, and the pool the welcome walkthrough subscribes from (topic ids from lib/persona/interests.ts; picks point at feed ids from lib/onboarding/topics.ts). Suggestions are never auto-subscribed; the walkthrough subscribes only to what you tapped, most specific first. Every URL here answered HTTP 200 with a parseable RSS or Atom body on 2026-10-21, fetched with the same User-Agent lib/brief/rss.ts sends. Dead candidates were dropped, not shipped.",
   "feeds": [
-    { "id": "smashing", "title": "Smashing Magazine", "site": "smashingmagazine.com", "url": "https://www.smashingmagazine.com/feed/", "topics": ["design-systems", "frontend", "css", "accessibility"] },
-    { "id": "alistapart", "title": "A List Apart", "site": "alistapart.com", "url": "https://alistapart.com/main/feed/", "topics": ["product-design", "frontend", "writing"] },
-    { "id": "nngroup", "title": "Nielsen Norman Group", "site": "nngroup.com", "url": "https://www.nngroup.com/feed/rss/", "topics": ["ux-research", "product-design"] },
-    { "id": "css-tricks", "title": "CSS-Tricks", "site": "css-tricks.com", "url": "https://css-tricks.com/feed/", "topics": ["css", "frontend"] },
-    { "id": "a11yproject", "title": "The A11Y Project", "site": "a11yproject.com", "url": "https://www.a11yproject.com/feed/feed.xml", "topics": ["accessibility"] },
-    { "id": "adrianroselli", "title": "Adrian Roselli", "site": "adrianroselli.com", "url": "https://adrianroselli.com/feed/", "topics": ["accessibility", "frontend"] },
-    { "id": "sidebar", "title": "Sidebar", "site": "sidebar.io", "url": "https://sidebar.io/feed.xml", "topics": ["product-design", "design-systems", "typography"] },
-    { "id": "ia", "title": "iA Writer blog", "site": "ia.net", "url": "https://ia.net/feed", "topics": ["typography", "writing", "product-design"] },
-    { "id": "hn", "title": "Hacker News front page", "site": "hnrss.org", "url": "https://hnrss.org/frontpage", "topics": ["indie-business", "open-source", "ai-tools", "frontend"] },
-    { "id": "lobsters", "title": "Lobsters", "site": "lobste.rs", "url": "https://lobste.rs/rss", "topics": ["open-source", "frontend", "privacy-security"] },
-    { "id": "selfhst", "title": "selfh.st", "site": "selfh.st", "url": "https://selfh.st/rss/", "topics": ["self-hosting", "open-source"] },
-    { "id": "simonwillison", "title": "Simon Willison", "site": "simonwillison.net", "url": "https://simonwillison.net/atom/everything/", "topics": ["local-models", "ai-tools", "open-source"] },
-    { "id": "huggingface", "title": "Hugging Face blog", "site": "huggingface.co", "url": "https://huggingface.co/blog/feed.xml", "topics": ["local-models", "ai-tools"] },
-    { "id": "eff", "title": "EFF Updates", "site": "eff.org", "url": "https://www.eff.org/rss/updates.xml", "topics": ["privacy-security"] },
-    { "id": "schneier", "title": "Schneier on Security", "site": "schneier.com", "url": "https://www.schneier.com/feed/atom/", "topics": ["privacy-security"] },
-    { "id": "jamesclear", "title": "James Clear", "site": "jamesclear.com", "url": "https://jamesclear.com/feed", "topics": ["adhd-habits", "productivity"] },
-    { "id": "additude", "title": "ADDitude", "site": "additudemag.com", "url": "https://www.additudemag.com/feed/", "topics": ["adhd-habits"] },
-    { "id": "react", "title": "React blog", "site": "react.dev", "url": "https://react.dev/rss.xml", "topics": ["react-next", "frontend"] },
-    { "id": "tailwind", "title": "Tailwind CSS blog", "site": "tailwindcss.com", "url": "https://tailwindcss.com/feeds/feed.xml", "topics": ["css", "design-systems"] },
-    { "id": "bicycling", "title": "Bicycling", "site": "bicycling.com", "url": "https://www.bicycling.com/rss/all.xml/", "topics": ["cycling", "outdoors"] },
-    { "id": "bonappetit", "title": "Bon Appétit", "site": "bonappetit.com", "url": "https://www.bonappetit.com/feed/rss", "topics": ["cooking"] },
-    { "id": "quanta", "title": "Quanta Magazine", "site": "quantamagazine.org", "url": "https://www.quantamagazine.org/feed/", "topics": ["science"] },
-    { "id": "outside", "title": "Outside", "site": "outsideonline.com", "url": "https://www.outsideonline.com/feed/", "topics": ["outdoors", "cycling"] },
-    { "id": "petapixel", "title": "PetaPixel", "site": "petapixel.com", "url": "https://petapixel.com/feed/", "topics": ["photography"] },
-    { "id": "dpreview", "title": "DPReview news", "site": "dpreview.com", "url": "https://www.dpreview.com/feeds/news.xml", "topics": ["photography"] },
-    { "id": "smittenkitchen", "title": "Smitten Kitchen", "site": "smittenkitchen.com", "url": "https://www.smittenkitchen.com/feed/", "topics": ["cooking"] },
-    { "id": "sciencedaily", "title": "ScienceDaily", "site": "sciencedaily.com", "url": "https://www.sciencedaily.com/rss/all.xml", "topics": ["science"] },
-    { "id": "nasa", "title": "NASA breaking news", "site": "nasa.gov", "url": "https://nasa.gov/rss/dyn/breaking_news.rss", "topics": ["science"] },
-    { "id": "rps", "title": "Rock Paper Shotgun", "site": "rockpapershotgun.com", "url": "https://www.rockpapershotgun.com/feed", "topics": ["gaming"] },
-    { "id": "nintendolife", "title": "Nintendo Life", "site": "nintendolife.com", "url": "https://www.nintendolife.com/feeds/latest", "topics": ["gaming"] },
-    { "id": "stereogum", "title": "Stereogum", "site": "stereogum.com", "url": "https://www.stereogum.com/feed/", "topics": ["music"] },
-    { "id": "mrmoneymustache", "title": "Mr. Money Mustache", "site": "mrmoneymustache.com", "url": "https://www.mrmoneymustache.com/feed/", "topics": ["personal-finance"] },
-    { "id": "ofdollarsanddata", "title": "Of Dollars And Data", "site": "ofdollarsanddata.com", "url": "https://ofdollarsanddata.com/feed/", "topics": ["personal-finance"] },
-    { "id": "insideclimate", "title": "Inside Climate News", "site": "insideclimatenews.org", "url": "https://insideclimatenews.org/feed/", "topics": ["climate"] },
-    { "id": "grist", "title": "Grist", "site": "grist.org", "url": "https://grist.org/feed/", "topics": ["climate"] },
-    { "id": "caranddriver", "title": "Car and Driver", "site": "caranddriver.com", "url": "https://www.caranddriver.com/rss/all.xml/", "topics": ["cars"] },
-    { "id": "apartmenttherapy", "title": "Apartment Therapy", "site": "apartmenttherapy.com", "url": "https://www.apartmenttherapy.com/main.rss", "topics": ["home"] }
+    {
+      "id": "smashing",
+      "title": "Smashing Magazine",
+      "site": "smashingmagazine.com",
+      "url": "https://www.smashingmagazine.com/feed/",
+      "topics": [
+        "design-systems",
+        "frontend",
+        "css",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "alistapart",
+      "title": "A List Apart",
+      "site": "alistapart.com",
+      "url": "https://alistapart.com/main/feed/",
+      "topics": [
+        "product-design",
+        "frontend",
+        "writing"
+      ]
+    },
+    {
+      "id": "nngroup",
+      "title": "Nielsen Norman Group",
+      "site": "nngroup.com",
+      "url": "https://www.nngroup.com/feed/rss/",
+      "topics": [
+        "ux-research",
+        "product-design"
+      ]
+    },
+    {
+      "id": "css-tricks",
+      "title": "CSS-Tricks",
+      "site": "css-tricks.com",
+      "url": "https://css-tricks.com/feed/",
+      "topics": [
+        "css",
+        "frontend"
+      ]
+    },
+    {
+      "id": "a11yproject",
+      "title": "The A11Y Project",
+      "site": "a11yproject.com",
+      "url": "https://www.a11yproject.com/feed/feed.xml",
+      "topics": [
+        "accessibility"
+      ]
+    },
+    {
+      "id": "adrianroselli",
+      "title": "Adrian Roselli",
+      "site": "adrianroselli.com",
+      "url": "https://adrianroselli.com/feed/",
+      "topics": [
+        "accessibility",
+        "frontend"
+      ]
+    },
+    {
+      "id": "sidebar",
+      "title": "Sidebar",
+      "site": "sidebar.io",
+      "url": "https://sidebar.io/feed.xml",
+      "topics": [
+        "product-design",
+        "design-systems",
+        "typography"
+      ]
+    },
+    {
+      "id": "ia",
+      "title": "iA Writer blog",
+      "site": "ia.net",
+      "url": "https://ia.net/feed",
+      "topics": [
+        "typography",
+        "writing",
+        "product-design"
+      ]
+    },
+    {
+      "id": "hn",
+      "title": "Hacker News front page",
+      "site": "hnrss.org",
+      "url": "https://hnrss.org/frontpage",
+      "topics": [
+        "indie-business",
+        "open-source",
+        "ai-tools",
+        "frontend"
+      ]
+    },
+    {
+      "id": "lobsters",
+      "title": "Lobsters",
+      "site": "lobste.rs",
+      "url": "https://lobste.rs/rss",
+      "topics": [
+        "open-source",
+        "frontend",
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "selfhst",
+      "title": "selfh.st",
+      "site": "selfh.st",
+      "url": "https://selfh.st/rss/",
+      "topics": [
+        "self-hosting",
+        "open-source"
+      ]
+    },
+    {
+      "id": "simonwillison",
+      "title": "Simon Willison",
+      "site": "simonwillison.net",
+      "url": "https://simonwillison.net/atom/everything/",
+      "topics": [
+        "local-models",
+        "ai-tools",
+        "open-source"
+      ]
+    },
+    {
+      "id": "huggingface",
+      "title": "Hugging Face blog",
+      "site": "huggingface.co",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "topics": [
+        "local-models",
+        "ai-tools"
+      ]
+    },
+    {
+      "id": "eff",
+      "title": "EFF Updates",
+      "site": "eff.org",
+      "url": "https://www.eff.org/rss/updates.xml",
+      "topics": [
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "schneier",
+      "title": "Schneier on Security",
+      "site": "schneier.com",
+      "url": "https://www.schneier.com/feed/atom/",
+      "topics": [
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "jamesclear",
+      "title": "James Clear",
+      "site": "jamesclear.com",
+      "url": "https://jamesclear.com/feed",
+      "topics": [
+        "adhd-habits",
+        "productivity"
+      ]
+    },
+    {
+      "id": "additude",
+      "title": "ADDitude",
+      "site": "additudemag.com",
+      "url": "https://www.additudemag.com/feed/",
+      "topics": [
+        "adhd-habits"
+      ]
+    },
+    {
+      "id": "react",
+      "title": "React blog",
+      "site": "react.dev",
+      "url": "https://react.dev/rss.xml",
+      "topics": [
+        "react-next",
+        "frontend"
+      ]
+    },
+    {
+      "id": "tailwind",
+      "title": "Tailwind CSS blog",
+      "site": "tailwindcss.com",
+      "url": "https://tailwindcss.com/feeds/feed.xml",
+      "topics": [
+        "css",
+        "design-systems"
+      ]
+    },
+    {
+      "id": "bicycling",
+      "title": "Bicycling",
+      "site": "bicycling.com",
+      "url": "https://www.bicycling.com/rss/all.xml/",
+      "topics": [
+        "cycling",
+        "outdoors"
+      ]
+    },
+    {
+      "id": "bonappetit",
+      "title": "Bon Appétit",
+      "site": "bonappetit.com",
+      "url": "https://www.bonappetit.com/feed/rss",
+      "topics": [
+        "cooking"
+      ]
+    },
+    {
+      "id": "quanta",
+      "title": "Quanta Magazine",
+      "site": "quantamagazine.org",
+      "url": "https://www.quantamagazine.org/feed/",
+      "topics": [
+        "science"
+      ]
+    },
+    {
+      "id": "outside",
+      "title": "Outside",
+      "site": "outsideonline.com",
+      "url": "https://www.outsideonline.com/feed/",
+      "topics": [
+        "outdoors",
+        "cycling"
+      ]
+    },
+    {
+      "id": "petapixel",
+      "title": "PetaPixel",
+      "site": "petapixel.com",
+      "url": "https://petapixel.com/feed/",
+      "topics": [
+        "photography"
+      ]
+    },
+    {
+      "id": "dpreview",
+      "title": "DPReview news",
+      "site": "dpreview.com",
+      "url": "https://www.dpreview.com/feeds/news.xml",
+      "topics": [
+        "photography"
+      ]
+    },
+    {
+      "id": "smittenkitchen",
+      "title": "Smitten Kitchen",
+      "site": "smittenkitchen.com",
+      "url": "https://www.smittenkitchen.com/feed/",
+      "topics": [
+        "cooking"
+      ]
+    },
+    {
+      "id": "sciencedaily",
+      "title": "ScienceDaily",
+      "site": "sciencedaily.com",
+      "url": "https://www.sciencedaily.com/rss/all.xml",
+      "topics": [
+        "science"
+      ]
+    },
+    {
+      "id": "nasa",
+      "title": "NASA breaking news",
+      "site": "nasa.gov",
+      "url": "https://nasa.gov/rss/dyn/breaking_news.rss",
+      "topics": [
+        "science"
+      ]
+    },
+    {
+      "id": "rps",
+      "title": "Rock Paper Shotgun",
+      "site": "rockpapershotgun.com",
+      "url": "https://www.rockpapershotgun.com/feed",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "nintendolife",
+      "title": "Nintendo Life",
+      "site": "nintendolife.com",
+      "url": "https://www.nintendolife.com/feeds/latest",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "stereogum",
+      "title": "Stereogum",
+      "site": "stereogum.com",
+      "url": "https://www.stereogum.com/feed/",
+      "topics": [
+        "music"
+      ]
+    },
+    {
+      "id": "mrmoneymustache",
+      "title": "Mr. Money Mustache",
+      "site": "mrmoneymustache.com",
+      "url": "https://www.mrmoneymustache.com/feed/",
+      "topics": [
+        "personal-finance"
+      ]
+    },
+    {
+      "id": "ofdollarsanddata",
+      "title": "Of Dollars And Data",
+      "site": "ofdollarsanddata.com",
+      "url": "https://ofdollarsanddata.com/feed/",
+      "topics": [
+        "personal-finance"
+      ]
+    },
+    {
+      "id": "insideclimate",
+      "title": "Inside Climate News",
+      "site": "insideclimatenews.org",
+      "url": "https://insideclimatenews.org/feed/",
+      "topics": [
+        "climate"
+      ]
+    },
+    {
+      "id": "grist",
+      "title": "Grist",
+      "site": "grist.org",
+      "url": "https://grist.org/feed/",
+      "topics": [
+        "climate"
+      ]
+    },
+    {
+      "id": "caranddriver",
+      "title": "Car and Driver",
+      "site": "caranddriver.com",
+      "url": "https://www.caranddriver.com/rss/all.xml/",
+      "topics": [
+        "cars"
+      ]
+    },
+    {
+      "id": "apartmenttherapy",
+      "title": "Apartment Therapy",
+      "site": "apartmenttherapy.com",
+      "url": "https://www.apartmenttherapy.com/main.rss",
+      "topics": [
+        "home"
+      ]
+    },
+    {
+      "id": "realpython",
+      "title": "Real Python",
+      "site": "realpython.com",
+      "url": "https://realpython.com/atom.xml",
+      "topics": [
+        "programming"
+      ]
+    },
+    {
+      "id": "rustblog",
+      "title": "Rust blog",
+      "site": "blog.rust-lang.org",
+      "url": "https://blog.rust-lang.org/feed.xml",
+      "topics": [
+        "programming",
+        "open-source"
+      ]
+    },
+    {
+      "id": "goblog",
+      "title": "The Go blog",
+      "site": "go.dev",
+      "url": "https://go.dev/blog/feed.atom",
+      "topics": [
+        "programming",
+        "open-source"
+      ]
+    },
+    {
+      "id": "kubernetes",
+      "title": "Kubernetes blog",
+      "site": "kubernetes.io",
+      "url": "https://kubernetes.io/feed.xml",
+      "topics": [
+        "programming",
+        "self-hosting"
+      ]
+    },
+    {
+      "id": "postgres",
+      "title": "PostgreSQL news",
+      "site": "postgresql.org",
+      "url": "https://www.postgresql.org/news.rss",
+      "topics": [
+        "programming",
+        "open-source"
+      ]
+    },
+    {
+      "id": "stackoverflow",
+      "title": "Stack Overflow blog",
+      "site": "stackoverflow.blog",
+      "url": "https://stackoverflow.blog/feed/",
+      "topics": [
+        "programming",
+        "ai-tools"
+      ]
+    },
+    {
+      "id": "githubblog",
+      "title": "The GitHub blog",
+      "site": "github.blog",
+      "url": "https://github.blog/feed/",
+      "topics": [
+        "open-source",
+        "programming"
+      ]
+    },
+    {
+      "id": "swyx",
+      "title": "swyx.io",
+      "site": "swyx.io",
+      "url": "https://www.swyx.io/rss.xml",
+      "topics": [
+        "ai-tools",
+        "frontend"
+      ]
+    },
+    {
+      "id": "overreacted",
+      "title": "Overreacted",
+      "site": "overreacted.io",
+      "url": "https://overreacted.io/rss.xml",
+      "topics": [
+        "react-next",
+        "frontend"
+      ]
+    },
+    {
+      "id": "pragmaticengineer",
+      "title": "The Pragmatic Engineer",
+      "site": "newsletter.pragmaticengineer.com",
+      "url": "https://newsletter.pragmaticengineer.com/feed",
+      "topics": [
+        "career",
+        "management",
+        "programming"
+      ]
+    },
+    {
+      "id": "lethain",
+      "title": "Irrational Exuberance",
+      "site": "lethain.com",
+      "url": "https://lethain.com/feeds/",
+      "topics": [
+        "management",
+        "career"
+      ]
+    },
+    {
+      "id": "hackaday",
+      "title": "Hackaday",
+      "site": "hackaday.com",
+      "url": "https://hackaday.com/blog/feed/",
+      "topics": [
+        "making",
+        "hardware"
+      ]
+    },
+    {
+      "id": "raspberrypi",
+      "title": "Raspberry Pi news",
+      "site": "raspberrypi.com",
+      "url": "https://www.raspberrypi.com/news/feed/",
+      "topics": [
+        "making",
+        "hardware",
+        "self-hosting"
+      ]
+    },
+    {
+      "id": "homeassistant",
+      "title": "Home Assistant",
+      "site": "home-assistant.io",
+      "url": "https://www.home-assistant.io/atom.xml",
+      "topics": [
+        "self-hosting",
+        "making"
+      ]
+    },
+    {
+      "id": "techreview",
+      "title": "MIT Technology Review",
+      "site": "technologyreview.com",
+      "url": "https://www.technologyreview.com/feed/",
+      "topics": [
+        "ai-tools",
+        "science"
+      ]
+    },
+    {
+      "id": "bair",
+      "title": "Berkeley AI Research",
+      "site": "bair.berkeley.edu",
+      "url": "https://bair.berkeley.edu/blog/feed.xml",
+      "topics": [
+        "ai-tools",
+        "local-models"
+      ]
+    },
+    {
+      "id": "arstechnica",
+      "title": "Ars Technica",
+      "site": "arstechnica.com",
+      "url": "https://feeds.arstechnica.com/arstechnica/index",
+      "topics": [
+        "hardware",
+        "ai-tools",
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "theverge",
+      "title": "The Verge",
+      "site": "theverge.com",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "topics": [
+        "hardware",
+        "ai-tools"
+      ]
+    },
+    {
+      "id": "wired",
+      "title": "WIRED",
+      "site": "wired.com",
+      "url": "https://www.wired.com/feed/rss",
+      "topics": [
+        "ai-tools",
+        "science",
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "engadget",
+      "title": "Engadget",
+      "site": "engadget.com",
+      "url": "https://www.engadget.com/rss.xml",
+      "topics": [
+        "hardware"
+      ]
+    },
+    {
+      "id": "macrumors",
+      "title": "MacRumors",
+      "site": "macrumors.com",
+      "url": "https://www.macrumors.com/macrumors.xml",
+      "topics": [
+        "hardware"
+      ]
+    },
+    {
+      "id": "androidauthority",
+      "title": "Android Authority",
+      "site": "androidauthority.com",
+      "url": "https://www.androidauthority.com/feed/",
+      "topics": [
+        "hardware"
+      ]
+    },
+    {
+      "id": "bleepingcomputer",
+      "title": "BleepingComputer",
+      "site": "bleepingcomputer.com",
+      "url": "https://www.bleepingcomputer.com/feed/",
+      "topics": [
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "krebs",
+      "title": "Krebs on Security",
+      "site": "krebsonsecurity.com",
+      "url": "https://krebsonsecurity.com/feed/",
+      "topics": [
+        "privacy-security"
+      ]
+    },
+    {
+      "id": "finewoodworking",
+      "title": "Fine Woodworking",
+      "site": "finewoodworking.com",
+      "url": "https://www.finewoodworking.com/feed",
+      "topics": [
+        "woodworking"
+      ]
+    },
+    {
+      "id": "popularwoodworking",
+      "title": "Popular Woodworking",
+      "site": "popularwoodworking.com",
+      "url": "https://www.popularwoodworking.com/feed/",
+      "topics": [
+        "woodworking"
+      ]
+    },
+    {
+      "id": "3dprintcom",
+      "title": "3DPrint.com",
+      "site": "3dprint.com",
+      "url": "https://3dprint.com/feed/",
+      "topics": [
+        "3d-printing"
+      ]
+    },
+    {
+      "id": "makezine",
+      "title": "Make:",
+      "site": "makezine.com",
+      "url": "https://makezine.com/feed/",
+      "topics": [
+        "making",
+        "3d-printing"
+      ]
+    },
+    {
+      "id": "ifixit",
+      "title": "iFixit news",
+      "site": "ifixit.com",
+      "url": "https://www.ifixit.com/News/rss",
+      "topics": [
+        "repair",
+        "hardware"
+      ]
+    },
+    {
+      "id": "msf1",
+      "title": "Motorsport.com F1",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/f1/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "autosportf1",
+      "title": "Autosport F1",
+      "site": "autosport.com",
+      "url": "https://www.autosport.com/rss/f1/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "msnascar",
+      "title": "Motorsport.com NASCAR",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/nascar-cup/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "msindycar",
+      "title": "Motorsport.com IndyCar",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/indycar/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "mswec",
+      "title": "Motorsport.com WEC",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/wec/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "mswrc",
+      "title": "Motorsport.com WRC",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/wrc/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "msmotogp",
+      "title": "Motorsport.com MotoGP",
+      "site": "motorsport.com",
+      "url": "https://www.motorsport.com/rss/motogp/news/",
+      "topics": [
+        "motorsport"
+      ]
+    },
+    {
+      "id": "jalopnik",
+      "title": "Jalopnik",
+      "site": "jalopnik.com",
+      "url": "https://jalopnik.com/rss",
+      "topics": [
+        "cars"
+      ]
+    },
+    {
+      "id": "electrek",
+      "title": "Electrek",
+      "site": "electrek.co",
+      "url": "https://electrek.co/feed/",
+      "topics": [
+        "cars",
+        "climate"
+      ]
+    },
+    {
+      "id": "hagerty",
+      "title": "Hagerty Media",
+      "site": "hagerty.com",
+      "url": "https://www.hagerty.com/media/feed/",
+      "topics": [
+        "cars"
+      ]
+    },
+    {
+      "id": "espn",
+      "title": "ESPN top headlines",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnnfl",
+      "title": "ESPN NFL",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/nfl/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnnba",
+      "title": "ESPN NBA",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/nba/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnmlb",
+      "title": "ESPN MLB",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/mlb/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnsoccer",
+      "title": "ESPN Soccer",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/soccer/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnnhl",
+      "title": "ESPN NHL",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/nhl/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espntennis",
+      "title": "ESPN Tennis",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/tennis/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espngolf",
+      "title": "ESPN Golf",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/golf/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "espnmma",
+      "title": "ESPN MMA",
+      "site": "espn.com",
+      "url": "https://www.espn.com/espn/rss/mma/news",
+      "topics": [
+        "sports"
+      ]
+    },
+    {
+      "id": "runnersworld",
+      "title": "Runner's World",
+      "site": "runnersworld.com",
+      "url": "https://www.runnersworld.com/rss/all.xml/",
+      "topics": [
+        "running",
+        "fitness"
+      ]
+    },
+    {
+      "id": "awoc",
+      "title": "A Wealth of Common Sense",
+      "site": "awealthofcommonsense.com",
+      "url": "https://awealthofcommonsense.com/feed/",
+      "topics": [
+        "personal-finance",
+        "pricing"
+      ]
+    },
+    {
+      "id": "coindesk",
+      "title": "CoinDesk",
+      "site": "coindesk.com",
+      "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+      "topics": [
+        "crypto"
+      ]
+    },
+    {
+      "id": "marginalrevolution",
+      "title": "Marginal Revolution",
+      "site": "marginalrevolution.com",
+      "url": "https://marginalrevolution.com/feed",
+      "topics": [
+        "personal-finance",
+        "indie-business"
+      ]
+    },
+    {
+      "id": "econlib",
+      "title": "Econlib",
+      "site": "econlib.org",
+      "url": "https://www.econlib.org/feed/",
+      "topics": [
+        "personal-finance",
+        "indie-business"
+      ]
+    },
+    {
+      "id": "spacenews",
+      "title": "SpaceNews",
+      "site": "spacenews.com",
+      "url": "https://spacenews.com/feed/",
+      "topics": [
+        "spaceflight",
+        "science"
+      ]
+    },
+    {
+      "id": "universetoday",
+      "title": "Universe Today",
+      "site": "universetoday.com",
+      "url": "https://www.universetoday.com/feed/",
+      "topics": [
+        "spaceflight",
+        "science"
+      ]
+    },
+    {
+      "id": "physorg",
+      "title": "Phys.org physics",
+      "site": "phys.org",
+      "url": "https://phys.org/rss-feed/physics-news/",
+      "topics": [
+        "science"
+      ]
+    },
+    {
+      "id": "neurosciencenews",
+      "title": "Neuroscience News",
+      "site": "neurosciencenews.com",
+      "url": "https://neurosciencenews.com/feed/",
+      "topics": [
+        "science",
+        "mental-health"
+      ]
+    },
+    {
+      "id": "strongerbyscience",
+      "title": "Stronger by Science",
+      "site": "strongerbyscience.com",
+      "url": "https://www.strongerbyscience.com/feed/",
+      "topics": [
+        "fitness"
+      ]
+    },
+    {
+      "id": "nutritionfacts",
+      "title": "NutritionFacts.org",
+      "site": "nutritionfacts.org",
+      "url": "https://www.nutritionfacts.org/feed/",
+      "topics": [
+        "nutrition"
+      ]
+    },
+    {
+      "id": "mindful",
+      "title": "Mindful",
+      "site": "mindful.org",
+      "url": "https://www.mindful.org/feed/",
+      "topics": [
+        "mental-health",
+        "productivity"
+      ]
+    },
+    {
+      "id": "kingarthur",
+      "title": "King Arthur Baking",
+      "site": "kingarthurbaking.com",
+      "url": "https://www.kingarthurbaking.com/blog/feed",
+      "topics": [
+        "cooking"
+      ]
+    },
+    {
+      "id": "sprudge",
+      "title": "Sprudge",
+      "site": "sprudge.com",
+      "url": "https://sprudge.com/feed",
+      "topics": [
+        "coffee"
+      ]
+    },
+    {
+      "id": "vinepair",
+      "title": "VinePair",
+      "site": "vinepair.com",
+      "url": "https://vinepair.com/feed/",
+      "topics": [
+        "drinks"
+      ]
+    },
+    {
+      "id": "eater",
+      "title": "Eater",
+      "site": "eater.com",
+      "url": "https://www.eater.com/rss/index.xml",
+      "topics": [
+        "cooking"
+      ]
+    },
+    {
+      "id": "minimalistbaker",
+      "title": "Minimalist Baker",
+      "site": "minimalistbaker.com",
+      "url": "https://minimalistbaker.com/feed/",
+      "topics": [
+        "cooking",
+        "nutrition"
+      ]
+    },
+    {
+      "id": "familyhandyman",
+      "title": "Family Handyman",
+      "site": "familyhandyman.com",
+      "url": "https://www.familyhandyman.com/feed/",
+      "topics": [
+        "home",
+        "repair"
+      ]
+    },
+    {
+      "id": "savvygardening",
+      "title": "Savvy Gardening",
+      "site": "savvygardening.com",
+      "url": "https://savvygardening.com/feed/",
+      "topics": [
+        "gardening"
+      ]
+    },
+    {
+      "id": "gardenersworld",
+      "title": "Gardeners' World",
+      "site": "gardenersworld.com",
+      "url": "https://www.gardenersworld.com/feed/",
+      "topics": [
+        "gardening"
+      ]
+    },
+    {
+      "id": "epicgardening",
+      "title": "Epic Gardening",
+      "site": "epicgardening.com",
+      "url": "https://www.epicgardening.com/feed/",
+      "topics": [
+        "gardening"
+      ]
+    },
+    {
+      "id": "becomingminimalist",
+      "title": "Becoming Minimalist",
+      "site": "becomingminimalist.com",
+      "url": "https://www.becomingminimalist.com/feed/",
+      "topics": [
+        "productivity",
+        "home"
+      ]
+    },
+    {
+      "id": "pcgamer",
+      "title": "PC Gamer",
+      "site": "pcgamer.com",
+      "url": "https://www.pcgamer.com/rss/",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "polygon",
+      "title": "Polygon",
+      "site": "polygon.com",
+      "url": "https://www.polygon.com/rss/index.xml",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "kotaku",
+      "title": "Kotaku",
+      "site": "kotaku.com",
+      "url": "https://kotaku.com/rss",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "eurogamer",
+      "title": "Eurogamer",
+      "site": "eurogamer.net",
+      "url": "https://www.eurogamer.net/feed",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "gamedeveloper",
+      "title": "Game Developer",
+      "site": "gamedeveloper.com",
+      "url": "https://www.gamedeveloper.com/rss.xml",
+      "topics": [
+        "gaming",
+        "programming"
+      ]
+    },
+    {
+      "id": "dicebreaker",
+      "title": "Dicebreaker",
+      "site": "dicebreaker.com",
+      "url": "https://www.dicebreaker.com/feed",
+      "topics": [
+        "tabletop",
+        "gaming"
+      ]
+    },
+    {
+      "id": "timeextension",
+      "title": "Time Extension",
+      "site": "timeextension.com",
+      "url": "https://www.timeextension.com/feeds/latest",
+      "topics": [
+        "gaming"
+      ]
+    },
+    {
+      "id": "rogerebert",
+      "title": "RogerEbert.com",
+      "site": "rogerebert.com",
+      "url": "https://www.rogerebert.com/feed",
+      "topics": [
+        "film"
+      ]
+    },
+    {
+      "id": "variety",
+      "title": "Variety",
+      "site": "variety.com",
+      "url": "https://variety.com/feed/",
+      "topics": [
+        "film",
+        "tv"
+      ]
+    },
+    {
+      "id": "lithub",
+      "title": "Literary Hub",
+      "site": "lithub.com",
+      "url": "https://lithub.com/feed/",
+      "topics": [
+        "books",
+        "writing"
+      ]
+    },
+    {
+      "id": "reactormag",
+      "title": "Reactor",
+      "site": "reactormag.com",
+      "url": "https://reactormag.com/feed/",
+      "topics": [
+        "books"
+      ]
+    },
+    {
+      "id": "marginalian",
+      "title": "The Marginalian",
+      "site": "themarginalian.org",
+      "url": "https://www.themarginalian.org/feed/",
+      "topics": [
+        "books",
+        "writing"
+      ]
+    },
+    {
+      "id": "colossal",
+      "title": "Colossal",
+      "site": "thisiscolossal.com",
+      "url": "https://www.thisiscolossal.com/feed/",
+      "topics": [
+        "photography"
+      ]
+    },
+    {
+      "id": "sectionhiker",
+      "title": "SectionHiker",
+      "site": "sectionhiker.com",
+      "url": "https://sectionhiker.com/feed/",
+      "topics": [
+        "outdoors"
+      ]
+    },
+    {
+      "id": "backpacker",
+      "title": "Backpacker",
+      "site": "backpacker.com",
+      "url": "https://www.backpacker.com/feed/",
+      "topics": [
+        "outdoors"
+      ]
+    },
+    {
+      "id": "climbingcom",
+      "title": "Climbing",
+      "site": "climbing.com",
+      "url": "https://www.climbing.com/feed/",
+      "topics": [
+        "climbing",
+        "outdoors"
+      ]
+    },
+    {
+      "id": "powder",
+      "title": "Powder",
+      "site": "powder.com",
+      "url": "https://www.powder.com/feed",
+      "topics": [
+        "snow-sports",
+        "outdoors"
+      ]
+    },
+    {
+      "id": "surfer",
+      "title": "Surfer",
+      "site": "surfer.com",
+      "url": "https://www.surfer.com/feed",
+      "topics": [
+        "outdoors"
+      ]
+    },
+    {
+      "id": "fieldandstream",
+      "title": "Field & Stream",
+      "site": "fieldandstream.com",
+      "url": "https://www.fieldandstream.com/feed/",
+      "topics": [
+        "fishing",
+        "outdoors"
+      ]
+    },
+    {
+      "id": "audubon",
+      "title": "Audubon",
+      "site": "audubon.org",
+      "url": "https://www.audubon.org/rss.xml",
+      "topics": [
+        "outdoors",
+        "science"
+      ]
+    },
+    {
+      "id": "nesslabs",
+      "title": "Ness Labs",
+      "site": "nesslabs.com",
+      "url": "https://nesslabs.com/feed",
+      "topics": [
+        "productivity",
+        "mental-health"
+      ]
+    },
+    {
+      "id": "zapierblog",
+      "title": "Zapier blog",
+      "site": "zapier.com",
+      "url": "https://zapier.com/blog/feeds/latest/",
+      "topics": [
+        "productivity",
+        "career"
+      ]
+    },
+    {
+      "id": "bbcworld",
+      "title": "BBC World",
+      "site": "bbc.co.uk",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "topics": [
+        "world-news"
+      ]
+    },
+    {
+      "id": "nprnews",
+      "title": "NPR News",
+      "site": "npr.org",
+      "url": "https://www.npr.org/rss/rss.php?id=1001",
+      "topics": [
+        "world-news"
+      ]
+    },
+    {
+      "id": "guardianworld",
+      "title": "The Guardian World",
+      "site": "theguardian.com",
+      "url": "https://www.theguardian.com/world/rss",
+      "topics": [
+        "world-news"
+      ]
+    },
+    {
+      "id": "nprpolitics",
+      "title": "NPR Politics",
+      "site": "npr.org",
+      "url": "https://feeds.npr.org/1014/rss.xml",
+      "topics": [
+        "politics"
+      ]
+    },
+    {
+      "id": "longreads",
+      "title": "Longreads",
+      "site": "longreads.com",
+      "url": "https://longreads.com/feed/",
+      "topics": [
+        "writing",
+        "world-news"
+      ]
+    }
   ]
 }

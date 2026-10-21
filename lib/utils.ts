@@ -46,3 +46,16 @@ export function greeting(date: Date = new Date()): string {
 export function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…` : text;
 }
+
+/**
+ * Capitalise the first letter of a sentence built by joining fragments.
+ * The Home "Right now" line is assembled from counts ("today's brief is not
+ * built yet · 2 jobs on the board"), so whichever fragment lands first has to
+ * be capitalised at render time rather than in every fragment.
+ * Leaves anything that does not start with a letter alone.
+ */
+export function sentenceCase(text: string): string {
+  const trimmed = text.trimStart();
+  if (!trimmed) return text;
+  return trimmed[0].toUpperCase() + trimmed.slice(1);
+}

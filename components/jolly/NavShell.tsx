@@ -18,13 +18,13 @@ export interface NavData {
   quickTabs: NavItem[];
 }
 
-export function NavShell({ nav, session, children }: { nav: NavData; session: Session; children: React.ReactNode }) {
+export function NavShell({ nav, session, displayName, children }: { nav: NavData; session: Session; displayName?: string; children: React.ReactNode }) {
   return (
     <div className="flex h-dvh overflow-hidden bg-bg">
       <Sidebar groups={nav.groups} session={session} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {session.demo ? <DemoBanner /> : null}
-        <TopBar session={session} />
+        <TopBar session={session} displayName={displayName} />
         <main id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto overflow-x-hidden pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-6">
           {children}
         </main>

@@ -35,7 +35,9 @@ import { enabledFeedUrls, feedCatalog, readAcceptedFeeds } from "./feeds-store";
 import { fetchFeed } from "./rss";
 import type { Brief, BriefPersonal, BriefSection, BriefSource, Story } from "./types";
 
-const MAX_SOURCES = 6;
+// Matches lib/onboarding/seed MAX_SEEDED_FEEDS: the walkthrough must never
+// subscribe to a feed the builder would then silently ignore.
+const MAX_SOURCES = 12;
 const MAX_STORIES = 8;
 
 interface FixtureFile {

@@ -27,7 +27,7 @@ import { deckStats } from "@/lib/persona/deck-store";
 import { personaCounts, readEntries } from "@/lib/persona/store";
 import { providersFromEnv } from "@/lib/providers";
 import { runtimeEnv } from "@/lib/settings/ai";
-import { greeting } from "@/lib/utils";
+import { greeting, sentenceCase } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +69,7 @@ export default async function HomePage() {
 
       {settled ? (
         <HeroStrip title="Right now" icon={<Sparkles size={12} aria-hidden="true" />} action={counts && counts.inbox + counts.running ? { href: "/jobs", label: "Open jobs" } : enabled.has("brief") ? { href: "/brief", label: "Open brief" } : null}>
-          {needs.length ? needs.join(" · ") : "Nothing needs you. Capture something below."}
+          {needs.length ? sentenceCase(needs.join(" · ")) : "Nothing needs you. Capture something below."}
         </HeroStrip>
       ) : (
         <HeroStrip title="Start here" icon={<Sparkles size={12} aria-hidden="true" />} action={{ href: "/welcome", label: walkthrough.status === "in-progress" ? "Pick it up" : "Set it up" }}>

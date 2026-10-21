@@ -17,11 +17,14 @@ import type { FeedCatalogEntry } from "@/lib/persona/interests";
 import type { EntryInput } from "@/lib/persona/types";
 import type { Privacy } from "@/lib/providers/types";
 import { BRIEF_LENGTHS, BRIEF_TONES, type WalkthroughAnswers } from "./types";
-import { SENSITIVE, TOPIC_CHIPS, chipById } from "./topics";
+import { ALL_PICKS, SENSITIVE } from "./topics";
 
-/** At most this many feeds; lib/brief/build only reads six sources anyway. */
-export const MAX_SEEDED_FEEDS = 6;
-const PER_CHIP = 2;
+/**
+ * At most this many feeds get subscribed by the walkthrough, however many
+ * topics were tapped. lib/brief/build reads the same number of sources, so
+ * nothing is subscribed that would never be fetched.
+ */
+export const MAX_SEEDED_FEEDS = 12;
 
 const clean = (s: string, max: number) => s.replace(/\s+/g, " ").trim().slice(0, max);
 
@@ -38,13 +41,14 @@ export function walkthroughEntries(answers: WalkthroughAnswers): EntryInput[] {
   if (role) add("profile", `What I do: ${role}.`, "cloud-ok");
   if (goals) add("profile", `Right now I am focused on: ${goals}.`, "cloud-ok");
 
-  // Interests, in chip order so the result is stable.
+  // Interests, in catalog order so the result is stable. A pick inherits its
+  // category's privacy tag (Money, Health, Local) unless it sets its own.
   const chosen = new Set(answers.topics);
   const protectedIds = answers.localOnly;
-  for (const chip of TOPIC_CHIPS) {
-    if (!chosen.has(chip.id)) continue;
-    const privacy: Privacy = chip.sensitive && protectedIds.includes(chip.sensitive) ? "local-only" : "cloud-ok";
-    add("preference", `I follow ${chip.label.toLowerCase()}.`, privacy);
+  for (const pick of ALL_PICKS) {
+    if (!chosen.has(pick.id)) continue;
+    const privacy: Privacy = pick.sensitiveId && protectedIds.includes(pick.sensitiveId) ? "local-only" : "cloud-ok";
+    add("preference", `I follow ${pick.label.toLowerCase()}.`, privacy);
   }
   const free = clean(answers.interestsText, 400);
   if (free) add("preference", `I am into ${free}.`, "cloud-ok");
@@ -64,36 +68,37 @@ export function walkthroughEntries(answers: WalkthroughAnswers): EntryInput[] {
 }
 
 /**
- * Feeds for the chosen chips: up to two per chip, best coverage first, capped.
- * Deterministic — ties break on the title, so the same answers always seed the
- * same list (and the test can assert it).
+ * Feeds for what was tapped, SPECIFIC FIRST: a sub-pick ("Formula 1") beats the
+ * broad chip above it ("Motorsport"), because somebody who bothered to pick the
+ * specific thing wants that feed, not the category firehose. Deduped by feed id
+ * and capped at MAX_SEEDED_FEEDS.
+ *
+ * Pure and deterministic — the same answers always seed the same list, which is
+ * what lets the test assert it.
  */
 export function walkthroughFeeds(answers: WalkthroughAnswers, catalog: FeedCatalogEntry[]): FeedCatalogEntry[] {
+  const byId = new Map(catalog.map((f) => [f.id, f] as const));
+  const chosen = new Set(answers.topics);
+  const selected = ALL_PICKS.filter((p) => chosen.has(p.id));
+  // Two passes over the same catalog order: sub-picks, then broad chips.
+  const ordered = [...selected.filter((p) => p.parentId), ...selected.filter((p) => !p.parentId)];
+
   const picked: FeedCatalogEntry[] = [];
   const seen = new Set<string>();
-  for (const id of TOPIC_CHIPS.map((c) => c.id)) {
-    if (!answers.topics.includes(id)) continue;
-    const chip = chipById(id)!;
-    const wanted = new Set(chip.topics);
-    const ranked = catalog
-      .map((f) => ({ feed: f, hits: f.topics.filter((t) => wanted.has(t)).length }))
-      .filter((r) => r.hits > 0)
-      .sort((a, b) => b.hits - a.hits || a.feed.title.localeCompare(b.feed.title));
-    let taken = 0;
-    for (const r of ranked) {
-      if (taken >= PER_CHIP || picked.length >= MAX_SEEDED_FEEDS) break;
-      const key = r.feed.url.toLowerCase();
-      if (seen.has(key)) continue;
-      seen.add(key);
-      picked.push(r.feed);
-      taken++;
+  for (const pick of ordered) {
+    for (const feedId of pick.feeds ?? []) {
+      if (picked.length >= MAX_SEEDED_FEEDS) return picked;
+      if (seen.has(feedId)) continue;
+      const feed = byId.get(feedId);
+      if (!feed) continue; // a stale id is caught by the catalog test, not here
+      seen.add(feedId);
+      picked.push(feed);
     }
-    if (picked.length >= MAX_SEEDED_FEEDS) break;
   }
   return picked;
 }
 
-/** The interest labels a chip selection stands for, for the finish summary. */
+/** The labels a selection stands for, in catalog order, for the finish summary. */
 export function chosenLabels(answers: WalkthroughAnswers): string[] {
-  return TOPIC_CHIPS.filter((c) => answers.topics.includes(c.id)).map((c) => c.label);
+  return ALL_PICKS.filter((p) => answers.topics.includes(p.id)).map((p) => p.label);
 }

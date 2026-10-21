@@ -10,7 +10,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { readAcceptedFeeds } from "@/lib/brief/feeds-store";
 import { checklistItems, checklistProgress, DECK_TARGET } from "@/lib/onboarding/checklist";
-import { chosenLabels, walkthroughEntries, walkthroughFeeds, MAX_SEEDED_FEEDS } from "@/lib/onboarding/seed";
+import { walkthroughEntries, walkthroughFeeds, MAX_SEEDED_FEEDS } from "@/lib/onboarding/seed";
 import { FIRST_STEP, LAST_STEP, STEPS } from "@/lib/onboarding/steps";
 import {
   completeWalkthrough,
@@ -23,7 +23,7 @@ import {
   walkthroughFinished,
   walkthroughStarted,
 } from "@/lib/onboarding/store";
-import { SENSITIVE, TOPIC_CHIPS, localOnlyTopics } from "@/lib/onboarding/topics";
+import { ALL_PICKS, CATEGORIES, SENSITIVE, localOnlyTopics, pickById, searchPicks, subsOf } from "@/lib/onboarding/topics";
 import { DEFAULT_ANSWERS } from "@/lib/onboarding/types";
 import { deriveInterests, TOPICS } from "@/lib/persona/interests";
 import { readInterests } from "@/lib/persona/interests-store";
@@ -46,7 +46,7 @@ const ANSWERS = {
   name: "Alex",
   role: "product designer at a two-person studio",
   goals: "ship the design system and stop losing my mornings",
-  topics: ["design", "accessibility", "money"],
+  topics: ["design", "accessibility", "personal-finance"],
   interestsText: "espresso gear",
   briefLength: "short" as const,
   tone: "direct" as const,
@@ -133,7 +133,7 @@ describe("finishing the walkthrough", () => {
     const entries = readEntries();
     expect(entries.length).toBe(receipt.entries);
     expect(entries.map((e) => e.text)).toContain("Call me Alex.");
-    expect(entries.some((e) => e.text.includes("design & ux"))).toBe(true);
+    expect(entries.some((e) => e.text === "I follow design.")).toBe(true);
 
     const feeds = readAcceptedFeeds();
     expect(feeds.length).toBeGreaterThan(0);
@@ -212,13 +212,13 @@ describe("re-running it", () => {
 });
 
 describe("what each step seeds (pure)", () => {
-  it("one entry per answered field, in a stable order", () => {
+  it("one entry per answered field, in catalog order", () => {
     const texts = walkthroughEntries({ ...ANSWERS, brain: "none" }).map((e) => e.text);
     expect(texts).toEqual([
       "Call me Alex.",
       "What I do: product designer at a two-person studio.",
       "Right now I am focused on: ship the design system and stop losing my mornings.",
-      "I follow design & ux.",
+      "I follow design.",
       "I follow accessibility.",
       "I follow personal finance.",
       "I am into espresso gear.",
@@ -238,51 +238,159 @@ describe("what each step seeds (pure)", () => {
     expect(entries.some((e) => e.text.startsWith("Call me"))).toBe(false);
     expect(entries.filter((e) => e.kind === "rule")).toHaveLength(SENSITIVE.length);
   });
+});
 
-  it("picks at most six feeds, deterministically", () => {
-    const answers = { ...DEFAULT_ANSWERS, topics: TOPIC_CHIPS.map((c) => c.id) };
-    const a = walkthroughFeeds(answers, catalog.feeds);
-    const b = walkthroughFeeds(answers, catalog.feeds);
-    expect(a).toHaveLength(MAX_SEEDED_FEEDS);
-    expect(a.map((f) => f.url)).toEqual(b.map((f) => f.url));
-    expect(new Set(a.map((f) => f.url)).size).toBe(a.length);
-  });
-
-  it("every topic chip can produce at least one feed, so a chip can never give an empty Brief", () => {
-    for (const chip of TOPIC_CHIPS) {
-      const feeds = walkthroughFeeds({ ...DEFAULT_ANSWERS, topics: [chip.id] }, catalog.feeds);
-      expect(feeds.length, `${chip.id} has no feed in lib/brief/feed-catalog.json`).toBeGreaterThan(0);
-    }
-  });
-
-  it("every chip's own entry derives one of its topics (a chip whose label matches no keyword is a silent no-op)", () => {
-    for (const chip of TOPIC_CHIPS) {
-      const entries = walkthroughEntries({ ...DEFAULT_ANSWERS, localOnly: [], topics: [chip.id] });
-      const profile = deriveInterests(entries.map((e, i) => ({ id: String(i), text: e.text, privacy: e.privacy })));
-      const derived = profile.interests.map((i) => i.topic);
-      expect(chip.topics.some((t) => derived.includes(t)), `"${chip.label}" derived ${JSON.stringify(derived)}`).toBe(true);
-    }
-  });
-
-  it("every chip points at real interest topics", () => {
-    const known = new Set(TOPICS.map((t) => t.id));
-    for (const chip of TOPIC_CHIPS) {
-      for (const topic of chip.topics) expect(known, `${chip.id} -> ${topic}`).toContain(topic);
-    }
-  });
-
-  it("the sensitive map only touches chips that declare a category", () => {
-    expect([...localOnlyTopics(["finance"])]).toEqual(["personal-finance"]);
-    expect([...localOnlyTopics([])]).toEqual([]);
-  });
-
-  it("chosenLabels reads back what was tapped", () => {
-    expect(chosenLabels({ ...DEFAULT_ANSWERS, topics: ["accessibility", "design"] })).toEqual(["Design & UX", "Accessibility"]);
-  });
-
-  it("has exactly seven screens and a distinct id each", () => {
+describe("the screens", () => {
+  it("has exactly seven, with a distinct id each", () => {
     expect(STEPS).toHaveLength(7);
     expect(new Set(STEPS.map((s) => s.id)).size).toBe(7);
+  });
+});
+
+describe("the topic catalog", () => {
+  it("is big enough to be specific, and every id is unique", () => {
+    expect(CATEGORIES.length).toBeGreaterThanOrEqual(15);
+    expect(ALL_PICKS.length).toBeGreaterThanOrEqual(150);
+    expect(new Set(ALL_PICKS.map((p) => p.id)).size).toBe(ALL_PICKS.length);
+  });
+
+  it("every pick's own entry derives an interest — a label the deriver cannot lift back out is a silent no-op", () => {
+    const dead: string[] = [];
+    for (const pick of ALL_PICKS) {
+      const entries = walkthroughEntries({ ...DEFAULT_ANSWERS, localOnly: [], topics: [pick.id] });
+      const profile = deriveInterests(entries.map((e, i) => ({ id: String(i), text: e.text, privacy: e.privacy })));
+      if (!profile.interests.length) dead.push(`${pick.label} (${pick.id})`);
+    }
+    expect(dead, `these picks derive nothing: ${dead.join(", ")}`).toEqual([]);
+  });
+
+  it("every label stays inside what the deriver can extract: <= 3 words, starts alphanumeric", () => {
+    for (const pick of ALL_PICKS) {
+      expect(pick.label.split(" ").length, pick.id).toBeLessThanOrEqual(3);
+      expect(pick.label, pick.id).toMatch(/^[A-Za-z0-9]/);
+    }
+  });
+
+  it("every topic id a pick claims is a real interest topic", () => {
+    const known = new Set(TOPICS.map((t) => t.id));
+    for (const pick of ALL_PICKS) {
+      for (const topic of pick.topics ?? []) expect(known, `${pick.id} -> ${topic}`).toContain(topic);
+    }
+  });
+
+  it("every feed id a pick claims exists in the shipped catalog", () => {
+    const known = new Set(catalog.feeds.map((f) => f.id));
+    for (const pick of ALL_PICKS) {
+      for (const feedId of pick.feeds ?? []) expect(known, `${pick.id} -> ${feedId}`).toContain(feedId);
+    }
+  });
+
+  it("broad chips reveal specific sub-picks, and a sub knows its parent", () => {
+    const subs = subsOf("motorsport");
+    expect(subs.map((s) => s.id)).toContain("f1");
+    expect(subs.map((s) => s.id)).toContain("wec");
+    expect(pickById("f1")!.parentLabel).toBe("Motorsport");
+    expect(pickById("f1")!.categoryLabel).toBe("Cars & motorsport");
+    // A broad chip has no parent, so the two can be told apart when seeding.
+    expect(pickById("motorsport")!.parentId).toBeUndefined();
+  });
+
+  it("there are plenty of sub-picks, not just a renamed flat list", () => {
+    expect(ALL_PICKS.filter((p) => p.parentId).length).toBeGreaterThanOrEqual(90);
+  });
+});
+
+describe("searching the catalog", () => {
+  it("finds a sub-pick by its synonym and reports where it lives", () => {
+    const hit = searchPicks("f1")[0];
+    expect(hit.id).toBe("f1");
+    expect(hit.categoryLabel).toBe("Cars & motorsport");
+    expect(hit.parentLabel).toBe("Motorsport");
+  });
+
+  it("an exact label beats a mere substring", () => {
+    expect(searchPicks("yoga")[0].id).toBe("yoga");
+    expect(searchPicks("sourdough")[0].id).toBe("sourdough");
+  });
+
+  it("a category word pulls in the whole family", () => {
+    const ids = searchPicks("racing").map((p) => p.id);
+    expect(ids).toContain("motorsport");
+    expect(ids.length).toBeGreaterThan(3);
+  });
+
+  it("ignores a one-character query and returns nothing for nonsense", () => {
+    expect(searchPicks("f")).toEqual([]);
+    expect(searchPicks("zzzzqqq")).toEqual([]);
+  });
+
+  it("never returns more than the limit", () => {
+    expect(searchPicks("a", 5).length).toBeLessThanOrEqual(5);
+    expect(searchPicks("ing", 5).length).toBeLessThanOrEqual(5);
+  });
+});
+
+describe("which feeds a selection subscribes to", () => {
+  it("prefers the specific sub-pick over the broad chip above it", () => {
+    const answers = { ...DEFAULT_ANSWERS, topics: ["motorsport", "f1"] };
+    const urls = walkthroughFeeds(answers, catalog.feeds).map((f) => f.id);
+    // Formula 1's own feeds come first; Motorsport's generic feed is deduped away.
+    expect(urls[0]).toBe("msf1");
+    expect(urls).toContain("autosportf1");
+  });
+
+  it("caps the list however many topics were tapped, and never repeats a feed", () => {
+    const answers = { ...DEFAULT_ANSWERS, topics: ALL_PICKS.map((p) => p.id) };
+    const feeds = walkthroughFeeds(answers, catalog.feeds);
+    expect(feeds).toHaveLength(MAX_SEEDED_FEEDS);
+    expect(new Set(feeds.map((f) => f.id)).size).toBe(feeds.length);
+  });
+
+  it("is deterministic", () => {
+    const answers = { ...DEFAULT_ANSWERS, topics: ["f1", "sourdough", "bouldering"] };
+    expect(walkthroughFeeds(answers, catalog.feeds).map((f) => f.id))
+      .toEqual(walkthroughFeeds(answers, catalog.feeds).map((f) => f.id));
+  });
+
+  it("a pick with no feed of its own subscribes to nothing but still seeds the persona", () => {
+    const answers = { ...DEFAULT_ANSWERS, topics: ["local-news", "karting"] };
+    expect(walkthroughFeeds(answers, catalog.feeds)).toEqual([]);
+    expect(walkthroughEntries({ ...answers, brain: "none", localOnly: [] }).map((e) => e.text))
+      .toEqual(["I follow karting.", "I follow local news.", ...["Keep my brief short: at most 3 bullets per section.", "Write to me in a direct tone: no filler, no preamble, lead with the action.", "My morning block starts at 07:00."]]);
+  });
+
+  it("every feed-mapped pick resolves to at least one real feed", () => {
+    for (const pick of ALL_PICKS) {
+      if (!pick.feeds?.length) continue;
+      const feeds = walkthroughFeeds({ ...DEFAULT_ANSWERS, topics: [pick.id] }, catalog.feeds);
+      expect(feeds.length, `${pick.id} maps to no working feed`).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("privacy still works across the bigger catalog", () => {
+  it("a category-level tag reaches every pick inside it", () => {
+    expect(pickById("personal-finance")!.sensitiveId).toBe("finance");
+    expect(pickById("index-funds")!.sensitiveId).toBe("finance");
+    expect(pickById("strength-training")!.sensitiveId).toBe("health");
+    expect(pickById("local-news")!.sensitiveId).toBe("location");
+    expect(pickById("f1")!.sensitiveId).toBeUndefined();
+  });
+
+  it("a pick can override its category (parenting is family, not health)", () => {
+    expect(pickById("parenting")!.sensitiveId).toBe("family");
+  });
+
+  it("all four protected categories map onto real topics", () => {
+    for (const cat of SENSITIVE) {
+      expect(localOnlyTopics([cat.id]).size, `${cat.id} protects nothing`).toBeGreaterThan(0);
+    }
+  });
+
+  it("a protected sub-pick is written local-only, an unprotected one is not", () => {
+    const entries = walkthroughEntries({ ...DEFAULT_ANSWERS, topics: ["index-funds", "f1"], localOnly: ["finance"], brain: "none" });
+    expect(entries.find((e) => e.text.includes("index funds"))!.privacy).toBe("local-only");
+    expect(entries.find((e) => e.text.includes("formula 1"))!.privacy).toBe("cloud-ok");
   });
 });
 

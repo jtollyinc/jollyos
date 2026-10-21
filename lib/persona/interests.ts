@@ -60,11 +60,43 @@ export const TOPICS: Topic[] = [
   { id: "politics", label: "politics", keywords: ["election", "politics", "congress", "parliament", "senate", "campaign"] },
   { id: "celebrity", label: "celebrity gossip", keywords: ["celebrity", "celebrities", "gossip", "reality tv", "royal family", "red carpet"] },
   { id: "sports", label: "sports", keywords: ["football", "soccer", "basketball", "nba", "nfl", "baseball", "tennis", "golf", "premier league"] },
+  // ── Added with the expanded "What you follow" catalog (lib/onboarding/topics).
+  // A pick with no entry here still ranks: deriveInterests falls back to the
+  // pick's own label as a custom keyword. These exist for the areas where one
+  // label is not enough, and so lib/brief/feed-catalog.json can point at them.
+  { id: "programming", label: "programming", keywords: ["programming", "python", "golang", "compiler", "api design", "sql", "database", "kubernetes", "devops", "refactor"] },
+  { id: "motorsport", label: "motorsport", keywords: ["motorsport", "formula 1", "f1", "grand prix", "nascar", "indycar", "motogp", "rally", "le mans", "endurance racing", "qualifying"] },
+  { id: "running", label: "running", keywords: ["running", "runner", "half marathon", "ultramarathon", "5k", "10k", "race pace"] },
+  { id: "gardening", label: "gardening", keywords: ["gardening", "garden", "houseplant", "houseplants", "compost", "seedling", "perennial", "vegetable garden"] },
+  { id: "film", label: "film", keywords: ["film", "films", "movie", "movies", "cinema", "screenplay", "box office"] },
+  { id: "tv", label: "TV", keywords: ["tv", "tv show", "television", "series finale", "episode"] },
+  { id: "books", label: "books", keywords: ["book", "books", "novel", "novels", "author", "nonfiction", "publisher"] },
+  { id: "tabletop", label: "tabletop games", keywords: ["board game", "board games", "tabletop", "dungeons & dragons", "ttrpg"] },
+  { id: "woodworking", label: "woodworking", keywords: ["woodworking", "joinery", "lathe", "workbench", "wood shop", "dovetail"] },
+  { id: "3d-printing", label: "3D printing", keywords: ["3d print", "3d printing", "3d printer", "filament", "resin print", "slicer"] },
+  { id: "making", label: "making & DIY", keywords: ["maker", "soldering", "arduino", "raspberry pi", "microcontroller", "breadboard"] },
+  { id: "repair", label: "repair", keywords: ["repair", "right to repair", "teardown", "refurbish"] },
+  { id: "spaceflight", label: "spaceflight", keywords: ["spaceflight", "rocket", "satellite", "orbit", "astronaut", "launch vehicle"] },
+  { id: "fitness", label: "fitness", keywords: ["strength training", "workout", "gym", "squat", "deadlift", "powerlifting", "hypertrophy", "lifting"] },
+  { id: "nutrition", label: "nutrition", keywords: ["nutrition", "protein", "calories", "meal plan", "macros"] },
+  { id: "mental-health", label: "mental health", keywords: ["mental health", "anxiety", "depression", "therapy", "mindfulness", "burnout", "meditation"] },
+  { id: "sleep", label: "sleep", keywords: ["sleep", "insomnia", "circadian", "sleep debt"] },
+  { id: "coffee", label: "coffee", keywords: ["coffee", "espresso", "pour over", "barista", "roaster", "cold brew"] },
+  { id: "drinks", label: "drinks", keywords: ["cocktail", "cocktails", "whisky", "whiskey", "wine", "beer", "brewing"] },
+  { id: "career", label: "career", keywords: ["career", "resume", "job hunt", "interviewing", "promotion", "salary", "negotiation"] },
+  { id: "management", label: "management", keywords: ["management", "manager", "leadership", "one-on-one", "hiring", "team lead"] },
+  { id: "hardware", label: "hardware", keywords: ["laptop", "smartphone", "gpu", "cpu", "android", "iphone", "gadget"] },
+  { id: "climbing", label: "climbing", keywords: ["climbing", "bouldering", "belay", "crag"] },
+  { id: "snow-sports", label: "snow sports", keywords: ["skiing", "snowboard", "snowboarding", "powder day", "backcountry", "ski resort"] },
+  { id: "fishing", label: "fishing", keywords: ["fishing", "angler", "fly fishing", "tackle"] },
+  { id: "world-news", label: "world news", keywords: ["world news", "headlines", "breaking news", "foreign policy", "geopolitics"] },
 ];
 
 const AVOID_RE = PATTERNS.filter((p) => p.category === "avoid").map((p) => p.re);
 /** "I'm into X", "I follow X" → the X phrase. */
-const EXPLICIT_RE = /\b(?:I(?:'m| am) (?:into|interested in|following|getting into|obsessed with|curious about|a fan of|big on|deep into)|I (?:follow|keep up with|read about|nerd out (?:on|about))|(?:interested in|passionate about|love reading about)) ([a-z][a-z0-9 '&-]{2,40}?)(?=[,.;:!]| and | or | because | so | but |$)/gi;
+// The captured phrase may start with a digit ("3d printing"); without that a
+// pick whose label begins with a number derives no interest at all.
+const EXPLICIT_RE = /\b(?:I(?:'m| am) (?:into|interested in|following|getting into|obsessed with|curious about|a fan of|big on|deep into)|I (?:follow|keep up with|read about|nerd out (?:on|about))|(?:interested in|passionate about|love reading about)) ([a-z0-9][a-z0-9 '&-]{2,40}?)(?=[,.;:!]| and | or | because | so | but |$)/gi;
 
 const PRIVACY_RANK: Record<Privacy, number> = { public: 0, "cloud-ok": 1, "local-only": 2 };
 const stricter = (a: Privacy, b: Privacy): Privacy => (PRIVACY_RANK[a] >= PRIVACY_RANK[b] ? a : b);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import catalogJson from "@/lib/brief/feed-catalog.json";
 import { deriveInterests, interestSegments, matchTopics, rankStories, scoreStory, suggestFeeds, TOPICS, type FeedCatalogEntry, type InterestInput } from "@/lib/persona/interests";
+import { sentenceCase } from "@/lib/utils";
 
 const e = (id: string, text: string, privacy: InterestInput["privacy"] = "cloud-ok", source?: InterestInput["source"]): InterestInput => ({ id, text, privacy, source });
 
@@ -102,11 +103,18 @@ describe("feed suggestions never auto-subscribe", () => {
     expect(suggestFeeds(catalog, deriveInterests([]))).toEqual([]);
   });
 
+  it("capitalises a joined Right now line without touching the rest", () => {
+    expect(sentenceCase("today's brief is not built yet · 2 jobs")).toBe("Today's brief is not built yet · 2 jobs");
+    expect(sentenceCase("2 jobs on the board · today's brief is ready")).toBe("2 jobs on the board · today's brief is ready");
+    expect(sentenceCase("")).toBe("");
+    expect(sentenceCase("Already capital")).toBe("Already capital");
+  });
+
   it("ships a small catalog of real, topic-tagged feeds", () => {
     // Small enough to read in one sitting, big enough that every welcome
     // walkthrough chip has a feed (tests/walkthrough.test.ts proves that).
     expect(catalog.length).toBeGreaterThanOrEqual(18);
-    expect(catalog.length).toBeLessThanOrEqual(45);
+    expect(catalog.length).toBeLessThanOrEqual(200);
     const ids = new Set(TOPICS.map((t) => t.id));
     for (const f of catalog) {
       expect(f.url).toMatch(/^https:\/\//);

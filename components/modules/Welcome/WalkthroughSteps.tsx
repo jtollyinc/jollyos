@@ -11,11 +11,11 @@
  * Phone first: one column, 44px targets, nothing below 11px, and short enough
  * that a 390x844 screen never needs to scroll past the Next button.
  */
-import { Bot, Check, KeyRound, Loader2, Newspaper, ServerCog, ShieldCheck, Sparkles, User } from "lucide-react";
+import { Bot, Check, ChevronDown, KeyRound, Loader2, Newspaper, Search, ServerCog, ShieldCheck, Sparkles, User, X } from "lucide-react";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Card, Chip, Notice } from "@/components/jolly/Foundation";
-import { SENSITIVE, TOPIC_CHIPS } from "@/lib/onboarding/topics";
+import { ALL_PICKS, CATEGORIES, CHIPS_BEFORE_MORE, SENSITIVE, searchPicks, subsOf, type FlatPick } from "@/lib/onboarding/topics";
 import { BRIEF_LENGTHS, BRIEF_TONES, type BrainChoice, type WalkthroughAnswers } from "@/lib/onboarding/types";
 import type { PublicAiSettings } from "@/lib/settings/ai";
 
@@ -42,31 +42,6 @@ function Choice({ selected, onSelect, title, hint, icon }: { selected: boolean; 
       </span>
       {selected ? <Check size={16} className="shrink-0 text-accent-soft" aria-hidden="true" /> : null}
     </button>
-  );
-}
-
-/** A row of pills. Multi-select, keyboard reachable, 44px tall. */
-function Chips({ options, value, onToggle, label }: { options: { id: string; label: string }[]; value: string[]; onToggle: (id: string) => void; label: string }) {
-  return (
-    <div>
-      <p className="mb-1.5 text-label font-bold uppercase tracking-wider text-text-subtle">{label}</p>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((o) => {
-          const on = value.includes(o.id);
-          return (
-            <button
-              key={o.id}
-              type="button"
-              aria-pressed={on}
-              onClick={() => onToggle(o.id)}
-              className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[13px] font-semibold ${on ? "border-accent bg-accent/15 text-accent-soft" : "border-strong bg-surface-2 text-text-muted hover:bg-surface-hover"}`}
-            >
-              {o.label}
-            </button>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 
@@ -125,19 +100,151 @@ export function StepAbout({ answers, patch }: StepProps) {
 
 // ── 3. What you follow ─────────────────────────────────────────────────────
 
-export function StepInterests({ answers, patch }: StepProps) {
-  const toggle = (id: string) => patch({ topics: answers.topics.includes(id) ? answers.topics.filter((t) => t !== id) : [...answers.topics, id] });
-  const opts = (group: "work" | "life") => TOPIC_CHIPS.filter((c) => c.group === group).map((c) => ({ id: c.id, label: c.label }));
+/** One selectable pill. Sub-picks are visually quieter than their chip. */
+function Pill({ pick, on, onToggle, sub = false }: { pick: FlatPick; on: boolean; onToggle: () => void; sub?: boolean }) {
   return (
-    <div className="space-y-3.5">
-      <Chips label="Work &amp; craft" options={opts("work")} value={answers.topics} onToggle={toggle} />
-      <Chips label="Life" options={opts("life")} value={answers.topics} onToggle={toggle} />
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={onToggle}
+      className={`inline-flex min-h-11 items-center gap-1 rounded-full border px-3 text-[13px] font-semibold ${
+        on
+          ? "border-accent bg-accent/15 text-accent-soft"
+          : sub
+            ? "border-subtle bg-surface text-text-muted hover:bg-surface-hover"
+            : "border-strong bg-surface-2 text-text-muted hover:bg-surface-hover"
+      }`}
+    >
+      {on ? <Check size={13} aria-hidden="true" /> : null}
+      {pick.label}
+    </button>
+  );
+}
+
+/**
+ * One collapsible category. Collapsed by default (except the first) so the
+ * phone shows a short menu rather than a wall of several hundred pills, with
+ * the number you have picked on the header so nothing is hidden that matters.
+ */
+function Category({ category, selected, toggle, startOpen }: {
+  category: (typeof CATEGORIES)[number];
+  selected: string[];
+  toggle: (id: string) => void;
+  startOpen: boolean;
+}) {
+  const [open, setOpen] = useState(startOpen);
+  const [showAll, setShowAll] = useState(false);
+  const bodyId = useId();
+  const picked = ALL_PICKS.filter((p) => p.categoryId === category.id && selected.includes(p.id)).length;
+  const chips = showAll ? category.chips : category.chips.slice(0, CHIPS_BEFORE_MORE);
+  const hidden = category.chips.length - chips.length;
+
+  return (
+    <div className="rounded-control border border-subtle bg-surface-2/30">
+      <h3 className="m-0">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          className="touch-target flex w-full items-center gap-2 rounded-control px-3 py-2 text-left"
+        >
+          <span className="min-w-0 flex-1 text-sm font-semibold">{category.label}</span>
+          {picked ? <Chip tone="accent">{picked}</Chip> : null}
+          <ChevronDown size={16} className={`shrink-0 text-text-subtle transition-transform ${open ? "" : "-rotate-90"}`} aria-hidden="true" />
+        </button>
+      </h3>
+      <div id={bodyId} hidden={!open} className="px-3 pb-3">
+        {open ? (
+          <>
+            <div className="flex flex-wrap gap-1.5">
+              {chips.map((chip) => {
+                const on = selected.includes(chip.id);
+                const subs = subsOf(chip.id);
+                return (
+                  <div key={chip.id} className={on && subs.length ? "w-full" : undefined}>
+                    <Pill pick={ALL_PICKS.find((p) => p.id === chip.id)!} on={on} onToggle={() => toggle(chip.id)} />
+                    {on && subs.length ? (
+                      <div className="mt-1.5 flex flex-wrap gap-1.5 border-l-2 border-accent/30 pl-2.5">
+                        <span className="w-full text-[11px] font-semibold uppercase tracking-wider text-text-subtle">Get specific</span>
+                        {subs.map((sub) => <Pill key={sub.id} pick={sub} on={selected.includes(sub.id)} onToggle={() => toggle(sub.id)} sub />)}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+            {hidden > 0 ? (
+              <button type="button" className="btn-quiet mt-1.5 !min-h-10 text-[13px]" onClick={() => setShowAll(true)}>
+                Show {hidden} more
+              </button>
+            ) : null}
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+export function StepInterests({ answers, patch }: StepProps) {
+  const [query, setQuery] = useState("");
+  const toggle = (id: string) =>
+    patch({ topics: answers.topics.includes(id) ? answers.topics.filter((t) => t !== id) : [...answers.topics, id] });
+  const results = searchPicks(query);
+  const searching = query.trim().length >= 2;
+
+  return (
+    <div className="space-y-3">
+      <label className="relative block">
+        <span className="sr-only">Search topics</span>
+        <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle" aria-hidden="true" />
+        <input
+          className="field pl-9 pr-10"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={`Search ${ALL_PICKS.length} topics — try "f1" or "sourdough"`}
+          autoCapitalize="none"
+          spellCheck={false}
+        />
+        {query ? (
+          <button type="button" aria-label="Clear search" onClick={() => setQuery("")} className="absolute right-1 top-1/2 flex h-11 w-9 -translate-y-1/2 items-center justify-center text-text-subtle hover:text-text-primary">
+            <X size={16} aria-hidden="true" />
+          </button>
+        ) : null}
+      </label>
+
+      {searching ? (
+        results.length ? (
+          <ul className="space-y-1.5" aria-label="Search results">
+            {results.map((pick) => (
+              <li key={pick.id} className="flex items-center gap-2">
+                <Pill pick={pick} on={answers.topics.includes(pick.id)} onToggle={() => toggle(pick.id)} sub={Boolean(pick.parentId)} />
+                <span className="min-w-0 truncate text-[12px] text-text-subtle">
+                  {pick.categoryLabel}{pick.parentLabel ? ` › ${pick.parentLabel}` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="py-3 text-center text-[13px] text-text-muted">
+            Nothing matches &ldquo;{query.trim()}&rdquo;. Put it in the box at the bottom instead — free text counts.
+          </p>
+        )
+      ) : (
+        <div className="space-y-1.5">
+          {CATEGORIES.map((cat, i) => (
+            <Category key={cat.id} category={cat} selected={answers.topics} toggle={toggle} startOpen={i === 0} />
+          ))}
+        </div>
+      )}
+
       <Field label="Anything else?" hint="Free text. Written into your persona as-is.">
         <input className="field" value={answers.interestsText} onChange={(e) => patch({ interestsText: e.target.value })} maxLength={400} placeholder="espresso gear, sourdough, 90s sci-fi" />
       </Field>
       <p className="text-[13px] text-text-muted">
         {answers.topics.length
-          ? `${answers.topics.length} picked — JollyOS will subscribe you to working public feeds for these and rank every story against them.`
+          ? `${answers.topics.length} picked — the specific ones decide which feeds you get, and every pick shapes how stories are ranked.`
           : "Pick none and the Brief still works: it just shows your jobs and your decisions until you add a feed."}
       </p>
     </div>
