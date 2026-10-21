@@ -13,6 +13,7 @@ import { queueCounts, rawFilesSummary, readBatches, readQueue } from "@/lib/impo
 import { runImport } from "@/lib/import/run";
 import { isMode, isSource } from "@/lib/import/types";
 import { providersFromEnv } from "@/lib/providers";
+import { runtimeEnv } from "@/lib/settings/ai";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -20,7 +21,7 @@ export const maxDuration = 300;
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
 
 export function importOptions() {
-  const providers = providersFromEnv();
+  const providers = providersFromEnv(runtimeEnv());
   return {
     demo: isDemoMode(),
     localAvailable: Boolean(providers.local),

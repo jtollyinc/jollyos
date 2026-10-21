@@ -7,6 +7,7 @@ import { requireSession } from "@/lib/auth/session";
 import { defaultRunner } from "@/lib/config";
 import { ensureDemoSeeded } from "@/lib/demo";
 import { runJob, runnerStatuses } from "@/lib/jobs/runners";
+import { runtimeEnv } from "@/lib/settings/ai";
 import { captureToJob, createJob, jobCounts, readJobs, RUNNER_MANIFESTS } from "@/lib/jobs/store";
 
 export const runtime = "nodejs";
@@ -17,11 +18,11 @@ export async function GET() {
   if ("response" in gate) return gate.response;
   ensureDemoSeeded();
   const jobs = readJobs();
-  const statuses = await runnerStatuses();
+  const statuses = await runnerStatuses(runtimeEnv());
   return NextResponse.json({
     jobs,
     counts: jobCounts(jobs),
-    defaultRunner: defaultRunner(),
+    defaultRunner: defaultRunner(runtimeEnv()),
     runners: RUNNER_MANIFESTS.map((m) => ({ ...m, health: statuses.find((s) => s.id === m.id) ?? null })),
   }, { headers: { "Cache-Control": "no-store" } });
 }
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Could not create the job" }, { status: 400 });
   }
   if (body?.run !== true) return NextResponse.json({ job }, { status: 201 });
-  const result = await runJob(job.id, body.runner ?? "auto");
+  const result = await runJob(job.id, body.runner ?? "auto", runtimeEnv());
   if ("error" in result) return NextResponse.json({ job, error: result.error }, { status: result.status });
   return NextResponse.json({ job: result.job, resolution: result.resolution }, { status: 201 });
 }

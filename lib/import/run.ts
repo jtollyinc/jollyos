@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { dataDir } from "@/lib/data-dir";
 import { providersFromEnv, type ProviderSet } from "@/lib/providers";
+import { runtimeEnv } from "@/lib/settings/ai";
 import { extractCandidates } from "./extract";
 import { authorizeExtraction, extractWithModel } from "./modes";
 import { parseUpload, type RawFile } from "./parse";
@@ -74,7 +75,7 @@ function readFolder(dir: string): { files: RawFile[]; warning: string | null } {
   return { files, warning };
 }
 
-export async function runImport(input: RunInput, providers: ProviderSet = providersFromEnv()): Promise<RunResult> {
+export async function runImport(input: RunInput, providers: ProviderSet = providersFromEnv(runtimeEnv())): Promise<RunResult> {
   const auth = authorizeExtraction(input.mode, input.cloudOptIn, providers);
   if (!auth.ok) return { status: auth.status, body: { error: auth.error, options: auth.options } };
 

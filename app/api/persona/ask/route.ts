@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { ensureDemoSeeded } from "@/lib/demo";
 import { askMyself } from "@/lib/persona/ask";
+import { providersFromEnv } from "@/lib/providers";
+import { runtimeEnv } from "@/lib/settings/ai";
 import { readEntries } from "@/lib/persona/store";
 import { ProviderError } from "@/lib/providers";
 
@@ -20,7 +22,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No persona entries yet. Add a few on the Persona page first." }, { status: 409 });
   }
   try {
-    return NextResponse.json(await askMyself(question.slice(0, 2000)));
+    return NextResponse.json(await askMyself(question.slice(0, 2000), providersFromEnv(runtimeEnv())));
   } catch (err) {
     const message = err instanceof ProviderError ? err.message : "The model request failed.";
     return NextResponse.json({ error: message }, { status: 502 });

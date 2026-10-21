@@ -1,12 +1,19 @@
 import Link from "next/link";
-import { ArrowRight, KeyRound } from "lucide-react";
+import { ArrowRight, KeyRound, Sparkles } from "lucide-react";
 import { Card, PageHeader, PageShell } from "@/components/jolly/Foundation";
 import { getSession } from "@/lib/auth/session";
 import { configSummary } from "@/lib/config";
+import { HELP } from "@/lib/help";
 import { queueCounts, rawFilesSummary } from "@/lib/import/queue";
 import { loadStatuses } from "@/lib/modules/registry";
+import { checklistProgress, checklistItems } from "@/lib/onboarding/checklist";
+import { readWalkthrough, walkthroughFinished } from "@/lib/onboarding/store";
+import { readCachedBrief } from "@/lib/brief/build";
+import { readJobs } from "@/lib/jobs/store";
+import { deckStats } from "@/lib/persona/deck-store";
 import { readInterests } from "@/lib/persona/interests-store";
 import { providersFromEnv } from "@/lib/providers";
+import { publicAiSettings, runtimeEnv } from "@/lib/settings/ai";
 import { ModulesTable } from "./ModulesTable";
 
 export const dynamic = "force-dynamic";
@@ -21,17 +28,49 @@ function Row({ k, v }: { k: string; v: string }) {
 /** Settings: which modules are on, which provider answers, what is configured. No secret values. */
 export default async function SettingsPage() {
   const session = (await getSession())!;
-  const cfg = configSummary();
-  const providers = providersFromEnv();
+  const env = runtimeEnv();
+  const cfg = configSummary(env);
+  const providers = providersFromEnv(env);
   const statuses = loadStatuses();
   const raw = rawFilesSummary();
   const queue = queueCounts();
   const interests = readInterests();
+  const ai = publicAiSettings();
+  const walkthrough = readWalkthrough();
+  const settled = walkthroughFinished(walkthrough);
+  const checklist = checklistProgress(checklistItems({
+    walkthroughFinished: settled,
+    jobs: readJobs().length,
+    briefBuilt: Boolean(readCachedBrief()),
+    deckAnswers: deckStats({ includePrivate: true }).answered,
+    imports: queue.total,
+  }));
+  const brainLabel = ai.brain === "api" ? `hosted key (${ai.vendor}${ai.apiKeyHint ? ` ${ai.apiKeyHint}` : ""})` : ai.brain === "local" ? `a model on this machine${ai.localBaseUrl ? ` at ${ai.localBaseUrl}` : ""}` : "none — the built-in responder answers";
 
   return (
     <PageShell width="narrow">
-      <PageHeader title="Settings" lede="Everything here comes from .env and DATA_DIR. Secret values are never shown." />
+      <PageHeader title="Settings" help={HELP.settings} />
       <div className="space-y-4">
+        <Card className="p-4">
+          <h2 className="mb-2 flex items-center gap-2 text-base font-semibold">
+            <Sparkles size={16} className="text-accent-soft" aria-hidden="true" />
+            First run
+          </h2>
+          <dl>
+            <Row k="Welcome walkthrough" v={walkthrough.status === "done" ? "finished" : walkthrough.status === "skipped" ? "skipped" : walkthrough.status === "in-progress" ? "half done" : "not started"} />
+            <Row k="It set up" v={walkthrough.seeded.entryIds.length ? `${walkthrough.seeded.entryIds.length} persona lines · ${walkthrough.seeded.feedUrls.length} feeds` : "nothing yet"} />
+            <Row k="Getting started list" v={walkthrough.checklistDismissedAt ? "hidden" : checklist.complete ? "complete" : `${checklist.done} of ${checklist.total} done`} />
+            <Row k="AI brain (chosen here)" v={brainLabel} />
+          </dl>
+          <p className="mt-2 text-[12px] text-text-subtle">
+            Running it again replaces the lines and feeds it created last time; anything you wrote yourself is left alone.
+            {ai.envProvides.apiKey || ai.envProvides.localBaseUrl ? " A model set in this server's environment always wins over the one chosen here." : ""}
+          </p>
+          <Link href="/welcome?replay=1" className="btn-ghost mt-3">
+            {settled ? "Run the walkthrough again" : "Finish the walkthrough"}
+            <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        </Card>
         <Card className="p-4">
           <h2 className="mb-2 text-base font-semibold">Modules</h2>
           <ModulesTable initial={statuses} />

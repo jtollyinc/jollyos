@@ -11,6 +11,7 @@
  */
 import { isDemoMode, type Env } from "@/lib/config";
 import { dataPath, readJson, writeJson } from "@/lib/data-dir";
+import { runtimeEnv } from "@/lib/settings/ai";
 import { MANIFESTS } from "./manifests";
 import type { IconName, ModuleManifest, ModuleOverrides, ModuleState, ModuleStatus } from "./types";
 
@@ -72,8 +73,9 @@ export function setModuleEnabled(id: string, enabled: boolean): ModuleOverrides 
   return next;
 }
 
+/** `runtimeEnv` so a model configured in the UI counts as configured here too. */
 export function loadStatuses(): ModuleStatus[] {
-  return computeStatuses({ overrides: readOverrides() });
+  return computeStatuses({ overrides: readOverrides(), env: runtimeEnv() });
 }
 
 export function getModuleStatus(id: string): ModuleStatus | null {

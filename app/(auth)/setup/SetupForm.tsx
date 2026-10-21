@@ -6,7 +6,12 @@ import { PasswordRules } from "@/components/auth/PasswordRules";
 import { Notice } from "@/components/jolly/Foundation";
 import { PASSWORD_MIN_LENGTH, validateCredentials } from "@/lib/auth/rules";
 
-/** First-run: pick the one username and password. The rules are live; the server checks them again. */
+/**
+ * First-run: pick the one username and password. The rules are live; the server
+ * checks them again. On success it goes to /welcome, not /: an owner who has
+ * just been created has nothing configured, and a blank dashboard is the thing
+ * the walkthrough exists to prevent.
+ */
 export function SetupForm() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -25,7 +30,7 @@ export function SetupForm() {
       const res = await fetch("/api/auth/setup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) });
       const data = (await res.json()) as { error?: string };
       if (!res.ok) { setError(data.error ?? "Setup failed."); return; }
-      router.push("/");
+      router.push("/welcome");
       router.refresh();
     } catch {
       setError("Network error — is the server running?");
