@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * components/modules/Welcome/Walkthrough — the seven-screen first run.
+ * components/modules/Welcome/Walkthrough — the eight-screen first run.
  * ────────────────────────────────────────────────────────────────────────────
  * Owns the answers, the progress bar and every network call; the screens
  * themselves are in WalkthroughSteps.tsx.
@@ -11,7 +11,7 @@
  *    DATA_DIR and resumes on any device. Nothing is kept in localStorage.
  *  - The last screen is a receipt, not a form: Next on the AI screen POSTs
  *    `finish`, which writes the persona entries and subscribes the feeds, and
- *    the answer to that request is what screen seven renders.
+ *    the answer to that request is what screen eight renders.
  *  - Skip is available on every screen and is a decision, not a failure: it is
  *    recorded, and Home keeps offering the tour quietly.
  */

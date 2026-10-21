@@ -95,7 +95,7 @@ export function PersonaEditor() {
       {data && data.entries.length === 0 ? (
         <EmptyState
           title="Nothing here yet"
-          action={<><Link href="/welcome" className="btn-primary">Answer seven questions</Link><Link href="/persona/import" className="btn-ghost">Import instead</Link></>}
+          action={<><Link href="/welcome" className="btn-primary">Answer eight questions</Link><Link href="/persona/import" className="btn-ghost">Import instead</Link></>}
         >
           Three entries are enough for Ask Myself to start sounding like you: one value, one decision rule, one line about what you do. Add them in the box above, let the welcome walkthrough ask you, or import what ChatGPT already knows.
         </EmptyState>

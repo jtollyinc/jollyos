@@ -94,7 +94,7 @@ export const HELP: Record<string, HelpTopic> = {
   },
   welcome: {
     title: "Welcome walkthrough",
-    line: "Seven short screens that set JollyOS up for you. Skip any of it; your place is saved.",
+    line: "Eight short screens that set JollyOS up for you. Skip any of it; your place is saved.",
     what: "It asks what to call you, what you follow, how you like information, what must stay on this machine, and whether you have a model to point at. Your answers become persona entries and feeds — real configuration, not a tour.",
     example: "Tapping \"Accessibility\" and \"Self-hosting\" subscribes you to four working feeds and makes tomorrow's Brief lead with them.",
     start: "Tap Next. Nothing here is permanent, and you can run it again from Settings.",

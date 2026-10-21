@@ -1,5 +1,5 @@
 /**
- * lib/onboarding/steps — the seven screens, in order. Client-safe plain data.
+ * lib/onboarding/steps — the eight screens, in order. Client-safe plain data.
  * ────────────────────────────────────────────────────────────────────────────
  * One idea per screen (docs/design-system.md rule 8). The ids are stable: they
  * are the resume key in DATA_DIR/walkthrough.json and the screenshot names in

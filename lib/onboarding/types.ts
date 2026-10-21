@@ -1,7 +1,7 @@
 /**
  * lib/onboarding/types — the welcome walkthrough's shapes.
  * ────────────────────────────────────────────────────────────────────────────
- * Client-safe (no fs). The walkthrough is seven short screens; its answers are
+ * Client-safe (no fs). The walkthrough is eight short screens; its answers are
  * the only thing that needs to survive a reload, so they live in ONE file,
  * DATA_DIR/walkthrough.json, written after every step (lib/onboarding/store).
  * localStorage would lose the progress on another device and could not seed the

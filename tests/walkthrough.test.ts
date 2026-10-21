@@ -285,7 +285,7 @@ describe("what each step seeds (pure)", () => {
 });
 
 describe("the screens", () => {
-  it("has exactly seven, with a distinct id each", () => {
+  it("has exactly eight, with a distinct id each", () => {
     expect(STEPS).toHaveLength(8);
     expect(new Set(STEPS.map((s) => s.id)).size).toBe(8);
     // Goals sit right after "about": who you are, then what you are chasing.

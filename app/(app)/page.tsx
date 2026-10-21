@@ -89,7 +89,7 @@ export default async function HomePage() {
         <HeroStrip title="Start here" icon={<Sparkles size={12} aria-hidden="true" />} action={{ href: "/welcome", label: walkthrough.status === "in-progress" ? "Pick it up" : "Set it up" }}>
           {walkthrough.status === "in-progress"
             ? "Your walkthrough is half done — it remembers where you stopped. Finish it and the Brief starts arriving about what you actually follow."
-            : "Nothing is set up for you yet. Seven short screens and JollyOS knows what to call you, what you follow and what must never leave this machine."}
+            : "Nothing is set up for you yet. Eight short screens and JollyOS knows what to call you, what you follow and what must never leave this machine."}
         </HeroStrip>
       )}
 

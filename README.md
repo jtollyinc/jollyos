@@ -32,7 +32,7 @@ Nothing to install: no Node, no terminal, no Docker. Four steps.
    browser opens at `http://127.0.0.1:3000`.
 4. **Pick a username and a password.** That is your account. There is no
    default login and nothing is sent anywhere.
-5. **Answer seven short questions.** The welcome walkthrough asks what to call
+5. **Answer eight short questions.** The welcome walkthrough asks what to call
    you, what you follow, how you like information and what must never leave your
    machine — and sets JollyOS up from your answers: feeds subscribed, interests
    recorded, privacy enforced. Skip any of it; your place is saved, and you can

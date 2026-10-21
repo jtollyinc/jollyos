@@ -30,7 +30,7 @@ them counts as evidence.
 
 ### A welcome walkthrough that actually configures JollyOS
 
-Creating your account now leads straight into seven short screens: what JollyOS
+Creating your account now leads straight into eight short screens: what JollyOS
 is, what to call you, what you follow, how you like information, what must stay
 on your machine, an optional model, and a receipt. Skip any screen; your place
 is saved in your data folder, so another device picks up where you stopped, and
