@@ -61,6 +61,18 @@ system, so nothing is installed: delete the folder and JollyOS is gone.
 Prefer Docker, or want to run it from source? See
 [For developers](#for-developers).
 
+## See it in action
+
+[![JollyOS demo (2:42)](docs/media/demo-poster.png)](../../releases/download/v0.2.0/jollyos-demo.mp4)
+
+**▶ Watch the 2:42 demo** (MP4) — the eight-screen walkthrough, goals and the
+Coach, the jobs board and the Daily Brief, end to end.
+
+[![The 30-second hype cut](docs/media/hype-poster.png)](../../releases/download/v0.2.0/jollyos-hype.mp4)
+
+30-second hype cut: [16:9](../../releases/download/v0.2.0/jollyos-hype.mp4) ·
+[vertical](../../releases/download/v0.2.0/jollyos-hype-vertical.mp4)
+
 One owner, no database, pluggable modules, and a privacy rule for AI that is
 enforced in code: anything you tag **local-only** is only ever sent to a model
 running on your own machine, or not sent at all.
